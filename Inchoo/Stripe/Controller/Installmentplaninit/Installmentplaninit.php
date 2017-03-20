@@ -30,6 +30,8 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 			echo $data = $this->helper->encodeData($response);
 			return;
 		}
+		$guestEmail = $request["guestEmail"];
+
 
 		$apiModelObj = $this->_objectManager->get('Inchoo\Stripe\Model\Api');
 		$loginResponse = $apiModelObj->apiLogin();
@@ -40,7 +42,7 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 			return;
 		}
 		// call Installment Plan
-		$installmentPlanInitResponse = $apiModelObj->installmentPlanInit($selectedInstallment);
+		$installmentPlanInitResponse = $apiModelObj->installmentPlanInit($selectedInstallment, $guestEmail);
 
 		if($installmentPlanInitResponse["status"]){
             $response["status"] = true;
