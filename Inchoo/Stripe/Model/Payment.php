@@ -52,7 +52,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Directory\Model\CountryFactory $countryFactory,
-        \Stripe\Stripe $stripe,
+        //\Stripe\Stripe $stripe,
         \Magento\Customer\Model\Session $customerSession,
         array $data = array()
     ) {
@@ -73,10 +73,10 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
         $this->_countryFactory = $countryFactory;
 
-        $this->_stripeApi = $stripe;
+        /*$this->_stripeApi = $stripe;
         $this->_stripeApi->setApiKey(
             $this->getConfigData('api_key')
-        );
+        );*/
 
         $this->_minAmount = $this->getConfigData('min_order_total');
         $this->_maxAmount = $this->getConfigData('max_order_total');
@@ -282,7 +282,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
-    {
+    {return parent::isAvailable($quote);
         if ($quote && (
             $quote->getBaseGrandTotal() < $this->_minAmount
             || ($this->_maxAmount && $quote->getBaseGrandTotal() > $this->_maxAmount))
