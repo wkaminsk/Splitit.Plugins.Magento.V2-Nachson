@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Splitit_Paymentmethod layout configuration
+*
+* @category    Splitit
+* @package     Splitit_Paymentmethod
+* @author      Ivan Weiler & Stjepan Udovičić
+* @copyright   Splitit (http://Splitit.net)
+* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+           <!-- for css file -->
+           <css src="Splitit_Paymentmethod::css/custom.css"/>
+     
+           <!-- for js file -->
+           <!-- <script src="Splitit_Paymentmethod::js/jquery-1.12.4.js"/> -->
+           <script src="Splitit_Paymentmethod::js/custom.js"/>
+            
+           <!-- src="Webkul_Grid::js/grid.js" that mean from here get file -->
+           <!-- Webkul_Grid is module name, js/grid.js and css/grid.css are location of files in web folder of module  -->
+    </head>
+    <body>
+        <referenceBlock name="checkout.root">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="checkout" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="steps" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="billing-step" xsi:type="array">
+                                            <item name="component" xsi:type="string">uiComponent</item>
+                                            <item name="children" xsi:type="array">
+                                                <item name="payment" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="renders" xsi:type="array">
+                                                            <!-- merge payment method renders here -->
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="splitit_paymentmethod-payments" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">Splitit_Paymentmethod/js/view/payment/splitit-payments</item>
+                                                                    <item name="methods" xsi:type="array">
+                                                                        <item name="splitit_paymentmethod" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
