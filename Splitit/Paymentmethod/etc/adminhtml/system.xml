@@ -148,13 +148,13 @@
                     <label>Sort Order</label>
                 </field>
                 
-                <field id="min_order_total" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
+                <!-- <field id="min_order_total" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Minimum Order Total</label>
                 </field>
                 <field id="max_order_total" translate="label" type="text" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Maximum Order Total</label>
                     <comment>Leave empty to disable limit</comment>
-                </field>
+                </field> -->
                 
             </group>
         </section>

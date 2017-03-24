@@ -31,8 +31,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
     protected $_countryFactory;
 
-    protected $_minAmount = null;
-    protected $_maxAmount = null;
+    //protected $_minAmount = null;
+    //protected $_maxAmount = null;
     protected $_supportedCurrencyCodes = array('USD');
 
     protected $_debugReplacePrivateDataKeys = ['number', 'exp_month', 'exp_year', 'cvc'];
@@ -40,6 +40,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc
     protected $_apiModel = null;
     private $customerSession;
     private $helper;
+    private $objectManager = null;
+    private $grandTotal = null;
 
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -74,13 +76,15 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
         
 
-        $this->_minAmount = $this->getConfigData('min_order_total');
-        $this->_maxAmount = $this->getConfigData('max_order_total');
+        //$this->_minAmount = $this->getConfigData('min_order_total');
+        //$this->_maxAmount = $this->getConfigData('max_order_total');
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->_apiModel = $objectManager->get('Splitit\Paymentmethod\Model\Api');
+        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->_apiModel = $this->objectManager->get('Splitit\Paymentmethod\Model\Api');
         $this->customerSession = $customerSession;
-        $this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
+        $this->helper = $this->objectManager->get('Splitit\Paymentmethod\Helper\Data');
+        $cart = $this->objectManager->get("\Magento\Checkout\Model\Cart");
+        $this->grandTotal = round($cart->getQuote()->getGrandTotal(),2);
     }
 
     /**
@@ -278,7 +282,13 @@ class Payment extends \Magento\Payment\Model\Method\Cc
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
-    {return parent::isAvailable($quote);
+    {//return parent::isAvailable($quote);
+        if($this->checkAvailableInstallments($quote)){
+            return parent::isAvailable($quote);
+        }else{
+            return false;
+        }
+    /*return parent::isAvailable($quote);
         if ($quote && (
             $quote->getBaseGrandTotal() < $this->_minAmount
             || ($this->_maxAmount && $quote->getBaseGrandTotal() > $this->_maxAmount))
@@ -290,7 +300,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
             return false;
         }
 
-        return parent::isAvailable($quote);
+        return parent::isAvailable($quote);*/
     }
 
     /**
@@ -365,5 +375,61 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         }
         return $response;
         
+    }
+
+    public function checkAvailableInstallments($quote){
+        $installments = array();
+        $totalAmount = $this->grandTotal;
+        $selectInstallmentSetup = $this->getConfigData('select_installment_setup');
+        
+        $options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
+        
+        $depandOnCart = 0;
+        
+        if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){ // Select Fixed installment setup
+            
+            $fixedInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
+            $installments = explode(',', $fixedInstallments);
+            if(count($installments) > 0){
+                return true;
+            }
+            
+        }else{ // Select Depanding on cart installment setup
+            $depandOnCart = 1;  
+            $depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
+            $depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+            $dataAsPerCurrency = [];
+            foreach($depandingOnCartInstallmentsArr as $data){
+                $dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
+            }
+            $currentCurrencyCode = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseCurrencyCode();
+            if(count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])){
+                
+                foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){
+                    if($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to){
+                        foreach (explode(',', $data->installments) as $n) {
+                            if((array_key_exists($n, $options))){
+                                $installments[$n] = $n;
+                            }
+                        }
+                        break;
+                    }else if($totalAmount >= $data->from && empty($data->to)){
+                        foreach (explode(',', $data->installments) as $n) {
+
+                            if((array_key_exists($n, $options))){
+                                $installments[$n] = $n;  
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            if(count($installments) > 0){
+                return true;
+            }
+        } 
+
+        return false;
+
     }
 }

@@ -1,0 +1,31 @@
+button.delete-product-option{
+    border: none;
+    background: none;
+}
+button.delete-product-option span{
+	display: none;
+}
+button.delete-product-option:before{
+    content: '\e630';
+    font-size: 2rem;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Admin Icons';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: none;
+}
+.add-tier{
+	background-color: #eb5202 !important;
+    border-color: #eb5202 !important;
+    color: #fff !important;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+    margin: 8px;
+}
+td.not-allowed-td{
+	cursor: not-allowed;
+    opacity: 0.3;
+}
+td.not-allowed-td table{
+    pointer-events: none;
+}
