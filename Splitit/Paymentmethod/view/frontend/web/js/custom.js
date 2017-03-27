@@ -33,7 +33,7 @@ window.onload = function(){
 		var ccExpMonth = jQuery("form.splitit-form").find("select[name='payment[cc_exp_month]']").val();
 		var ccExpYear = jQuery("form.splitit-form").find("select[name='payment[cc_exp_year]']").val();
 		var ccCvv = jQuery("form.splitit-form").find("input[name='payment[cc_cid]']").val();
-		
+		var guestEmail = jQuery("input#customer-email").val();
 		
 		if(ccNum == ""){
 			alert("Please input Credit card number");
@@ -60,7 +60,7 @@ window.onload = function(){
 			url: baseUrl + "splititpaymentmethod/installmentplaninit/installmentplaninit", 
 			type : 'POST',
 	        dataType:'json',
-	        data:{"selectedInstallment":selectedInstallment},
+	        data:{"selectedInstallment":selectedInstallment, "guestEmail":guestEmail},
 	        showLoader: true,
 			success: function(result){
 					if(result.status){

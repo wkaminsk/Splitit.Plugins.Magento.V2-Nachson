@@ -15,6 +15,8 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
 	private $storeManager;
     private $currency;
     private $countryFactory;
+    private $guestEmail;
+    private $quote;
 
 	public function __construct(\Magento\Customer\Model\Session $customerSession,\Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Directory\Model\Currency $currency){
 
@@ -75,9 +77,10 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
         return $response;
     }
 
-    public function installmentPlanInit($selectedInstallment){
+    public function installmentPlanInit($selectedInstallment, $guestEmail){
     	$response = ["errorMsg"=>"", "successMsg"=>"", "status"=>false];
     	$apiUrl = $this->getApiUrl();
+        $this->guestEmail = $guestEmail;
     	$params = $this->createDataForInstallmentPlanInit($selectedInstallment);
     	$this->customerSession->setSelectedInstallment($selectedInstallment);
     	// check if cunsumer dont filled data in billing form in case of onepage checkout.
@@ -130,6 +133,9 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
             $customerInfo["firstname"] = $this->billingAddress->getFirstname();
             $customerInfo["lastname"] = $this->billingAddress->getLastname();
             $customerInfo["email"] = $this->billingAddress->getEmail();
+        }
+        if($customerInfo["email"] == ""){
+            $customerInfo["email"] = $this->guestEmail;
         }
         $billingStreet1 = "";
         $billingStreet2 = "";
@@ -237,6 +243,14 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
 
     public function checkForBillingFieldsEmpty(){
     	$customerInfo = $this->customerSession->getCustomer()->getData();
+        if(!isset($customerInfo["firstname"])){
+            $customerInfo["firstname"] = $this->billingAddress->getFirstname();
+            $customerInfo["lastname"] = $this->billingAddress->getLastname();
+            $customerInfo["email"] = $this->billingAddress->getEmail();
+        }
+        if($customerInfo["email"] == ""){
+            $customerInfo["email"] = $this->guestEmail;
+        }
     	$response = ["errorMsg"=>"", "successMsg"=>"", "status"=>false];
     	if($this->billingAddress->getStreet()[0] == "" || $this->billingAddress->getCity() == "" || $this->billingAddress->getPostcode() == "" || $customerInfo["firstname"] == "" || $customerInfo["lastname"] == "" || $customerInfo["email"] == "" || $this->billingAddress->getTelephone() == ""){
                     $response["errorMsg"] = "Please fill required fields.";    
