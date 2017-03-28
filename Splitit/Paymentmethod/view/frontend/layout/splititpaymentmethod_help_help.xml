@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<body>
+        <referenceContainer name="header.container" remove="true" />
+        <referenceContainer name="footer" remove="true" />
+        <referenceContainer name="catalog.topnav" remove="true"/>
+        <referenceContainer name="copyright" remove="true"/>
+    </body>
+
     <referenceContainer name="content">
         <!-- <block class="Mageplaza\HelloWorld\Block\Display" name="splititpaymentmethod_help" template="Splitit_Paymentmethod::help.phtml" /> -->
         <block class="Splitit\Paymentmethod\Block\Help" name="splititpaymentmethod_help" template="Splitit_Paymentmethod::help.phtml" />

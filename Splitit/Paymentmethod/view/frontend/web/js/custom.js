@@ -9,6 +9,7 @@ window.onload = function(){
 		splititAvail = jQuery('#splitit_paymentmethod').length;
 		console.log(splititAvail);
 		if(splititAvail > 0){
+			// get num of installment and help link url if active in configuration
 			getInstallmentOptions();
 			clearInterval(sitInterval);
 		}	
@@ -17,15 +18,26 @@ window.onload = function(){
 	function getInstallmentOptions(){
 		jQuery.ajax({
 			url: baseUrl + "splititpaymentmethod/installments/getinstallment", 
-			success: function(result){
+			success: function(result1){
+				var result = jQuery.parseJSON(result1); 
+				
+			// show help link
+			if(result.helpSection.link != undefined){
+				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.helpSection.link + '\',\'' +  result.helpSection.title + '\')">'+result.helpSection.title+'</a>';
+				
+				jQuery("#splitit-paymentmethod").append(helpLink);	
+			}
+			
 
-			jQuery("#select-num-of-installments").html(jQuery.parseJSON(result));
+			// show installments
+			jQuery("#select-num-of-installments").html(result.installmentHtml);
 			// disable place order button
 			jQuery("button#splitit-form").prop("disabled",true);
 			
 			}
 		});
 	}
+	 
 
 	jQuery(document).on("click", ".apr-tc",function(){
 		var selectedInstallment = jQuery("#select-num-of-installments").val();
@@ -135,3 +147,10 @@ function closeApprovalPopup(){
 	jQuery("#approval-popup, .approval-popup_ovelay").remove();
 }
 		
+function popWin(mylink, windowname) { 
+	 	console.log('texdasft' );	    
+	    var href;
+	    href=mylink;
+	    window.open(href, windowname, 'width=800,height=1075,scrollbars=yes,left=0,top=0,location=no,status=no,resizable=no'); 
+	    return false; 
+	  }

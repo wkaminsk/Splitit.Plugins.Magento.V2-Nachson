@@ -6,7 +6,7 @@
 >
    <head>
    		<css src="Splitit_Paymentmethod::css/custom.css"/>
-   		<script src="Splitit_Paymentmethod::js/jquery-1.12.4.js"/>
+   		<!-- <script src="Splitit_Paymentmethod::js/jquery-1.12.4.js"/> -->
     	<script src="Splitit_Paymentmethod::js/custom.js"/>
    </head>
    <body/>

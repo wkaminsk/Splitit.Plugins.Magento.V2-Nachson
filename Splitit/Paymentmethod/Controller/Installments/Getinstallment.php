@@ -18,7 +18,14 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 
 	public function execute() {
 		$this->helper = $this->_objectManager->create('Splitit\Paymentmethod\Helper\Data');
-		
+		$response = [
+                        "status" => true,
+                        "errorMsg" => "",
+                        "successMsg"=>"",
+                        "installmentHtml" => "",
+                        "helpSection" => ""
+                        
+        ];
 
 		$cart = $this->_objectManager->get("\Magento\Checkout\Model\Cart");
 		$totalAmount = $cart->getQuote()->getGrandTotal();
@@ -68,10 +75,22 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
             }
 
 		}
-		
-		echo $data = $this->helper->encodeData($installmentHtml);
+		$response["installmentHtml"] = $installmentHtml;
+		$response["helpSection"] = $this->getHelpSection();
+		echo $data = $this->helper->encodeData($response);
 		return;
     	
+    }
+
+    private function getHelpSection(){
+    	$baseUrl = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
+    	$help = [];
+
+    	if($this->helper->getConfig("payment/splitit_paymentmethod/faq_link_enabled")){
+    		$help["title"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title");
+    		$help["link"] = $baseUrl."splititpaymentmethod/help/help"; 
+    	}
+    	return $help;
     }
 
 	/*public function execute() {
