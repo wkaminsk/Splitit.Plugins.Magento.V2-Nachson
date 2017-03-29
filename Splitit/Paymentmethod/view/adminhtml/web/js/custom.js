@@ -1,6 +1,9 @@
 var baseCurrencyCode = "";
 var baseCurrencySymbol = "";
 var jqueryIsHere = 0;
+var curUrl = window.location.href; 
+var baseUrl = "";
+baseUrl = curUrl.substring(0, curUrl.indexOf('admin'));
 var jqueryInterval = setInterval(function(){    
     if(window.jQuery){
       jqueryIsHere = 1;
@@ -167,13 +170,15 @@ function runMyScripts(){
       jQuery('#payment_us_splitit_paymentmethod_fixed_installment').attr('disabled', 'disabled');
     }
   });
+
+  jQuery(document).on("click","#payment_us_splitit_paymentmethod_check_setting", function(){
+    checkSetting();  
+  });
 }
 
 function getCurrency(){
   
-  var curUrl = window.location.href; 
-  var baseUrl = "";
-  baseUrl = curUrl.substring(0, curUrl.indexOf('admin'));
+  
   jQuery.ajax({
     url: baseUrl + "splititpaymentmethod/getcurrency/getcurrency", 
     success: function(result){
@@ -312,4 +317,19 @@ function createJsonOfDependingOnCartTotal(){
     object = JSON.stringify(object);
     jQuery("#payment_us_splitit_paymentmethod_depanding_on_cart_total_values").val(object);
 
+}
+
+function checkSetting(){
+
+  jQuery.ajax({
+    url: baseUrl + "splititpaymentmethod/checksetting/checksetting", 
+    showLoader: true,
+    success: function(result){
+      if(result.status){
+        alert(result.successMsg);  
+      } else{
+        alert(result.errorMsg);
+      } 
+    }
+  });
 }
