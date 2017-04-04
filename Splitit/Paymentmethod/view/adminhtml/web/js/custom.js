@@ -8,7 +8,9 @@ var jqueryInterval = setInterval(function(){
     if(window.jQuery){
       jqueryIsHere = 1;
       clearInterval(jqueryInterval);
-      runMyScripts();
+      setTimeout(function(){
+        runMyScripts();
+      }, 2000);      
      }else{
       console.log('jquery not loaded!!');
      }       
