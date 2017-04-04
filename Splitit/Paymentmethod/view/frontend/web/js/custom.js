@@ -18,6 +18,7 @@ window.onload = function(){
 	function getInstallmentOptions(){
 		jQuery.ajax({
 			url: baseUrl + "splititpaymentmethod/installments/getinstallment", 
+			showLoader: true,
 			success: function(result1){
 				var result = jQuery.parseJSON(result1); 
 				

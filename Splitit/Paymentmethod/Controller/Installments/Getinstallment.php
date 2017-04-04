@@ -37,9 +37,6 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 		$installmentHtml = '<option value="">--No Intallment available--</option>';
 		if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){
 			$installments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
-
-			
-
 			
 			if(count($installments)){
 				$installmentHtml = '<option value="">--Please Select--</option>';
@@ -49,6 +46,7 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 				
 			}
 		}else{
+			$installmentHtml = '<option value="">--Please Select--</option>';
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
 			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
