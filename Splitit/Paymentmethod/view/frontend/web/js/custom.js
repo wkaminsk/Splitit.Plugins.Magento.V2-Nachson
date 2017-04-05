@@ -5,15 +5,23 @@ window.onload = function(){
 	var baseUrl = "";
 	baseUrl = curUrl.substring(0, curUrl.indexOf('checkout'));
 	
-	var sitInterval = setInterval(function(){
+	/*var sitInterval = setInterval(function(){
 		splititAvail = jQuery('#splitit_paymentmethod').length;
 		console.log(splititAvail);
 		if(splititAvail > 0){
 			// get num of installment and help link url if active in configuration
-			getInstallmentOptions();
+			//getInstallmentOptions();
 			clearInterval(sitInterval);
 		}	
-	}, 2000);
+	}, 2000);*/
+	
+	jQuery(document).on("focus", "form.splitit-form input, form.splitit-form select",function(){
+		var numOfInstallmentLength = jQuery("select#select-num-of-installments option").length;
+		if(numOfInstallmentLength == 1){
+			getInstallmentOptions();	
+		}
+	});
+	
 
 	function getInstallmentOptions(){
 		jQuery.ajax({
