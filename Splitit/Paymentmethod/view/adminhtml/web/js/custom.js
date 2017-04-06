@@ -4,20 +4,20 @@ var jqueryIsHere = 0;
 var curUrl = window.location.href; 
 var baseUrl = "";
 baseUrl = curUrl.substring(0, curUrl.indexOf('admin'));
-var jqueryInterval = setInterval(function(){    
-    if(window.jQuery){
+
+var jqueryInterval = setInterval(function(){  
+    var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
+    if(depandingOnCart){
       jqueryIsHere = 1;
-      clearInterval(jqueryInterval);
-      setTimeout(function(){
-        runMyScripts();
-      }, 2000);      
+      clearInterval(jqueryInterval);      
+      runMyScripts();     
      }else{
-      console.log('jquery not loaded!!');
+      console.log('Element not found!!');
      }       
   }, 1000);
 
 function runMyScripts(){
-  console.log(jQuery);
+  // console.log(jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").length);
   var tableHtml = getTableHtml();
   jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").replaceWith(tableHtml);
   // disable or enable Fixed and Depanding on cart total
