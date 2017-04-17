@@ -256,7 +256,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        $transactionId = $payment->getParentTransactionId();
+        /*$transactionId = $payment->getParentTransactionId();
 
         try {
             \Stripe\Charge::retrieve($transactionId)->refund(['amount' => $amount * 100]);
@@ -272,7 +272,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
             ->setIsTransactionClosed(1)
             ->setShouldCloseParentTransaction(1);
 
-        return $this;
+        return $this;*/
     }
 
     /**
