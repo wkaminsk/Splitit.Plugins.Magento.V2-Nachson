@@ -55,14 +55,23 @@ function runMyScripts(){
 
 				}
 				// for cart page only
-				if(jQuery('table.totals').length && displayInstallmentPriceOnPage.indexOf("cart") >= 0){
+				if((window.location.href).indexOf("checkout/cart") >= 0 && displayInstallmentPriceOnPage.indexOf("cart") >= 0){
 					
-					productprice = result.grandTotal;
-					currencySymbol = result.currencySymbol;
-					productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
-					installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
-					installmentNewSpan = '<br><span class="cart-installment">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
-					jQuery('table.totals tr:last').after('<tr><td>'+installmentNewSpan+'</td></tr>');
+					var cartPageInterval = setInterval(function(){  
+		    		if(jQuery("table.totals").length){
+		    			clearInterval(cartPageInterval);      
+						productprice = result.grandTotal;
+						currencySymbol = result.currencySymbol;
+						productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
+						installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
+						installmentNewSpan = '<br><span class="cart-installment">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
+						jQuery('table.totals tr:last').after('<tr><td>'+installmentNewSpan+'</td></tr>');    
+		    		}else{
+		    			console.log('In cart page totals not found!!');   
+		    		}
+			      
+			      }, 3000);
+					
 					
 
 				}
