@@ -31,6 +31,9 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
         $displayInstallmentPriceOnPage = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_on_pages");
         $numOfInstallmentForDisplay = $this->helper->getConfig("payment/splitit_paymentmethod/installments_count");
         $installmetPriceText = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_text");
+        if(is_null($installmetPriceText)){
+            $installmetPriceText = "";
+        }
 
         $response["isActive"] = $isEnable;
         $response["displayInstallmentPriceOnPage"] = $displayInstallmentPriceOnPage;
