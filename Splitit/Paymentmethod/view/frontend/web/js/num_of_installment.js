@@ -76,13 +76,20 @@ function runMyScripts(){
 
 				}
 				// onepage checkout only
-				if(jQuery("div.iwd-grand-total-item").length && displayInstallmentPriceOnPage.indexOf("checkout") >= 0){
-					productprice = result.grandTotal;
-					currencySymbol = result.currencySymbol;
-					productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
-					installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
-					installmentNewSpan = '<br><span class="cart-installment-onepage">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
-					jQuery('div.iwd-grand-total-item').after(installmentNewSpan);
+				if( (window.location.href).indexOf("checkout") >= 0 && (window.location.href).indexOf("checkout/cart") < 0 &&  displayInstallmentPriceOnPage.indexOf("checkout") >= 0){
+
+					var checkoutOnepageInterval = setInterval(function(){  
+						if(jQuery("div.iwd-grand-total-item").length){
+							clearInterval(checkoutOnepageInterval);    
+							productprice = result.grandTotal;
+							currencySymbol = result.currencySymbol;
+							productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
+							installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
+							installmentNewSpan = '<br><span class="cart-installment-onepage">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
+							jQuery('div.iwd-grand-total-item').after(installmentNewSpan);
+						}
+					}, 3000);	
+					
 					
 				}
 				
@@ -91,7 +98,7 @@ function runMyScripts(){
 		}
 	});
 
-	// find if url has #payment
+	// regular checkout page
 	
     
     if((window.location.href).indexOf("checkout") >= 0 && (window.location.href).indexOf("checkout/cart") < 0){
