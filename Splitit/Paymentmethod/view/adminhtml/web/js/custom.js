@@ -1,5 +1,6 @@
 var baseCurrencyCode = "";
 var baseCurrencySymbol = "";
+var currencyCodeSymbol = "";
 var jqueryIsHere = 0;
 var curUrl = window.location.href; 
 var baseUrl = "";
@@ -17,17 +18,10 @@ var jqueryInterval = setInterval(function(){
   }, 1000);
 
 function runMyScripts(){
-  // console.log(jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").length);
-  var tableHtml = getTableHtml();
-  jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").replaceWith(tableHtml);
-  // disable or enable Fixed and Depanding on cart total
-  if(jQuery("#payment_us_splitit_paymentmethod_select_installment_setup").val() == 'fixed'){
-    jQuery('#tiers_table.splitit').closest('td').addClass('not-allowed-td');
-    jQuery('#payment_us_splitit_paymentmethod_fixed_installment').removeAttr('disabled');
-  }else{
-    jQuery('#tiers_table.splitit').closest('td').removeClass('not-allowed-td');
-    jQuery('#payment_us_splitit_paymentmethod_fixed_installment').attr('disabled', 'disabled');
-  }
+
+  // run on page load.  
+  getCurrency();
+  
 
   jQuery(document).on("mousedown", "#save", function(event) {
 
@@ -53,6 +47,8 @@ function runMyScripts(){
         
         var doctv_from = parseFloat(jQuery(this).find(".doctv_from").val());
         var doctv_to = parseFloat(jQuery(this).find(".doctv_to").val());
+        var doctv_currency = jQuery(this).find(".doctv_currency").val();
+
         jQuery(this).find(".doctv_from").css("border","1px solid #ccc");
         jQuery(this).find(".doctv_to").css("border","1px solid #ccc");
         jQuery(this).find("select.doctv_installments").css("border","1px solid #ccc");
@@ -91,12 +87,17 @@ function runMyScripts(){
         }
 
         //  validation that there are no overlaps with the periods
-        fromToArr[i] = {};
-        fromToArr[i]["from"] = doctv_from;
-        fromToArr[i]["to"] = doctv_to;
-        if(flag1 == 0 && Object.keys(fromToArr).length > 1){
-          for(var j=0; j<Object.keys(fromToArr).length-1; j++){
-            if((doctv_from >= fromToArr[j]["from"] && doctv_from <= fromToArr[j]["to"]) || (doctv_to >= fromToArr[j]["from"] && doctv_to <= fromToArr[j]["to"]) ){
+        if (!fromToArr.hasOwnProperty(doctv_currency)) {
+          fromToArr[doctv_currency] = {};  
+        }
+        var countObj = Object.keys(fromToArr[doctv_currency]).length;
+        fromToArr[doctv_currency][countObj] = {};
+        fromToArr[doctv_currency][countObj]["from"] = doctv_from;
+        fromToArr[doctv_currency][countObj]["to"] = doctv_to;
+        fromToArr[doctv_currency][countObj]["currency"] = doctv_currency;
+        if(flag1 == 0 && Object.keys(fromToArr[doctv_currency]).length > 1){
+          for(var j=0; j<Object.keys(fromToArr[doctv_currency]).length-1; j++){
+             if(((doctv_from >= fromToArr[doctv_currency][j]["from"] && doctv_from <= fromToArr[doctv_currency][j]["to"]) || (doctv_to >= fromToArr[doctv_currency][j]["from"] && doctv_to <= fromToArr[doctv_currency][j]["to"])) && doctv_currency == fromToArr[doctv_currency][j]["currency"]){
               console.log("forrrr");
               jQuery(this).find(".doctv_from").css("border","1px solid red");
               jQuery(this).find(".doctv_to").css("border","1px solid red");
@@ -104,12 +105,12 @@ function runMyScripts(){
               overlaps++;
             }
             // check if there is gap between previous to and next from
-            if((fromToArr[j]["to"]+1) != fromToArr[j+1]["from"]){
+            if(((fromToArr[doctv_currency][j]["to"]+1) != fromToArr[doctv_currency][j+1]["from"]) && doctv_currency == fromToArr[doctv_currency][j]["currency"]){
               jQuery(this).find(".doctv_from").css("border","1px solid red");
               jQuery(this).find(".doctv_to").css("border","1px solid red");
               flag1++;
               hasGap++;  
-            }  
+            } 
           }
         }
 
@@ -161,7 +162,7 @@ function runMyScripts(){
 
     });
 
-  getCurrency();
+  
 
   jQuery(document).on('change', '#payment_us_splitit_paymentmethod_select_installment_setup', function(){
     if(jQuery(this).val() == 'fixed'){
@@ -183,11 +184,26 @@ function getCurrency(){
   
   jQuery.ajax({
     url: baseUrl + "splititpaymentmethod/getcurrency/getcurrency", 
+    showLoader: true,
     success: function(result){
       jQuery("input.doctv_currency").val(result.currencyCode);
       jQuery("span.base-currency-symbol").html(result.currencySymbol);
       baseCurrencyCode = result.currencyCode;
       baseCurrencySymbol = result.currencySymbol;
+      currencyCodeSymbol = result.currencyCodeSymbol;
+
+      // console.log(jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").length);
+      // show depanding on cart table
+      var tableHtml = getTableHtml();
+      jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").replaceWith(tableHtml);
+      // disable or enable Fixed and Depanding on cart total
+      if(jQuery("#payment_us_splitit_paymentmethod_select_installment_setup").val() == 'fixed'){
+        jQuery('#tiers_table.splitit').closest('td').addClass('not-allowed-td');
+        jQuery('#payment_us_splitit_paymentmethod_fixed_installment').removeAttr('disabled');
+      }else{
+        jQuery('#tiers_table.splitit').closest('td').removeClass('not-allowed-td');
+        jQuery('#payment_us_splitit_paymentmethod_fixed_installment').attr('disabled', 'disabled');
+      }
     }
   });
 }
@@ -228,7 +244,7 @@ function getTableInnerContent(){
 function getRowHtml(){
   var rowHtml = '<tr>'
          +'<td style="padding: 8px;">'
-          +'From<br><span class="base-currency-symbol">'+baseCurrencySymbol+'</span><input type="text" class="doctv_from" name="doctv_from" /><br>To<br><span class="base-currency-symbol">'+baseCurrencySymbol+'</span><input type="text" class="doctv_to" name="doctv_to" />'
+          +'From<br><span class="base-currency-symbol">'+getCurrencyCode("")+'</span><input type="text" class="doctv_from" name="doctv_from" /><br>To<br><span class="base-currency-symbol">'+getCurrencyCode("")+'</span><input type="text" class="doctv_to" name="doctv_to" />'
          +'</td>'
          +'<td style="padding: 8px;">'
           +'<select id="doctv_installments" name="doctv_installments" class=" select multiselect doctv_installments" size="10" multiple="multiple">'
@@ -246,7 +262,7 @@ function getRowHtml(){
             +'</select>'
          +'</td>'
          +'<td style="padding: 8px; text-align: center;">'
-           +'<input style="width: 60px;" disabled class="doctv_currency" value="'+baseCurrencyCode+'"/>'
+           +getCurrencyDropdown("")
          +'</td>'
          +'<td style="padding: 8px; text-align: center;">'
           +'<button title="Delete Tier" type="button" class="scalable delete icon-btn delete-product-option" id="" onclick="deleteRow(this);"><span><span><span>Delete</span></span></span></button>'
@@ -261,7 +277,7 @@ function getRowHtmlFromJson(){
   var rowHtml = "";
   jQuery.each( doctv, function( index, value ){
       rowHtml += '<tr>';
-        rowHtml += '<td style="padding: 8px;"> From<br><span class="base-currency-symbol">$</span><input type="text" class="doctv_from" name="doctv_from" value="'+value.doctv.from+'" /><br>To<br><span class="base-currency-symbol">$</span><input type="text" class="doctv_to" name="doctv_to" value="'+value.doctv.to+'" /> </td>';
+        rowHtml += '<td style="padding: 8px;"> From<br><span class="base-currency-symbol">'+getCurrencyCode(value.doctv.currency)+'</span><input type="text" class="doctv_from" name="doctv_from" value="'+value.doctv.from+'" /><br>To<br><span class="base-currency-symbol">'+getCurrencyCode(value.doctv.currency)+'</span><input type="text" class="doctv_to" name="doctv_to" value="'+value.doctv.to+'" /> </td>';
         rowHtml += '<td style="padding: 8px;"> <select id="" name="doctv_installments" class=" select multiselect doctv_installments" size="10" multiple="multiple">';
         var installments = value.doctv.installments.split(',');
         var i = 2;
@@ -275,7 +291,7 @@ function getRowHtmlFromJson(){
 
         }
         rowHtml += '</select></td>';
-        rowHtml += '<td style="padding: 8px; text-align: center;"><input style="width: 60px;" disabled class="doctv_currency" value="'+value.doctv.currency+'"/></td>'; 
+        rowHtml += '<td style="padding: 8px; text-align: center;">'+getCurrencyDropdown(value.doctv.currency)+'</td>'; 
         rowHtml += '<td style="padding: 8px; text-align: center;">'
                 +'<button title="Delete Tier" type="button" class="scalable delete icon-btn delete-product-option" id="" onclick="deleteRow(this);"><span><span><span>Delete</span></span></span></button>'
               +'</td>'
@@ -295,6 +311,38 @@ function deleteRow(curObj){
         jQuery(curObj).closest("tr").remove();    
     }
     
+}
+function getCurrencyDropdown(selectedCurrency){
+    var currencyDropdown = '<select id="" class="doctv_currency" name="doctv_currency" class=" select">';
+    var selected = "";       
+    jQuery.each(currencyCodeSymbol, function(i, val) {
+      selected = ""
+        if(selectedCurrency == i){
+            selected = 'selected="selected"';
+        }
+        currencyDropdown += '<option value="'+i+'" '+selected+'>'+i+'</option>';    
+    });
+    return currencyDropdown += '</select>';
+
+}
+
+function getCurrencyCode(selectedCurrency){
+    var currencyCode = "";
+
+    if(selectedCurrency == ""){
+        var flag = 0;
+        jQuery.each(currencyCodeSymbol, function(i, val) {
+            if(flag == 0){
+              currencyCode = val;
+            }
+            flag++;
+        });
+        return currencyCode;
+
+    }
+    if (currencyCodeSymbol.hasOwnProperty(selectedCurrency)){
+        return currencyCodeSymbol[selectedCurrency];
+    } 
 }
 
 function createJsonOfDependingOnCartTotal(){

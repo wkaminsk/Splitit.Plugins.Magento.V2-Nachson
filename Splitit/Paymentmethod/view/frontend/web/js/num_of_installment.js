@@ -35,7 +35,7 @@ function runMyScripts(){
 					jQuery(".product-items li").each(function(){
 						priceSpan = jQuery(this).find(".price");
 						productprice = jQuery(priceSpan).text();
-						currencySymbol = productprice.charAt(0);
+						currencySymbol = result.currencySymbol;
 						productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
 						installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
 						installmentNewSpan = '<br><span class="cart-installment">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
@@ -47,7 +47,7 @@ function runMyScripts(){
 				if(jQuery('.product-info-price').length && displayInstallmentPriceOnPage.indexOf("product") >= 0){
 					priceSpan = jQuery(".product-info-price").find(".price");
 					productprice = jQuery(priceSpan).text();
-					currencySymbol = productprice.charAt(0);
+					currencySymbol = result.currencySymbol;
 					productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
 					installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
 					installmentNewSpan = '<br><span class="cart-installment">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';

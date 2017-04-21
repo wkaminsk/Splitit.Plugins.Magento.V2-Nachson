@@ -43,7 +43,8 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
         $cart = $this->_objectManager->get("\Magento\Checkout\Model\Cart");
 		$totalAmount = $cart->getQuote()->getGrandTotal();
 		$response["grandTotal"] = number_format((float)$totalAmount, 2, '.', '');	
-		$response["currencySymbol"] = $this->_objectManager->get('\Magento\Directory\Model\Currency')->getCurrencySymbol();
+		$response["currencySymbol"] = $this->helper->getCurrencyData();
+        
         echo $data = $this->helper->encodeData($response);
 		return;
 

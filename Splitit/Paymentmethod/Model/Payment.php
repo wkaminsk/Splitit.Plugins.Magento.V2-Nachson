@@ -14,6 +14,7 @@ namespace Splitit\Paymentmethod\Model;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Payment\Model\IframeConfigProvider;
+use Magento\Store\Model\StoreManagerInterfa‌​ce;
 
 class Payment extends \Magento\Payment\Model\Method\Cc
 {
@@ -402,7 +403,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc
             foreach($depandingOnCartInstallmentsArr as $data){
                 $dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
             }
-            $currentCurrencyCode = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseCurrencyCode();
+            $storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface'); 
+            $currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
             if(count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])){
                 
                 foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){

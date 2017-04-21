@@ -4,6 +4,8 @@
  * created by Zoran Salamun(zoran.salamun@inchoo.net)
  */
 namespace Splitit\Paymentmethod\Controller\Installments;
+use Magento\Store\Model\StoreManagerInterfa‌​ce;
+use Magento\Directory\Model\Currency;
 
 class Getinstallment extends \Magento\Framework\App\Action\Action {
 
@@ -32,7 +34,9 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 
 		$selectInstallmentSetup = $this->helper->getConfig('payment/splitit_paymentmethod/select_installment_setup');
 		$options = $this->_objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
-		$currencySymbol = $this->_objectManager->get('\Magento\Directory\Model\Currency')->getCurrencySymbol();
+		$storeManager = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+		$currencySymbol = $this->_objectManager->get('\Magento\Directory\Model\Currency')->load($currentCurrencyCode)->getCurrencySymbol();
 
 		$installmentHtml = '<option value="">--No Intallment available--</option>';
 		if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){
@@ -53,7 +57,10 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
             foreach($depandingOnCartInstallmentsArr as $data){
                 $dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
             }
-            $currentCurrencyCode = $this->_objectManager->get('\Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseCurrencyCode();
+
+            
+
+            
             if(count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])){
                 
                 foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){

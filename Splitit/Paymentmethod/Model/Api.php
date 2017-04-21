@@ -1,6 +1,6 @@
 <?php 
 namespace Splitit\Paymentmethod\Model;
-
+use Magento\Store\Model\StoreManagerInterface;
 class Api extends \Magento\Payment\Model\Method\AbstractMethod{
 
 	private $helper;
@@ -30,10 +30,10 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
 
 		$this->billingAddress = $cart->getQuote()->getBillingAddress();
 
+        $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $this->currencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+        $this->currencySymbol = $objectManager->get('\Magento\Directory\Model\Currency')->load($this->currencyCode)->getCurrencySymbol();
 		
-		$this->currencySymbol = $objectManager->get('\Magento\Directory\Model\Currency')->getCurrencySymbol();
-		$this->currencyCode = $storeManager->getStore()->getBaseCurrencyCode();
-
         $this->customerSession = $customerSession;
 
         $this->countryFactory = $objectManager->get('\Magento\Directory\Model\CountryFactory');
