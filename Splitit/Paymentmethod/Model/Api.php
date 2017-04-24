@@ -386,15 +386,20 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
 
           // Start Term and Condition Popup
           $html .= '<div id="termAndConditionpopup" style=" ">
-                    <div class="popup-block">
-                    <div class="popup-content" style="">'.$this->getTermnConditionText().'
-
-                    </div>';
+                    <div class="popup-block">';
+          
+          $html .= '<div class="popup-content" style="">';
+          // start close button on terms-condition popup
           $html .= '<div class="popup-footer" style="">';
           $html .= '<div id="payment-schedule-close-btn" class="popup-btn"  style="">';
-          $html .= '<div class="popup-btn-area" style=""><span id="termAndConditionpopupCloseBtn" class="popup-btn-icon" style="">Close</span></div>';
+          $html .= '<div class="popup-btn-area" style=""><span id="termAndConditionpopupCloseBtn" class="popup-btn-icon" style="">x</span></div>';
           $html .= '</div>';
           $html .= '</div>';
+          // end close button on terms-condition popup
+          $html .= $this->getTermnConditionText().'
+
+                    </div>';
+          
           $html .= '</div>';
           $html .= '</div>';
           // Close Term and Condition Popup
