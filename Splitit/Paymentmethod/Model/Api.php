@@ -392,7 +392,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
           // start close button on terms-condition popup
           $html .= '<div class="popup-footer" style="">';
           $html .= '<div id="payment-schedule-close-btn" class="popup-btn"  style="">';
-          $html .= '<div class="popup-btn-area" style=""><span id="termAndConditionpopupCloseBtn" class="popup-btn-icon" style="">x</span></div>';
+          $html .= '<div class="popup-btn-area-terms" style=""><span id="termAndConditionpopupCloseBtn" class="popup-btn-icon-terms" style="">x</span></div>';
           $html .= '</div>';
           $html .= '</div>';
           // end close button on terms-condition popup
