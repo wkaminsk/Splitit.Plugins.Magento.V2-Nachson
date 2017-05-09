@@ -19,8 +19,8 @@ var jqueryInterval = setInterval(function(){
 function runMyScripts(){
 	jQuery.ajax({
 		url: url + "splititpaymentmethod/showinstallmentprice/getinstallmentprice", 
-		success: function(result1){
-			var result = jQuery.parseJSON(result1); 
+		success: function(result){
+			
 			var numOfInstallmentForDisplay = result.numOfInstallmentForDisplay;
 			
 			if(result.isActive){
@@ -121,8 +121,8 @@ function runMyScripts(){
 function runMyScriptForCheckout(){
 	jQuery.ajax({
 		url: url + "splititpaymentmethod/showinstallmentprice/getinstallmentprice", 
-		success: function(result1){
-			var result = jQuery.parseJSON(result1); 
+		success: function(result){
+			
 			var numOfInstallmentForDisplay = result.numOfInstallmentForDisplay;
 			
 			if(result.isActive){

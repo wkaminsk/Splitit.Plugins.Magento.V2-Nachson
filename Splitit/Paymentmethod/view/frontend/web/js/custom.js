@@ -27,8 +27,8 @@ window.onload = function(){
 		jQuery.ajax({
 			url: baseUrl + "splititpaymentmethod/installments/getinstallment", 
 			showLoader: true,
-			success: function(result1){
-				var result = jQuery.parseJSON(result1); 
+			success: function(result){
+				
 				
 			// show help link
 			if(result.helpSection.link != undefined){

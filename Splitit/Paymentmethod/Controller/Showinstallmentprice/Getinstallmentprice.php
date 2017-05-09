@@ -4,7 +4,7 @@
  * created by Zoran Salamun(zoran.salamun@inchoo.net)
  */
 namespace Splitit\Paymentmethod\Controller\Showinstallmentprice;
-
+use Magento\Framework\Controller\ResultFactory;
 class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 
 	private $helper;
@@ -45,8 +45,10 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 		$response["grandTotal"] = number_format((float)$totalAmount, 2, '.', '');	
 		$response["currencySymbol"] = $this->helper->getCurrencyData();
         
-        echo $data = $this->helper->encodeData($response);
-		return;
+        $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+        return $resultJson->setData($response);
+        /*echo $data = $this->helper->encodeData($response);
+		return;*/
 
         
 

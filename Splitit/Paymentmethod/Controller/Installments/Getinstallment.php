@@ -6,6 +6,7 @@
 namespace Splitit\Paymentmethod\Controller\Installments;
 use Magento\Store\Model\StoreManagerInterfa‌​ce;
 use Magento\Directory\Model\Currency;
+use Magento\Framework\Controller\ResultFactory;
 
 class Getinstallment extends \Magento\Framework\App\Action\Action {
 
@@ -82,8 +83,9 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 		}
 		$response["installmentHtml"] = $installmentHtml;
 		$response["helpSection"] = $this->getHelpSection();
-		echo $data = $this->helper->encodeData($response);
-		return;
+		$resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+        return $resultJson->setData($response);
+		
     	
     }
 

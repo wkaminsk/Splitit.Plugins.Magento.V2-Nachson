@@ -14,6 +14,7 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 
 		$this->helper = $this->_objectManager->create('Splitit\Paymentmethod\Helper\Data');
 		$request = $this->_objectManager->get('\Magento\Framework\App\Request\Http')->getParams();
+		$resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
 		$response = [
                         "status" => false,
                         "errorMsg" => "",
@@ -27,8 +28,8 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 			$selectedInstallment = $request["selectedInstallment"];	
 		}else{
 			$response["errorMsg"] = "Please select Number of Installments";
-			echo $data = $this->helper->encodeData($response);
-			return;
+			return $resultJson->setData($response);
+			
 		}
 		$guestEmail = "";
 		if(isset($request["guestEmail"])){
@@ -40,8 +41,8 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 		// check if login successfully or not
 		if(!$loginResponse["status"]){
 			$response["errorMsg"] = $loginResponse["errorMsg"];
-			echo $data = $this->helper->encodeData($response);
-			return;
+			return $resultJson->setData($response);
+			
 		}
 		// call Installment Plan
 		$installmentPlanInitResponse = $apiModelObj->installmentPlanInit($selectedInstallment, $guestEmail);
@@ -52,16 +53,9 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
         }else{
             $response["errorMsg"] = $installmentPlanInitResponse["errorMsg"];
         }
-        try{
-        	$resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
-	        $resultJson->setData($response);
-	        return $resultJson;
-        	//echo $data = json_encode($response);
-        }catch(Exception $e){
-        	echo $e->getMessage();
-        }
         
-		return;
+        	$resultJson->setData($response);
+	        return $resultJson;
 
 	}
 
