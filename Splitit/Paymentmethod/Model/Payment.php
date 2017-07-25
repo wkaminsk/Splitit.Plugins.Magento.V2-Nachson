@@ -312,9 +312,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc
      */
     public function canUseForCurrency($currencyCode)
     {
-        if (!in_array($currencyCode, $this->_supportedCurrencyCodes)) {
+        /*if (!in_array($currencyCode, $this->_supportedCurrencyCodes)) {
             return false;
-        }
+        }*/
         return true;
     }
 
