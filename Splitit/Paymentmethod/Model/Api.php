@@ -145,7 +145,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod{
     	if(isset($this->billingAddress->getStreet()[1])){
     		$billingStreet2 = $this->billingAddress->getStreet()[1];
     	}
-
+//echo $this->grandTotal;exit;
     	$params = [
             "RequestHeader" => [
                 "SessionId" => $this->customerSession->getSplititSessionid(),

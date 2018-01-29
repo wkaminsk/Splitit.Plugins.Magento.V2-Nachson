@@ -14,7 +14,7 @@ namespace Splitit\Paymentmethod\Model;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Payment\Model\IframeConfigProvider;
-use Magento\Store\Model\StoreManagerInterfa‌​ce;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Payment extends \Magento\Payment\Model\Method\Cc
 {
@@ -248,6 +248,66 @@ class Payment extends \Magento\Payment\Model\Method\Cc
     }
 
     /**
+     * Cancel payment
+     *
+     * @param \Magento\Framework\DataObject|\Magento\Payment\Model\InfoInterface|Payment $payment
+     * @return $this
+     */
+    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        $transactionId = $payment->getParentTransactionId();
+        try {
+            $apiLogin = $this->_apiModel->apiLogin();
+            $api = $this->_apiModel->getApiUrl();
+            $installmentPlanNumber = $payment->getAuthorizationTransaction()->getTxnId();
+            $ipn = substr($installmentPlanNumber, 0, strpos($installmentPlanNumber, '-'));
+            if($ipn != ""){
+                $installmentPlanNumber = $ipn;
+            }
+            $params = array(
+                "RequestHeader" => array(
+                    "SessionId" => $this->customerSession->getSplititSessionid(),
+                ),
+                "InstallmentPlanNumber" => $installmentPlanNumber,
+                "RefundUnderCancelation" => "OnlyIfAFullRefundIsPossible"
+            );
+
+            $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Cancel",$params);
+            $result = json_decode($result, true);
+            if (!$result) {
+                $errorMsg = "";
+                
+                $errorCode = 503;
+                $isErrorCode503Found = 0;
+                foreach ($result["ResponseHeader"]["Errors"] as $key => $value) {
+                    $errorMsg .= $value["ErrorCode"]." : ".$value["Message"];
+                    if($value["ErrorCode"] == $errorCode){
+                        $isErrorCode503Found = 1;
+                        break;
+                    }
+                }    
+                
+                
+                if($isErrorCode503Found == 0){
+                    $this->_logger->error(__($errorMsg));
+                    throw new \Magento\Framework\Validator\Exception(__($errorMsg));
+                }
+
+            }elseif(isset($result["serverError"])){
+                $errorMsg = $result["serverError"];
+                $this->_logger->error(__($errorMsg));
+                throw new \Magento\Framework\Validator\Exception(__($errorMsg));
+            }
+        } catch (\Exception $e) {
+            $this->debugData(['transaction_id' => $transactionId, 'exception' => $e->getMessage()]);
+            $this->_logger->error(__('Payment cancel error.'));
+            throw new \Magento\Framework\Validator\Exception(__('Payment cancel error.'));
+        }
+
+        return $this;
+    }
+
+    /**
      * Payment refund
      *
      * @param \Magento\Payment\Model\InfoInterface $payment
@@ -257,10 +317,51 @@ class Payment extends \Magento\Payment\Model\Method\Cc
      */
     public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
-        /*$transactionId = $payment->getParentTransactionId();
-
+        $transactionId = $payment->getParentTransactionId();
         try {
-            \Stripe\Charge::retrieve($transactionId)->refund(['amount' => $amount * 100]);
+            $apiLogin = $this->_apiModel->apiLogin();
+            $api = $this->_apiModel->getApiUrl();
+            $installmentPlanNumber = $payment->getAuthorizationTransaction()->getTxnId();
+            $ipn = substr($installmentPlanNumber, 0, strpos($installmentPlanNumber, '-'));
+            if($ipn != ""){
+                $installmentPlanNumber = $ipn;
+            }
+            $params = array(
+                "RequestHeader" => array(
+                    "SessionId" => $this->customerSession->getSplititSessionid(),
+                ),
+                "InstallmentPlanNumber" => $installmentPlanNumber,
+                "Amount" => array("Value" => $amount),
+                "_RefundStrategy" => "FutureInstallmentsFirst"
+
+            );
+
+            $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Refund",$params);
+            $result = json_decode($result, true);
+            if (!$result) {
+                $errorMsg = "";
+                
+                $errorCode = 503;
+                $isErrorCode503Found = 0;
+                foreach ($result["ResponseHeader"]["Errors"] as $key => $value) {
+                    $errorMsg .= $value["ErrorCode"]." : ".$value["Message"];
+                    if($value["ErrorCode"] == $errorCode){
+                        $isErrorCode503Found = 1;
+                        break;
+                    }
+                }    
+                
+                
+                if($isErrorCode503Found == 0){
+                    $this->_logger->error(__($errorMsg));
+                    throw new \Magento\Framework\Validator\Exception(__($errorMsg));
+                }
+
+            }elseif(isset($result["serverError"])){
+                $errorMsg = $result["serverError"];
+                $this->_logger->error(__($errorMsg));
+                throw new \Magento\Framework\Validator\Exception(__($errorMsg));
+            }
         } catch (\Exception $e) {
             $this->debugData(['transaction_id' => $transactionId, 'exception' => $e->getMessage()]);
             $this->_logger->error(__('Payment refunding error.'));
@@ -268,12 +369,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         }
 
         $payment
-            ->setTransactionId($transactionId . '-' . \Magento\Sales\Model\Order\Payment\Transaction::TYPE_REFUND)
-            ->setParentTransactionId($transactionId)
-            ->setIsTransactionClosed(1)
-            ->setShouldCloseParentTransaction(1);
+        ->setTransactionId($transactionId . '-' . \Magento\Sales\Model\Order\Payment\Transaction::TYPE_REFUND)
+        ->setParentTransactionId($transactionId)
+        ->setIsTransactionClosed(1)
+        ->setShouldCloseParentTransaction(1);
 
-        return $this;*/
+        return $this;
     }
 
     /**

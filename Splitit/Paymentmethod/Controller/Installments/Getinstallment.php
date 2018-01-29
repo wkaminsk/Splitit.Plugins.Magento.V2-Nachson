@@ -4,7 +4,7 @@
  * created by Zoran Salamun(zoran.salamun@inchoo.net)
  */
 namespace Splitit\Paymentmethod\Controller\Installments;
-use Magento\Store\Model\StoreManagerInterfa‌​ce;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Directory\Model\Currency;
 use Magento\Framework\Controller\ResultFactory;
 

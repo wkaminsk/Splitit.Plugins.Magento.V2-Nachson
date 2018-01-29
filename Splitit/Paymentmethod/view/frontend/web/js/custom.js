@@ -22,6 +22,20 @@ window.onload = function(){
 		}
 	});
 	
+        jQuery(document).on('click','input[type="radio"]',function(e){
+            jQuery('.table-totals tbody').find('tr.totals.splititfee').remove();
+        });
+        jQuery(document).on('click','#splitit_paymentmethod',function(e){
+            jQuery.ajax({
+			url: baseUrl + "splititpaymentmethod/index/update", 
+			showLoader: true,
+			success: function(result){
+                            if(result.success){                                
+                                jQuery('.table-totals tbody').find('tr.totals.sub').after('<tr class="totals fee splititfee excl"><th class="mark" colspan="1" scope="row">Splitit Fees</th><td class="amount"><span class="price" data-bind="text: getFormattedPrice()">'+result.data.splitit_fees+'</span></td></tr>');
+                            }			
+			}
+		});
+        });
 
 	function getInstallmentOptions(){
 		jQuery.ajax({
