@@ -40,7 +40,7 @@ class Totals extends \Magento\Framework\View\Element\Template
       }
       // echo "orderItems=$o creditmemoItems=$c QtyRefunded=$r";exit;
       $feeAmount = 0 ;
-      if($c==($o-$r)){
+      if(($c==($o-$r))||$this->_source->getFeeAmount()){
         $feeAmount = $this->_order->getFeeAmount();
       }
       $store = $this->getStore();
