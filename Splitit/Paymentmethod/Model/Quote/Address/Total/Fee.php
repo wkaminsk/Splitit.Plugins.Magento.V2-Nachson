@@ -73,9 +73,14 @@ class Fee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         $total->setBaseFeeAmount($fee);
         $total->setTotalAmount('fee_amount', $fee);
         $total->setBaseTotalAmount('base_fee_amount', $fee);
-        $total->setGrandTotal($total->getGrandTotal() + $total->getFeeAmount());
-        $total->setBaseGrandTotal($total->getBaseGrandTotal() + $total->getBaseFeeAmount());
-
+        $quote->setFeeAmount($fee);
+        $quote->setBaseFeeAmount($fee);
+        // echo 'grandTotal='.$total->getGrandTotal().' , fee_amount='.$total->getFeeAmount().' ,';
+        // $total->setGrandTotal($total->getGrandTotal() + $total->getFeeAmount());
+        // echo 'grandTotal='.$total->getGrandTotal().' ,';
+        // echo 'baseGrandTotal='.$total->getBaseGrandTotal().' , base_fee_amount='.$total->getBaseFeeAmount().' ,';
+        // $total->setBaseGrandTotal($total->getBaseGrandTotal() + $total->getBaseFeeAmount());
+        // echo 'baseGrandTotal='.$total->getBaseGrandTotal();exit;
         return $this;
     }
 
@@ -95,7 +100,7 @@ class Fee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         $result = [
             'code' => $this->getCode(),
             'title' => __('Splitit Fee'),
-            'value' => $total->getFeeAmount()
+            'value' => $quote->getFeeAmount()
         ];
         return $result;
     }

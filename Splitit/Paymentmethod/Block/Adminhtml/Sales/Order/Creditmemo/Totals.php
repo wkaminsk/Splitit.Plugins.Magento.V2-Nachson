@@ -24,26 +24,36 @@ class Totals extends \Magento\Framework\View\Element\Template
      *
      * @return $this
      */
-    public function initTotals()
-    {
-        $this->getParentBlock();
-        $this->getCreditmemo();
-        $this->getSource();
-
-        if(!$this->getSource()->getFeeAmount()) {
-            return $this;
-        }
-        $fee = new \Magento\Framework\DataObject(
-            [
-                'code' => 'fee',
-                'strong' => false,
-                'value' => $this->getSource()->getFeeAmount(),
-                'label' => __('Splitit Fee'),
-            ]
-        );
-
-        $this->getParentBlock()->addTotalBefore($fee, 'grand_total');
-
-        return $this;
-    }
+    public function initTotals() {
+      $parent = $this->getParentBlock();
+      $this->_order = $parent->getOrder();
+      $this->_source = $parent->getSource();
+      $orderItems = $this->_order->getAllItems();
+      $r=$c=$o=0;
+      foreach ($orderItems as $oitem) {
+          $o+=$oitem->getQtyOrdered();
+          $r+=$oitem->getQtyRefunded();
+      }
+      $creditmemoItems = $this->_source->getAllItems();
+      foreach ($creditmemoItems as $citems) {
+          $c+=$citems->getQty();
+      }
+      // echo "orderItems=$o creditmemoItems=$c QtyRefunded=$r";exit;
+      $feeAmount = 0 ;
+      if($c==($o-$r)){
+        $feeAmount = $this->_order->getFeeAmount();
+      }
+      $store = $this->getStore();
+      $fee = new \Magento\Framework\DataObject(
+        [
+            'code' => 'fee',
+            'strong' => false,
+            'value' => $feeAmount,
+            'base_value' => $feeAmount,
+            'label' => __('Splitit Fee'),
+        ]
+      );
+      $parent->addTotal($fee, 'fee');
+      return $this;
+  }
 }

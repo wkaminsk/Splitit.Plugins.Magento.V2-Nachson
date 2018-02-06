@@ -18,9 +18,23 @@ class Totals extends \Magento\Framework\View\Element\Template {
     public function displayFullSummary() {
         return true;
     }
+    
+    /**
+     * Get data (totals) source model
+     *
+     * @return \Magento\Framework\DataObject
+     */
+    public function getSource()
+    {
+        return $this->getParentBlock()->getSource();
+    }
 
-    public function getSource() {
-        return $this->_source;
+    /**
+     * @return mixed
+     */
+    public function getInvoice()
+    {
+        return $this->getParentBlock()->getInvoice();
     }
 
     public function getStore() {
@@ -45,7 +59,7 @@ class Totals extends \Magento\Framework\View\Element\Template {
         $this->_source = $parent->getSource();
 
         $store = $this->getStore();
-
+        // echo $this->_order->getFeeAmount();exit;
         $fee = new \Magento\Framework\DataObject(
                 [
             'code' => 'fee',

@@ -26,6 +26,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $creditmemoTable = 'sales_creditmemo';
 
         //Setup two columns for quote, quote_address and order
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($quoteTable),
+                'fee_amount',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Splitit Fee Amount'
+                ]
+            );
+        $setup->getConnection()
+            ->addColumn(
+                $setup->getTable($quoteTable),
+                'base_fee_amount',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '10,2',
+                    'default' => 0.00,
+                    'nullable' => true,
+                    'comment' =>'Base Fee Amount'
+                ]
+            );
         //Quote address tables
         $setup->getConnection()
             ->addColumn(
@@ -33,7 +57,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount'
@@ -45,7 +69,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount'
@@ -58,7 +82,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount'
@@ -72,7 +96,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount'
@@ -86,7 +110,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount_refunded',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount Refunded'
@@ -98,7 +122,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount_refunded',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount Refunded'
@@ -110,7 +134,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount_invoiced',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount Invoiced'
@@ -122,7 +146,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount_invoiced',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount Invoiced'
@@ -135,7 +159,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount'
@@ -148,7 +172,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount'
@@ -162,7 +186,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Splitit Fee Amount'
@@ -175,7 +199,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'base_fee_amount',
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                    '10,2',
+                    'length' => '10,2',
                     'default' => 0.00,
                     'nullable' => true,
                     'comment' =>'Base Fee Amount'

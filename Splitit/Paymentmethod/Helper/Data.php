@@ -13,6 +13,10 @@ class Data extends AbstractHelper {
      * Total Code
      */
     const TOTAL_CODE = 'fee_amount';
+    /**
+     * Grand Total Code
+     */
+    const GRAND_TOTAL_CODE = 'grand_total';
 
     /**
      * @var array
@@ -97,8 +101,9 @@ class Data extends AbstractHelper {
      * @return float|int
      */
     public function getFee(\Magento\Quote\Model\Quote $quote) {
-        $method = $quote->getPayment()->getMethod();
-        $fee = $this->methodFee[$method]['fee'];
+        // $method = $quote->getPayment()->getMethod();
+        // $fee = $this->methodFee[$method]['fee'];
+        $fee = $this->getConfig('payment/splitit_paymentmethod/splitit_fees');
         $feeType = $this->getFeeType();
         if ($feeType == \Splitit\Paymentmethod\Model\Source\Feetypes::FIXED) {
             return $fee;
@@ -106,10 +111,20 @@ class Data extends AbstractHelper {
             $totals = $quote->getTotals();
             $sum = 0;
             foreach ($totals as $total) {
-                if ($total->getCode() != self::TOTAL_CODE) {
+                if (($total->getCode() != self::TOTAL_CODE)&&($total->getCode() != self::GRAND_TOTAL_CODE)) {
                     $sum += (float) $total->getValue();
+                    // echo $total->getCode().'='.((float) $total->getValue()).' , ';
                 }
+                if (($total->getCode() == 'shipping')&&($total->getValue()==0)) {
+                    $sum += (float) $quote->getShippingAddress()->getShippingAmount();
+                    // echo $total->getCode().'='.((float) $quote->getShippingAddress()->getShippingAmount()).' , ';
+                }                
             }
+            // echo 'sum='.$sum.' , ';
+            // echo 'grandTotal='.$quote->getGrandTotal().' , ';
+            // echo 'fee='.$fee.' , ';
+            // echo 'new_fee='.($sum * ($fee / 100));
+            // exit;
             return ($sum * ($fee / 100));
         }
     }

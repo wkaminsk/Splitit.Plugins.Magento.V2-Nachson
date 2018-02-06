@@ -18,24 +18,39 @@ window.onload = function(){
 	jQuery(document).on("focus", "form.splitit-form input, form.splitit-form select",function(){
 		var numOfInstallmentLength = jQuery("select#select-num-of-installments option").length;
 		if(numOfInstallmentLength == 1){
-			getInstallmentOptions();	
+			getInstallmentOptions();
 		}
 	});
 	
         jQuery(document).on('click','input[type="radio"]',function(e){
             jQuery('.table-totals tbody').find('tr.totals.splititfee').remove();
+            runMyScriptForCheckout();
+        });
+        jQuery(document).ready(function(){
+        	var interval=setInterval(function(){
+        	if(jQuery('#splitit_paymentmethod').is(':checked')){
+        		splititFees();
+        		runMyScriptForCheckout();
+        		clearInterval(interval);
+        	}
+        	},1000);
         });
         jQuery(document).on('click','#splitit_paymentmethod',function(e){
-            jQuery.ajax({
-			url: baseUrl + "splititpaymentmethod/index/update", 
-			showLoader: true,
-			success: function(result){
-                            if(result.success){                                
-                                jQuery('.table-totals tbody').find('tr.totals.sub').after('<tr class="totals fee splititfee excl"><th class="mark" colspan="1" scope="row">Splitit Fees</th><td class="amount"><span class="price" data-bind="text: getFormattedPrice()">'+result.data.splitit_fees+'</span></td></tr>');
-                            }			
-			}
-		});
+            splititFees();
+            runMyScriptForCheckout();
         });
+
+        function splititFees(){
+        	jQuery.ajax({
+        		url: baseUrl + "splititpaymentmethod/index/update", 
+        		showLoader: true,
+        		success: function(result){
+        			if(result.success){                                
+        				jQuery('.table-totals tbody').find('tr.totals.sub').after('<tr class="totals fee splititfee excl"><th class="mark" colspan="1" scope="row">Splitit Fees</th><td class="amount"><span class="price" data-bind="text: getFormattedPrice()">'+result.data.splitit_fees+'</span></td></tr>');
+        			}			
+        		}
+        	});
+        }
 
 	function getInstallmentOptions(){
 		jQuery.ajax({

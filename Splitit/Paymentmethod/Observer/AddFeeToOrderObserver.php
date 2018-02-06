@@ -2,7 +2,7 @@
 
 namespace Splitit\Paymentmethod\Observer;
 
-use Magento\Framework\Event\Observer as EventObserver;
+// use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
 class AddFeeToOrderObserver implements ObserverInterface
@@ -31,16 +31,27 @@ class AddFeeToOrderObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $quote = $observer->getQuote();
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $logger = $objectManager->get('Psr\Log\LoggerInterface');
+        $logger->debug('fee_amount=0 , base_fee_amount=0');
+        
+        $quote = $observer->getEvent()->getQuote();
         $feeAmount = $quote->getFeeAmount();
+        
+        $logger->debug(print_r($quote->getId(),TRUE));
+        $logger->debug('feeAmount='.$feeAmount);
+        
+        
         $baseFeeAmount = $quote->getBaseFeeAmount();
         if(!$feeAmount || !$baseFeeAmount) {
             return $this;
         }
         //Set fee data to order
-        $order = $observer->getOrder();
+        $order = $observer->getEvent()->getOrder();
         $order->setData('fee_amount', $feeAmount);
         $order->setData('base_fee_amount', $baseFeeAmount);
+
+        $logger->debug('fee_amount='.$feeAmount.', base_fee_amount='.$baseFeeAmount);
 
         return $this;
     }
