@@ -16,6 +16,7 @@
         <arguments>
             <argument name="methodCodes" xsi:type="array">
                 <item name="splitit_paymentmethod" xsi:type="const">Splitit\Paymentmethod\Model\Payment::CODE</item>
+                <item name="splitit_paymentredirect" xsi:type="const">Splitit\Paymentmethod\Model\PaymentRedirect::CODE</item>
             </argument>
         </arguments>
     </virtualType>
@@ -24,6 +25,7 @@
         <arguments>
             <argument name="configProviders" xsi:type="array">
                 <item name="splitit_paymentmethod_config_provider" xsi:type="object">Splitit\Paymentmethod\Model\ConfigProvider</item>
+                <item name="splitit_paymentredirect_config_provider" xsi:type="object">Splitit\Paymentmethod\Model\ExpressConfigProvider</item>
             </argument>
         </arguments>
     </type>

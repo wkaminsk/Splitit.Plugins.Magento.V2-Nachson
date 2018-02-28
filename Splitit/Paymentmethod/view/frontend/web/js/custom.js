@@ -28,14 +28,14 @@ window.onload = function(){
         });
         jQuery(document).ready(function(){
         	var interval=setInterval(function(){
-        	if(jQuery('#splitit_paymentmethod').is(':checked')){
+        	if(jQuery('#splitit_paymentmethod,#splitit_paymentredirect').is(':checked')){
         		splititFees();
         		runMyScriptForCheckout();
         		clearInterval(interval);
         	}
         	},1000);
         });
-        jQuery(document).on('click','#splitit_paymentmethod',function(e){
+        jQuery(document).on('click','#splitit_paymentmethod,#splitit_paymentredirect',function(e){
             splititFees();
             runMyScriptForCheckout();
         });

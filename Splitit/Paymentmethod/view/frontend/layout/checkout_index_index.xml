@@ -47,6 +47,14 @@
                                                                         </item>
                                                                     </item>
                                                                 </item>
+                                                                <item name="splitit_paymentredirect" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">Splitit_Paymentmethod/js/view/payment/splitit-redirect</item>
+                                                                    <item name="methods" xsi:type="array">
+                                                                        <item name="splitit_paymentredirect" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
                                                             </item>
                                                         </item>
                                                     </item>

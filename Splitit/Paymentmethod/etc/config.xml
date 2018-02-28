@@ -29,6 +29,21 @@
                 <check_setting>Check settings</check_setting>
                 <installment_price_text>No interest</installment_price_text>
             </splitit_paymentmethod>
+            <splitit_paymentredirect>
+                <active>0</active>
+                <model>Splitit\Paymentmethod\Model\PaymentRedirect</model>
+                <payment_action>authorize</payment_action>
+                <order_status>pending_payment</order_status>
+                <title>Monthly payments - 0% Interest</title>
+                <api_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />                
+                <allowspecific>0</allowspecific>
+                <min_order_total>0.50</min_order_total>
+                <api_url>https://web-api.splitit.com/</api_url>
+                <api_url_sandbox>https://web-api-sandbox.splitit.com/</api_url_sandbox>
+                <faq_link_title>Tell me more</faq_link_title>
+                <check_setting>Check settings</check_setting>
+                <installment_price_text>No interest</installment_price_text>
+            </splitit_paymentredirect>
         </payment>
     </default>
 </config>

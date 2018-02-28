@@ -48,6 +48,7 @@ class PaymentCancel implements ObserverInterface
         try {
             $apiLogin = $this->_apiModel->apiLogin();
             $api = $this->_apiModel->getApiUrl();
+            if($payment->getAuthorizationTransaction()){
             $installmentPlanNumber = $payment->getAuthorizationTransaction()->getTxnId();
             $this->_logger->debug('IPN='.$installmentPlanNumber);
             $ipn = substr($installmentPlanNumber, 0, strpos($installmentPlanNumber, '-'));
@@ -87,6 +88,7 @@ class PaymentCancel implements ObserverInterface
                 $errorMsg = $result["serverError"];
                 $this->_logger->error(__($errorMsg));
                 throw new \Magento\Framework\Validator\Exception(__($errorMsg));
+            }
             }
         } catch (\Exception $e) {
             $this->_logger->debug(['transaction_id' => $transactionId, 'exception' => $e->getMessage()]);

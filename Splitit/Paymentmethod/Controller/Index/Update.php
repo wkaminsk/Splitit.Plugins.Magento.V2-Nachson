@@ -37,13 +37,14 @@ class Update extends \Magento\Framework\App\Action\Action {
 
     public function execute() {
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
-        $applyFees = $this->scopeConfig->getValue("payment/splitit_paymentmethod/splitit_fee_on_total", $storeScope);
+        $quote = $this->checkoutSession->getQuote();
+        $method=$quote->getPayment()->getMethod();
+        $applyFees = $this->scopeConfig->getValue("payment/$method/splitit_fee_on_total", $storeScope);
         if ($applyFees) {
             try {
-               $feeType = $this->scopeConfig->getValue("payment/splitit_paymentmethod/splitit_fee_types", $storeScope);
-               $fees = $this->scopeConfig->getValue("payment/splitit_paymentmethod/splitit_fees", $storeScope);
+               $feeType = $this->scopeConfig->getValue("payment/$method/splitit_fee_types", $storeScope);
+               $fees = $this->scopeConfig->getValue("payment/$method/splitit_fees", $storeScope);
                $post = $this->getRequest()->getPostValue();
-               $quote = $this->checkoutSession->getQuote();
                // $grand_total = $quote->getGrandTotal();
                // if (\Splitit\Paymentmethod\Model\Source\Feetypes::PERCENTAGE == $feeType) {
                //     $fees = ($grand_total * $fees / 100);

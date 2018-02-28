@@ -13,6 +13,7 @@ class Data extends AbstractHelper {
      * Total Code
      */
     const TOTAL_CODE = 'fee_amount';
+
     /**
      * Grand Total Code
      */
@@ -67,6 +68,9 @@ class Data extends AbstractHelper {
             $this->methodFee['splitit_paymentmethod'] = array(
                 'fee' => $this->getConfig('payment/splitit_paymentmethod/splitit_fees')
             );
+            $this->methodFee['splitit_paymentredirect'] = array(
+                'fee' => $this->getConfig('payment/splitit_paymentredirect/splitit_fees')
+            );
         }
         return $this->methodFee;
     }
@@ -75,7 +79,10 @@ class Data extends AbstractHelper {
      * Check if Extension is Enabled config
      * @return bool
      */
-    public function isEnabled() {
+    public function isEnabled($method = '') {
+        if ($method) {
+            return $this->getConfig("payment/$method/splitit_fee_on_total");
+        }
         return $this->getConfig('payment/splitit_paymentmethod/splitit_fee_on_total');
     }
 
@@ -86,8 +93,8 @@ class Data extends AbstractHelper {
     public function canApply(\Magento\Quote\Model\Quote $quote) {
 
         /*         * @TODO check module or config* */
-        if ($this->isEnabled()) {
-            if ($method = $quote->getPayment()->getMethod()) {
+        if ($method = $quote->getPayment()->getMethod()) {
+            if ($this->isEnabled($method)) {
                 if (isset($this->methodFee[$method])) {
                     return true;
                 }
@@ -101,24 +108,24 @@ class Data extends AbstractHelper {
      * @return float|int
      */
     public function getFee(\Magento\Quote\Model\Quote $quote) {
-        // $method = $quote->getPayment()->getMethod();
-        // $fee = $this->methodFee[$method]['fee'];
-        $fee = $this->getConfig('payment/splitit_paymentmethod/splitit_fees');
-        $feeType = $this->getFeeType();
+        $method = $quote->getPayment()->getMethod();
+        $fee = $this->methodFee[$method]['fee'];
+//        $fee = $this->getConfig('payment/splitit_paymentmethod/splitit_fees');
+        $feeType = $this->getFeeType($method);
         if ($feeType == \Splitit\Paymentmethod\Model\Source\Feetypes::FIXED) {
             return $fee;
         } else {
             $totals = $quote->getTotals();
             $sum = 0;
             foreach ($totals as $total) {
-                if (($total->getCode() != self::TOTAL_CODE)&&($total->getCode() != self::GRAND_TOTAL_CODE)) {
+                if (($total->getCode() != self::TOTAL_CODE) && ($total->getCode() != self::GRAND_TOTAL_CODE)) {
                     $sum += (float) $total->getValue();
                     // echo $total->getCode().'='.((float) $total->getValue()).' , ';
                 }
-                if (($total->getCode() == 'shipping')&&($total->getValue()==0)) {
+                if (($total->getCode() == 'shipping') && ($total->getValue() == 0)) {
                     $sum += (float) $quote->getShippingAddress()->getShippingAmount();
                     // echo $total->getCode().'='.((float) $quote->getShippingAddress()->getShippingAmount()).' , ';
-                }                
+                }
             }
             // echo 'sum='.$sum.' , ';
             // echo 'grandTotal='.$quote->getGrandTotal().' , ';
@@ -133,7 +140,10 @@ class Data extends AbstractHelper {
      * Retrieve Fee type from Store config (Percent or Fixed)
      * @return string
      */
-    public function getFeeType() {
+    public function getFeeType($method = '') {
+        if ($method) {
+            return $this->getConfig("payment/$method/splitit_fee_types");
+        }
         return $this->getConfig('payment/splitit_paymentmethod/splitit_fee_types');
     }
 

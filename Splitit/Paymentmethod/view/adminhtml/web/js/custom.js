@@ -186,8 +186,8 @@ function getCurrency(){
     url: baseUrl + "splititpaymentmethod/getcurrency/getcurrency", 
     showLoader: true,
     success: function(result){
-      jQuery("input.doctv_currency").val(result.currencyCode);
-      jQuery("span.base-currency-symbol").html(result.currencySymbol);
+      jQuery('#tiers_table.splitit').find("input.doctv_currency").val(result.currencyCode);
+      jQuery('#tiers_table.splitit').find("span.base-currency-symbol").html(result.currencySymbol);
       baseCurrencyCode = result.currencyCode;
       baseCurrencySymbol = result.currencySymbol;
       currencyCodeSymbol = result.currencyCodeSymbol;
@@ -303,7 +303,7 @@ function getRowHtmlFromJson(){
 
 function addRow(){
   var rowHtml = getRowHtml();
-  jQuery("table.splitit tbody#tier_price_container").append(rowHtml);
+  jQuery("#tiers_table.splitit tbody#tier_price_container").append(rowHtml);
 }
 function deleteRow(curObj){
     var count = jQuery(curObj).closest("tbody").find("tr").length;
@@ -349,7 +349,7 @@ function createJsonOfDependingOnCartTotal(){
      var i = 0;
      var object = {};
 
-     jQuery("table.splitit tbody").find('tr').each(function() {
+     jQuery("#tiers_table.splitit tbody").find('tr').each(function() {
         var $this = jQuery(this);
         var installments = [];
         object[i] = {};
