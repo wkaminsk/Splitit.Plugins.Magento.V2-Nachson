@@ -10,8 +10,9 @@ var jqueryInterval = setInterval(function(){
     var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
     if(depandingOnCart){
       jqueryIsHere = 1;
-      clearInterval(jqueryInterval);      
-      runMyScripts();     
+      clearInterval(jqueryInterval);
+      splitit_fee_types();
+      runMyScripts();
      }else{
       console.log('Element not found!!');
      }       
@@ -382,4 +383,27 @@ function checkSetting(){
       } 
     }
   });
+}
+
+function splitit_fee_types(){
+    jQuery(document).on('change','#payment_us_splitit_paymentmethod_splitit_fee_types',function(){
+        jQuery('#payment_us_splitit_paymentmethod_splitit_fees').trigger('change');
+    });
+    jQuery(document).on('change','#payment_us_splitit_paymentredirect_splitit_fee_types',function(){
+        jQuery('#payment_us_splitit_paymentredirect_splitit_fees').trigger('change');
+    });
+    jQuery(document).on('change','#payment_us_splitit_paymentmethod_splitit_fees',function(){
+        if(jQuery(this).val()>50){
+        if(jQuery('#payment_us_splitit_paymentmethod_splitit_fee_types').val()==1){
+            jQuery(this).val(50);
+        }
+        }
+    });
+    jQuery(document).on('change','#payment_us_splitit_paymentredirect_splitit_fees',function(){
+        if(jQuery(this).val()>50){
+        if(jQuery('#payment_us_splitit_paymentredirect_splitit_fee_types').val()==1){
+            jQuery(this).val(50);
+        }
+        }
+    });
 }
