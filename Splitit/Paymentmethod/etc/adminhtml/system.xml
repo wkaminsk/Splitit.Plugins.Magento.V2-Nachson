@@ -261,14 +261,14 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="splitit_fee_types" translate="label" sortOrder="17.2" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Splitit Fees Types</label>
+                    <label>Fee Method</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Feetypes</source_model>
                     <depends>
                         <field id="splitit_fee_on_total">1</field>
                     </depends>
                 </field>
                 <field id="splitit_fees" translate="label" sortOrder="17.3"  showInDefault="1" showInWebsite="1" showInStore="0" >
-                    <label>Splitit Fees</label>
+                    <label>Fees Amount/Percentage</label>
                     <depends>
                         <field id="splitit_fee_on_total">1</field>
                     </depends>
