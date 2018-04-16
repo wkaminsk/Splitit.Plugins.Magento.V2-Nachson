@@ -75,7 +75,7 @@ class PaymentForm {
 
         $api = $this->_initApi();
 
-        $this->_checkoutSession->setInstallmentsInDropdownForPaymentForm(explode(',',$this->helper->getConfig('payment/splitit_paymentredirect/fixed_installment')));
+//        $this->_checkoutSession->setInstallmentsInDropdownForPaymentForm(explode(',',$this->helper->getConfig('payment/splitit_paymentredirect/fixed_installment')));
         $response = array(
             "status" => false,
             "error" => "",
@@ -643,6 +643,7 @@ class PaymentForm {
 
     public function checkAvailableInstallments($quote) {
         $installments = array();
+        $installmentsInDropdown = array();
         $totalAmount = $quote->getGrandTotal();
         $selectInstallmentSetup = $this->helper->getConfig("payment/splitit_paymentredirect/select_installment_setup");
 
@@ -653,8 +654,10 @@ class PaymentForm {
         if ($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed") { // Select Fixed installment setup
             $fixedInstallments = $this->helper->getConfig("payment/splitit_paymentredirect/fixed_installment");
             $installments = explode(',', $fixedInstallments);
-            if (count($installments) > 0) {
-                return true;
+            foreach ($installments as $n) {                
+                if((array_key_exists($n, $options))){
+                    $installmentsInDropdown[$n] = round($totalAmount/$n,2); 
+                }
             }
         } else { // Select Depanding on cart installment setup
             $depandOnCart = 1;
@@ -673,6 +676,7 @@ class PaymentForm {
                         foreach (explode(',', $data->installments) as $n) {
                             if ((array_key_exists($n, $options))) {
                                 $installments[$n] = $n;
+                                $installmentsInDropdown[$n] = round($totalAmount/$n,2);
                             }
                         }
                         break;
@@ -681,16 +685,18 @@ class PaymentForm {
 
                             if ((array_key_exists($n, $options))) {
                                 $installments[$n] = $n;
+                                $installmentsInDropdown[$n] = round($totalAmount/$n,2); 
                             }
                         }
                         break;
                     }
                 }
             }
+        }
+        $this->_checkoutSession->setInstallmentsInDropdownForPaymentForm($installmentsInDropdown);
             if (count($installments) > 0) {
                 return true;
             }
-        }
 
         return false;
     }

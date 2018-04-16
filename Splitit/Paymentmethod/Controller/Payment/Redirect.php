@@ -58,6 +58,7 @@ class Redirect extends \Magento\Framework\App\Action\Action {
         $order = $this->checkoutSession->getLastRealOrder();
         $orderId = $order->getEntityId();
         $payment=$order->getPayment();
+//        var_dump($this->checkoutSession->getData());exit;
         $payment->setTransactionId($this->checkoutSession->getSplititInstallmentPlanNumber());
         $payment->save();
         $order->save();
