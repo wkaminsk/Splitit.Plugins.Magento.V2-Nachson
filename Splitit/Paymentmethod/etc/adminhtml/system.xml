@@ -171,6 +171,11 @@
                     <label>Sort Order</label>
                 </field>
                 
+                <field id="splitit_fallback_language" translate="label" type="select" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Splitit Fallback Language</label>
+                    <source_model>Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures</source_model>
+                </field>
+                
                 <!-- <field id="min_order_total" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Minimum Order Total</label>
                 </field>
@@ -325,6 +330,11 @@
 
                 <field id="sort_order" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Sort Order</label>
+                </field>
+                
+                <field id="splitit_fallback_language" translate="label" type="select" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Splitit Fallback Language</label>
+                    <source_model>Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures</source_model>
                 </field>
             </group>
         </section>

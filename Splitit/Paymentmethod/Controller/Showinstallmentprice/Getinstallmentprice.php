@@ -38,7 +38,7 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
         $response["isActive"] = $isEnable;
         $response["displayInstallmentPriceOnPage"] = $displayInstallmentPriceOnPage;
         $response["numOfInstallmentForDisplay"] = $numOfInstallmentForDisplay;
-        $response["installmetPriceText"] = $installmetPriceText;
+        $response["installmetPriceText"] = __($installmetPriceText);
 
         $cart = $this->_objectManager->get("\Magento\Checkout\Model\Cart");
 		$totalAmount = $cart->getQuote()->getGrandTotal();

@@ -58,6 +58,36 @@ class Data extends AbstractHelper {
         return $currencySymbol = $currency->getCurrencySymbol();
     }
 
+    public function getCultureName($paymentForm = false) {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $store = $objectManager->get('Magento\Framework\Locale\Resolver');
+        $storelang = $store->getLocale();
+        $splititSupportedCultures = $this->getSplititSupportedCultures();
+//        var_dump($storelang);echo "<br/>";
+//        print_r($splititSupportedCultures);exit;
+        if (count($splititSupportedCultures) && in_array(str_replace('_', '-', $storelang), $splititSupportedCultures)) {
+            return str_replace('_', '-', $storelang);
+        } else {
+            if ($paymentForm)
+                return $this->getConfig('payment/splitit_paymentredirect/splitit_fallback_language');
+            return $this->getConfig('payment/splitit_paymentmethod/splitit_fallback_language');
+        }
+    }
+
+    public function getSplititSupportedCultures() {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $api = $objectManager->get('Splitit\Paymentmethod\Model\Api');
+        $apiUrl = $api->getApiUrl();
+        $getSplititSupportedCultures = $api->getSplititSupportedCultures($apiUrl."api/Infrastructure/SupportedCultures");
+//        print_r($getSplititSupportedCultures);echo "<br/>";
+        $decodedResult = json_decode($getSplititSupportedCultures,true);
+        if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1 && count($decodedResult["SupportedCultures"])) {
+            return $decodedResult["SupportedCultures"];
+        }
+        return array();
+    }
+
     /**
      * Retrieve Payment Method Fees from Store Config
      * @return array

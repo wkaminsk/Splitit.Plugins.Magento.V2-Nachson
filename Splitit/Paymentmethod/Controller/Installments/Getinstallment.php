@@ -39,19 +39,19 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
         $currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
 		$currencySymbol = $this->_objectManager->get('\Magento\Directory\Model\Currency')->load($currentCurrencyCode)->getCurrencySymbol();
 
-		$installmentHtml = '<option value="">--No Intallment available--</option>';
+		$installmentHtml = '<option value="">--'.__('No Installment available').'--</option>';
 		if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){
 			$installments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
 			
 			if(count($installments)){
-				$installmentHtml = '<option value="">--Please Select--</option>';
+				$installmentHtml = '<option value="">--'.__('Please Select').'--</option>';
 				foreach (explode(',', $installments) as $value) {
-					$installmentHtml .= '<option value="'.$value.'">'.$value.' Installments of '.$currencySymbol.round($totalAmount/$value,2).'</option>';
+					$installmentHtml .= '<option value="'.$value.'">'.$value.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$value,2).'</option>';
 				}
 				
 			}
 		}else{
-			$installmentHtml = '<option value="">--Please Select--</option>';
+			$installmentHtml = '<option value="">--'.__('Please Select').'--</option>';
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
 			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
@@ -67,13 +67,13 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
                 foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){
                     if($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to){
                         foreach (explode(',', $data->installments) as $n) {
-                            $installmentHtml .= '<option value="'.$n.'">'.$n.' Installments of '.$currencySymbol.round($totalAmount/$n,2).'</option>';
+                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$n,2).'</option>';
                         }
                         break;
                     }else if($totalAmount >= $data->from && empty($data->to)){
                         foreach (explode(',', $data->installments) as $n) {
 
-                            $installmentHtml .= '<option value="'.$n.'">'.$n.' Installments of '.$currencySymbol.round($totalAmount/$n,2).'</option>';
+                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$n,2).'</option>';
                         }
                         break;
                     }

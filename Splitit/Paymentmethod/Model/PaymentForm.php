@@ -196,7 +196,7 @@ class PaymentForm {
     }
 
     protected function createInstallmentPlan($api, $payment, $amount) {
-        $cultureName = str_replace('_', '-', $this->_store->getLocaleCode());
+        $cultureName = $this->helper->getCultureName(true);
         $params = array(
             "RequestHeader" => array(
                 "SessionId" => $this->customerSession->getSplititSessionid(),
@@ -295,7 +295,7 @@ class PaymentForm {
             $customerInfo["lastname"] = $billAddress->getLastname();
             $customerInfo["email"] = $billAddress->getEmail();
         }
-        $cultureName = str_replace('_', '-', $this->_store->getLocaleCode());
+        $cultureName = $this->helper->getCultureName(true);
         $params = $this->installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, null, $selectedInstallment);
 
         try {
@@ -380,7 +380,7 @@ class PaymentForm {
             $customerInfo["lastname"] = $billAddress->getLastname();
             $customerInfo["email"] = $billAddress->getEmail();
         }
-        $cultureName = str_replace('_', '-', $this->_store->getLocaleCode());
+        $cultureName = $this->helper->getCultureName(true);
         $params = $this->installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, $numOfInstallments, null);
         $this->logger->addDebug('======= installmentplaninitForHostedSolution : params passed to Initit Api ======= : ');
         $this->logger->addDebug(print_r($params,TRUE));

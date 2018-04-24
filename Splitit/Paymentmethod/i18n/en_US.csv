@@ -1,0 +1,19 @@
+pd_credit_card_type,"Credit Card Type",module,Splitit_Paymentmethod
+pd_credit_card,"Credit Card Number",module,Splitit_Paymentmethod
+pd_exp_date,"Expiration Date",module,Splitit_Paymentmethod
+pd_exp_month_long,Month,module,Splitit_Paymentmethod
+pd_exp_year_long,Year,module,Splitit_Paymentmethod
+pd_cvv,"Card Verification Number",module,Splitit_Paymentmethod
+pd_whatiscvv,"What is this ?",module,Splitit_Paymentmethod
+pd_installments,installments,module,Splitit_Paymentmethod
+pd_per_month,/mon,module,Splitit_Paymentmethod
+pd_number_of_installments,"Number Of Installments",module,Splitit_Paymentmethod
+visa,Visa,module,Splitit_Paymentmethod
+mastercard,MasterCard,module,Splitit_Paymentmethod
+tc_approval,Approval,module,Splitit_Paymentmethod
+tc_clicktoapprovetermsandconditions,"Click To Approve Terms and Conditions",module,Splitit_Paymentmethod
+ecomm_no_interest,"No interest",module,Splitit_Paymentmethod
+ecomm_tell_me_more,"Tell me more",module,Splitit_Paymentmethod
+common_pleaseselect,"Please Select",module,Splitit_Paymentmethod
+common_i_approve,"I Approve",module,Splitit_Paymentmethod
+ecomm_redirect_to_payment_form,"You will redirect to secured payment form",module,Splitit_Paymentmethod

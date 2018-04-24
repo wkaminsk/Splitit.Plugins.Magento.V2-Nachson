@@ -1,0 +1,19 @@
+"Credit Card Type",kreditkortategund,module,Splitit_Paymentmethod
+"Credit Card Number",Kreditkortanúmer,module,Splitit_Paymentmethod
+"Expiration Date",Gildistökudagur,module,Splitit_Paymentmethod
+Month,Mánuður,module,Splitit_Paymentmethod
+Year,Ár,module,Splitit_Paymentmethod
+"Card Verification Number","Card Staðfestingarnúmer",module,Splitit_Paymentmethod
+"What is this ?","Hvað er þetta ?",module,Splitit_Paymentmethod
+installments,afborganir,module,Splitit_Paymentmethod
+/mon,/mán,module,Splitit_Paymentmethod
+"Number Of Installments","Fjöldi afborgana",module,Splitit_Paymentmethod
+Visa,Visa,module,Splitit_Paymentmethod
+MasterCard,MasterCard,module,Splitit_Paymentmethod
+Approval,Samþykki,module,Splitit_Paymentmethod
+"Click To Approve Terms and Conditions","Smelltu til að samþykkja skilmála",module,Splitit_Paymentmethod
+"No interest","Engin áhugi",module,Splitit_Paymentmethod
+"Tell me more","Segðu mér meira",module,Splitit_Paymentmethod
+"Please Select","Vinsamlegast veldu",module,Splitit_Paymentmethod
+"I Approve","Ég samþykki",module,Splitit_Paymentmethod
+"You will redirect to secured payment form","Þú sendir áfram til tryggt greiðsluform",module,Splitit_Paymentmethod

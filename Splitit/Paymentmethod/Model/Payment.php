@@ -421,10 +421,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
     protected function createInstallmentPlan($api, $payment, $amount)
     {
+        $cultureName = $this->helper->getCultureName();
         $params = [
             "RequestHeader" => [
                 "SessionId" => $this->customerSession->getSplititSessionid(),
                 "ApiKey"    => $this->helper->getConfig("payment/splitit_payment/api_terminal_key"),
+                "CultureName" => $cultureName
             ],
             "InstallmentPlanNumber" => $this->customerSession->getInstallmentPlanNumber(),
             "CreditCardDetails" => [
