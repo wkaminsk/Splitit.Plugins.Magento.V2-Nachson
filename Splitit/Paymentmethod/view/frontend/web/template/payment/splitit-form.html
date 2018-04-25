@@ -16,7 +16,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: $t(getTitle())"></span></label>
     </div>
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->
@@ -32,7 +32,7 @@
             <!-- ko template: 'Magento_Payment/payment/cc-form' --><!-- /ko -->
         </form>
         <div class="num-of-installments" style="width:230px">
-            <label><!-- ko i18n: 'Number of Installments' --><!-- /ko --><em>*</em></label>
+            <label><!-- ko i18n: 'Number Of Installments' --><!-- /ko --><em>*</em></label>
             <select id="select-num-of-installments" class="select">
                 <option value="">--<!-- ko i18n: 'Please Select' --><!-- /ko -->--</option>
             </select>
