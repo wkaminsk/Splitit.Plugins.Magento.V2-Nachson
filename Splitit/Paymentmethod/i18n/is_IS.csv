@@ -18,3 +18,4 @@ Approval,Samþykki,module,Splitit_Paymentmethod
 "I Approve","Ég samþykki",module,Splitit_Paymentmethod
 "You will redirect to secured payment form","Þú sendir áfram til tryggt greiðsluform",module,Splitit_Paymentmethod
 "Monthly payments - 0% Interest","Mánaðarlegar greiðslur - 0% Vextir",module,Splitit_Paymentmethod
+"Installments of","Afborganir af",module,Splitit_Paymentmethod
