@@ -634,7 +634,7 @@ class PaymentForm {
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null) {
         if (!$quote)
             $quote = $this->quote;
-        if ($this->checkAvailableInstallments($quote)) {
+        if ($this->checkAvailableInstallments($quote)&&$this->checkProductBasedAvailability()) {
             return parent::isAvailable($quote);
         } else {
             return false;
@@ -699,6 +699,41 @@ class PaymentForm {
             }
 
         return false;
+    }
+    
+    public function checkProductBasedAvailability() {
+        $check = TRUE;
+        if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product")) {
+            $cart = $this->objectManager->get('\Magento\Checkout\Model\Cart');
+// retrieve quote items collection
+//        $itemsCollection = $cart->getQuote()->getItemsCollection();
+// retrieve quote items array
+//        $items = $cart->getQuote()->getAllItems();
+// get array of all items what can be display directly
+            $itemsVisible = $cart->getQuote()->getAllVisibleItems();
+            $allowedProducts = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_product_skus");
+            $allowedProducts = explode(',', $allowedProducts);
+            if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product") == 1) {
+                $check = TRUE;
+                foreach ($itemsVisible as $item) {
+                    if (!in_array($item->getProductId(), $allowedProducts)) {
+                        $check = FALSE;
+                        break;
+                    }
+                }
+            }
+            if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product") == 2) {
+                $check = FALSE;
+                foreach ($itemsVisible as $item) {
+                    if (in_array($item->getProductId(), $allowedProducts)) {
+                        $check = TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+//        var_dump($check);
+        return $check;
     }
 
 }

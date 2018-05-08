@@ -4,7 +4,7 @@
 Month,Mánuður,module,Splitit_Paymentmethod
 Year,Ár,module,Splitit_Paymentmethod
 "Card Verification Number","Card Staðfestingarnúmer",module,Splitit_Paymentmethod
-"What is this ?","Hvað er þetta ?",module,Splitit_Paymentmethod
+"What is this?","Hvað er þetta ?",module,Splitit_Paymentmethod
 installments,afborganir,module,Splitit_Paymentmethod
 /mon,/mán,module,Splitit_Paymentmethod
 "Number Of Installments","Fjöldi afborgana",module,Splitit_Paymentmethod

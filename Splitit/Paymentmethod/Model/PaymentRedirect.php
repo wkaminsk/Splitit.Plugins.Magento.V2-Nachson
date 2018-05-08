@@ -101,7 +101,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
         if (!$quote) {
             $quote = $this->quote;
         }
-        if ($this->paymentForm->checkAvailableInstallments($quote)) {
+        if ($this->paymentForm->checkAvailableInstallments($quote)&&$this->paymentForm->checkProductBasedAvailability()) {
             return parent::isAvailable($quote);
         } else {
             return false;

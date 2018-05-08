@@ -12,6 +12,7 @@ class Getsplititsupportedcultures
 //        print_r($getSplititSupportedCultures);echo "<br/>";
         $decodedResult = json_decode($getSplititSupportedCultures,true);
 //        print_r($decodedResult);exit;
+        $allCulture=array();
         if(isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1 && count($decodedResult["Cultures"])){
             foreach ($decodedResult["Cultures"] as $key => $value) {
                 $allCulture[]= array('value' =>$value["CultureName"], 'label' => $value["DisplayName"]);
