@@ -42,14 +42,15 @@ class Update extends \Magento\Framework\App\Action\Action {
         $applyFees = $this->scopeConfig->getValue("payment/$method/splitit_fee_on_total", $storeScope);
         if ($applyFees) {
             try {
-               $feeType = $this->scopeConfig->getValue("payment/$method/splitit_fee_types", $storeScope);
-               $fees = $this->scopeConfig->getValue("payment/$method/splitit_fees", $storeScope);
-               $post = $this->getRequest()->getPostValue();
-               // $grand_total = $quote->getGrandTotal();
-               // if (\Splitit\Paymentmethod\Model\Source\Feetypes::PERCENTAGE == $feeType) {
-               //     $fees = ($grand_total * $fees / 100);
-               // }
-               $fees = $this->_helperData->getFee($quote);
+                $feeType = $this->scopeConfig->getValue("payment/$method/splitit_fee_types", $storeScope);
+                $fees = $this->scopeConfig->getValue("payment/$method/splitit_fees", $storeScope);
+                $post = $this->getRequest()->getPostValue();
+                $this->checkoutSession->setSelectedIns($this->getRequest()->getParam('selectedIns'));
+                // $grand_total = $quote->getGrandTotal();
+                // if (\Splitit\Paymentmethod\Model\Source\Feetypes::PERCENTAGE == $feeType) {
+                //     $fees = ($grand_total * $fees / 100);
+                // }
+                $fees = $this->_helperData->getFee($quote);
                // $new_grand_total = $grand_total + $fees;
                // $quote->setGrandTotal($new_grand_total);
                // $quote->save();

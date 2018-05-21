@@ -249,19 +249,11 @@ function getRowHtml1(){
           +'From<br><span class="base-currency-symbol">'+getCurrencyCode1("")+'</span><input type="text" class="doctv_from" name="doctv_from_pf" /><br>To<br><span class="base-currency-symbol">'+getCurrencyCode1("")+'</span><input type="text" class="doctv_to" name="doctv_to_pf" />'
          +'</td>'
          +'<td style="padding: 8px;">'
-          +'<select id="doctv_installments" name="doctv_installments_pf" class=" select multiselect doctv_installments" size="10" multiple="multiple">'
-            +'<option value="2">2 Installments</option>'
-            +'<option value="3">3 Installments</option>'
-            +'<option value="4">4 Installments</option>'
-            +'<option value="5">5 Installments</option>'
-            +'<option value="6">6 Installments</option>'
-            +'<option value="7">7 Installments</option>'
-            +'<option value="8">8 Installments</option>'
-            +'<option value="9">9 Installments</option>'
-            +'<option value="10">10 Installments</option>'
-            +'<option value="11">11 Installments</option>'
-            +'<option value="12">12 Installments</option>'
-            +'</select>'
+          +'<select id="doctv_installments" name="doctv_installments_pf" class=" select multiselect doctv_installments" size="10" multiple="multiple">';
+            for(var iP=2; iP<=24; iP++){
+          rowHtmlP += '<option value="'+iP+'">'+iP+' Installments</option>';
+      }
+            rowHtmlP+='</select>';
          +'</td>'
          +'<td style="padding: 8px; text-align: center;">'
            +getCurrencyDropdown1("")
@@ -284,7 +276,7 @@ function getRowHtmlFromJson1(){
         var installmentsP = valueP.doctv.installments.split(',');
         var iP = 2;
         var selectedP = "";
-        for(iP=2; iP<=12; iP++){
+        for(iP=2; iP<=24; iP++){
           if(jQuery.inArray(iP.toString(), installmentsP) != -1){
             selectedP = 'selected="selected"';
           }

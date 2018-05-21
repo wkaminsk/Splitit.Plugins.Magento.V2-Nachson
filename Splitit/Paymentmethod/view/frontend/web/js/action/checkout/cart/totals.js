@@ -25,9 +25,11 @@ define(
 
         return function (isLoading, payment) {
             var serviceUrl = urlBuilder.build('splititpaymentmethod/checkout/totals');
+            var pageReloaded = (document.getElementById('pageReloaded')!=null)?document.getElementById('pageReloaded').value:1;
+//            alert(pageReloaded);
             return storage.post(
                 serviceUrl,
-                JSON.stringify({payment: payment})
+                JSON.stringify({payment: payment,pageReloaded:pageReloaded})
             ).done(
                 function(response) {
                     if(response) {

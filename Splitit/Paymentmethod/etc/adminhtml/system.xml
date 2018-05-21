@@ -95,25 +95,18 @@
                 <field id="cctypes" translate="label" type="multiselect" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Credit Card Types</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Cctype</source_model>
-                </field>
-                
+                </field>                
                 <field id="splitit_fee_on_total" translate="label" sortOrder="17.1" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Add Splitit Fee on Total Amount</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="splitit_fee_types" translate="label" sortOrder="17.2" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Fee Method</label>
-                    <source_model>Splitit\Paymentmethod\Model\Source\Feetypes</source_model>
+                <field id="splitit_fee_table" translate="label comment tooltip" sortOrder="17.4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Splitit Fee by Number of Installments(NOI)</label>
+                    <frontend_model>Splitit\Paymentmethod\Block\Adminhtml\System\Config\Form\Field\Feetable</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                     <depends>
                         <field id="splitit_fee_on_total">1</field>
                     </depends>
-                </field>
-                <field id="splitit_fees" translate="label" sortOrder="17.3"  showInDefault="1" showInWebsite="1" showInStore="0" >
-                    <label>Fees Amount/Percentage</label>
-                    <depends>
-                        <field id="splitit_fee_on_total">1</field>
-                    </depends>
-                    <validate>required-entry validate-zero-or-greater validate-number</validate>
                 </field>
 
                 <field id="first_payment" translate="label" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="0" >

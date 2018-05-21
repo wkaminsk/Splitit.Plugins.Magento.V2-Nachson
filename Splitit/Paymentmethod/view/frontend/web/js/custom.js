@@ -14,7 +14,6 @@ window.onload = function(){
 			clearInterval(sitInterval);
 		}	
 	}, 2000);*/
-	
 	jQuery(document).on("focus", "form.splitit-form input, form.splitit-form select",function(){
 		var numOfInstallmentLength = jQuery("select#select-num-of-installments option").length;
 		if(numOfInstallmentLength == 1){
@@ -28,21 +27,32 @@ window.onload = function(){
         });
         jQuery(document).ready(function(){
         	var interval=setInterval(function(){
-        	if(jQuery('#splitit_paymentmethod,#splitit_paymentredirect').is(':checked')){
-        		splititFees();
+            if(!jQuery('#pageReloaded').length){
+                jQuery('#splitit_paymentmethod').parent().append('<input type="hidden" id="pageReloaded" value="1"/>');
+            }
+        	if(jQuery('#splitit_paymentmethod,#splitit_paymentredirect').is(':checked')){                    
+        		splititFees(jQuery('#select-num-of-installments').val());
         		runMyScriptForCheckout();
         		clearInterval(interval);
         	}
         	},1000);
         });
         jQuery(document).on('click','#splitit_paymentmethod,#splitit_paymentredirect',function(e){
-            splititFees();
+            splititFees(jQuery('#select-num-of-installments').val());
             runMyScriptForCheckout();
         });
+        jQuery(document).on('change','#select-num-of-installments',function(e){
+            splititFees(jQuery('#select-num-of-installments').val());
+            jQuery('#pageReloaded').val('0');
+            setTimeout(function(){
+                jQuery('#splitit_paymentmethod').trigger('click');                
+            },1000);
+        });
 
-        function splititFees(){
+        function splititFees(selectedIns){
         	jQuery.ajax({
-        		url: baseUrl + "splititpaymentmethod/index/update", 
+        		url: baseUrl + "splititpaymentmethod/index/update",
+                        data : {selectedIns:selectedIns},
         		showLoader: true,
         		success: function(result){
         			if(result.success){

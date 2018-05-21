@@ -11,7 +11,8 @@ var jqueryInterval = setInterval(function(){
     if(depandingOnCart){
       jqueryIsHere = 1;
       clearInterval(jqueryInterval);
-      splitit_fee_types();
+//      splitit_fee_types();
+splitit_fee_table();
       runMyScripts();
      }else{
       console.log('Element not found!!');
@@ -248,19 +249,11 @@ function getRowHtml(){
           +'From<br><span class="base-currency-symbol">'+getCurrencyCode("")+'</span><input type="text" class="doctv_from" name="doctv_from" /><br>To<br><span class="base-currency-symbol">'+getCurrencyCode("")+'</span><input type="text" class="doctv_to" name="doctv_to" />'
          +'</td>'
          +'<td style="padding: 8px;">'
-          +'<select id="doctv_installments" name="doctv_installments" class=" select multiselect doctv_installments" size="10" multiple="multiple">'
-            +'<option value="2">2 Installments</option>'
-            +'<option value="3">3 Installments</option>'
-            +'<option value="4">4 Installments</option>'
-            +'<option value="5">5 Installments</option>'
-            +'<option value="6">6 Installments</option>'
-            +'<option value="7">7 Installments</option>'
-            +'<option value="8">8 Installments</option>'
-            +'<option value="9">9 Installments</option>'
-            +'<option value="10">10 Installments</option>'
-            +'<option value="11">11 Installments</option>'
-            +'<option value="12">12 Installments</option>'
-            +'</select>'
+          +'<select id="doctv_installments" name="doctv_installments" class=" select multiselect doctv_installments" size="10" multiple="multiple">';
+    for(var i=2; i<=24; i++){
+        rowHtml += '<option value="'+i+'">'+i+' Installments</option>';
+    }
+    rowHtml+='</select>'
          +'</td>'
          +'<td style="padding: 8px; text-align: center;">'
            +getCurrencyDropdown("")
@@ -283,7 +276,7 @@ function getRowHtmlFromJson(){
         var installments = value.doctv.installments.split(',');
         var i = 2;
         var selected = "";
-        for(i=2; i<=12; i++){
+        for(i=2; i<=24; i++){
           if(jQuery.inArray(i.toString(), installments) != -1){
             selected = 'selected="selected"';
           }
@@ -405,5 +398,33 @@ function splitit_fee_types(){
             jQuery(this).val(50);
         }
         }
+    });
+}
+
+function splitit_fee_table(){
+    var table=jQuery('#row_payment_us_splitit_paymentmethod_splitit_fee_table');
+    console.log('row_payment_us_splitit_paymentmethod_splitit_fee_table loaded');
+    while(table.find('tbody tr').length!=23){
+        table.find('button.action-add').click();
+    }
+    table.find('tfoot').remove();
+    table.find('th').last().remove();
+    var i=2;
+    table.find('tbody tr').each(function(){
+        var tr=jQuery(this);
+        tr.find('td input[name*="noi"]').attr('readonly',true).val(i++);
+        if(tr.find('td input[name*="fixed"]').val()==''||parseFloat(tr.find('td input[name*="fixed"]').val())<=0){
+            tr.find('td input[name*="fixed"]').val('0.00');
+        }
+        if(tr.find('td input[name*="percent"]').val()==''||parseFloat(tr.find('td input[name*="percent"]').val())<=0){
+            tr.find('td input[name*="percent"]').val('0.00');
+        }
+        tr.find('td input[name*="percent"]').on('change',function(){
+            if(parseFloat(jQuery(this).val())>30){
+                alert("Percent value cannot be greater than 30");
+                jQuery(this).val('30.00');
+            }
+        });
+        tr.find('td.col-actions').remove();
     });
 }

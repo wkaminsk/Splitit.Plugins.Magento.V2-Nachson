@@ -58,6 +58,9 @@ class Totals extends \Magento\Framework\App\Action\Action
             $quote = $this->_checkoutSession->getQuote();
             //Trigger to re-calculate totals
             $payment = $this->_helper->jsonDecode($this->getRequest()->getContent());
+            if($payment['pageReloaded']){
+                $this->_checkoutSession->setSelectedIns(false);
+            }
             $this->_checkoutSession->getQuote()->getPayment()->setMethod($payment['payment']);
             $this->quoteRepository->save($quote->collectTotals());
             //@deprecated save collect totals function

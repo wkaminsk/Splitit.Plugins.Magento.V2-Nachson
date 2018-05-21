@@ -67,8 +67,11 @@ class Fee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 
         $fee = 0;
         if($this->_helperData->canApply($quote)) {
+//            echo "Fee-Totals";
             $fee = $this->_helperData->getFee($quote);
+//            var_dump($fee);
         }
+//        $fee=0;
         $total->setFeeAmount($fee);
         $total->setBaseFeeAmount($fee);
         $total->setTotalAmount('fee_amount', $fee);

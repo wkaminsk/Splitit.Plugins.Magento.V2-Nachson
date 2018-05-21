@@ -23,6 +23,10 @@ class Data extends AbstractHelper {
      * @var array
      */
     public $methodFee = NULL;
+    
+    public $checkoutSession;
+    
+    public static $selectedIns;
 
     /**
      * Constructor
@@ -30,6 +34,8 @@ class Data extends AbstractHelper {
     public function __construct(
     \Magento\Framework\App\Helper\Context $context
     ) {
+        $om = \Magento\Framework\App\ObjectManager::getInstance();
+        $this->checkoutSession = $om->get('Magento\Checkout\Model\Session');
         parent::__construct($context);
         $this->_getMethodFee();
     }
@@ -140,29 +146,64 @@ class Data extends AbstractHelper {
     public function getFee(\Magento\Quote\Model\Quote $quote) {
         $method = $quote->getPayment()->getMethod();
         $fee = $this->methodFee[$method]['fee'];
-//        $fee = $this->getConfig('payment/splitit_paymentmethod/splitit_fees');
-        $feeType = $this->getFeeType($method);
-        if ($feeType == \Splitit\Paymentmethod\Model\Source\Feetypes::FIXED) {
-            return $fee;
-        } else {
-            $totals = $quote->getTotals();
-            $sum = 0;
-            foreach ($totals as $total) {
-                if (($total->getCode() != self::TOTAL_CODE) && ($total->getCode() != self::GRAND_TOTAL_CODE)) {
-                    $sum += (float) $total->getValue();
-                    // echo $total->getCode().'='.((float) $total->getValue()).' , ';
-                }
-                if (($total->getCode() == 'shipping') && ($total->getValue() == 0)) {
-                    $sum += (float) $quote->getShippingAddress()->getShippingAmount();
-                    // echo $total->getCode().'='.((float) $quote->getShippingAddress()->getShippingAmount()).' , ';
+//        echo $method;
+        if ($method == 'splitit_paymentmethod') {
+            $fee=0;
+            $feeTable = (unserialize($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
+            $selectedInstallment = $this->checkoutSession->getSelectedIns();
+//            var_dump($selectedInstallment);
+            if ($selectedInstallment) {
+                foreach ($feeTable as $value) {
+                    if ($value['noi'] == $selectedInstallment) {
+                        $fixedFee = $value['fixed'];
+                        $percentFee = $value['percent'];
+                        $totals = $quote->getTotals();
+                        $sum = 0;
+                        foreach ($totals as $total) {
+                            if (($total->getCode() != self::TOTAL_CODE) && ($total->getCode() != self::GRAND_TOTAL_CODE)) {
+                                $sum += (float) $total->getValue();
+                                // echo $total->getCode().'='.((float) $total->getValue()).' , ';
+                            }
+                            if (($total->getCode() == 'shipping') && ($total->getValue() == 0)) {
+                                $sum += (float) $quote->getShippingAddress()->getShippingAmount();
+                                // echo $total->getCode().'='.((float) $quote->getShippingAddress()->getShippingAmount()).' , ';
+                            }
+                        }
+//         echo 'sum='.$sum.' , ';
+//         echo 'grandTotal='.$quote->getGrandTotal().' , ';
+//         echo 'fee='.$fixedFee.' , ';
+//         echo 'new_fee='.($sum * ($percentFee / 100));
+//         exit;
+                        return ($sum * ($percentFee / 100)) + $fixedFee;
+                    }
                 }
             }
-            // echo 'sum='.$sum.' , ';
-            // echo 'grandTotal='.$quote->getGrandTotal().' , ';
-            // echo 'fee='.$fee.' , ';
-            // echo 'new_fee='.($sum * ($fee / 100));
-            // exit;
-            return ($sum * ($fee / 100));
+            return $fee;
+        } else {
+//        $fee = $this->getConfig('payment/splitit_paymentmethod/splitit_fees');
+            $feeType = $this->getFeeType($method);
+            if ($feeType == \Splitit\Paymentmethod\Model\Source\Feetypes::FIXED) {
+                return $fee;
+            } else {
+                $totals = $quote->getTotals();
+                $sum = 0;
+                foreach ($totals as $total) {
+                    if (($total->getCode() != self::TOTAL_CODE) && ($total->getCode() != self::GRAND_TOTAL_CODE)) {
+                        $sum += (float) $total->getValue();
+                        // echo $total->getCode().'='.((float) $total->getValue()).' , ';
+                    }
+                    if (($total->getCode() == 'shipping') && ($total->getValue() == 0)) {
+                        $sum += (float) $quote->getShippingAddress()->getShippingAmount();
+                        // echo $total->getCode().'='.((float) $quote->getShippingAddress()->getShippingAmount()).' , ';
+                    }
+                }
+                // echo 'sum='.$sum.' , ';
+                // echo 'grandTotal='.$quote->getGrandTotal().' , ';
+                // echo 'fee='.$fee.' , ';
+                // echo 'new_fee='.($sum * ($fee / 100));
+                // exit;
+                return ($sum * ($fee / 100));
+            }
         }
     }
 
