@@ -177,7 +177,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
                 "AddressLine2" => $billingStreet2,
                 "City" => $this->billingAddress->getCity(),
                 "State" => $this->billingAddress->getRegion(),
-                "Country" => $this->countryFactory->create()->loadByCode($this->billingAddress->getCountry())->getName(),
+                "Country" => $this->countryFactory->create()->loadByCode($this->billingAddress->getCountry())->getName('en_US'),
                 "Zip" => $this->billingAddress->getPostcode(),
             ],
             "ConsumerData" => [
@@ -186,7 +186,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
                 "PhoneNumber" => $this->billingAddress->getTelephone()
             ],
         ];
-
+//        print_r($params);
         return $params;
     }
 

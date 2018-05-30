@@ -46,7 +46,7 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 			if(count($installments)){
 				$installmentHtml = '<option value="">--'.__('Please Select').'--</option>';
 				foreach (explode(',', $installments) as $value) {
-					$installmentHtml .= '<option value="'.$value.'">'.$value.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$value,2).'</option>';
+					$installmentHtml .= '<option value="'.$value.'">'.$value.' '.__('Installments').'</option>';
 				}
 				
 			}
@@ -67,13 +67,13 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
                 foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){
                     if($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to){
                         foreach (explode(',', $data->installments) as $n) {
-                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$n,2).'</option>';
+                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments').'</option>';
                         }
                         break;
                     }else if($totalAmount >= $data->from && empty($data->to)){
                         foreach (explode(',', $data->installments) as $n) {
 
-                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments of').' '.$currencySymbol.round($totalAmount/$n,2).'</option>';
+                            $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments').'</option>';
                         }
                         break;
                     }
