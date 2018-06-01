@@ -65,7 +65,7 @@ class PaymentCancel implements ObserverInterface
 
             $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Cancel",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;

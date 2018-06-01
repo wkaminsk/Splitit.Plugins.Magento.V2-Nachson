@@ -206,7 +206,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
             $api = $this->_apiModel->getApiUrl();
             $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/StartInstallments",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;
@@ -275,7 +275,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
             $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Cancel",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;
@@ -339,7 +339,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc
 
             $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Refund",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+//            print_r($result);exit;
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;

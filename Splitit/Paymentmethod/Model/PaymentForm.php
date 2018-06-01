@@ -181,7 +181,7 @@ class PaymentForm {
             "InstallmentPlanNumber" => $transactionId
         );
         $result = $api->startInstallment($this->api->getApiUrl(), $params);
-        if (!$result) {
+        if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
             $e = $api->getError();
             throw new \Magento\Framework\Validator\Exception($e['code'] . ' ' . $e['message']);
         }
@@ -215,7 +215,7 @@ class PaymentForm {
             ),
         );
         $result = $api->createInstallmentPlan($this->api->getApiUrl(), $params);
-        if (!$result) {
+        if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
             $e = $api->getError();
             throw new \Magento\Framework\Validator\Exception($e['code'] . ' ' . $e['message']);
         }

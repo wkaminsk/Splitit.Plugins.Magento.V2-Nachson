@@ -138,7 +138,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
             $api = $this->api->getApiUrl();
             $result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/StartInstallments",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;
@@ -207,7 +207,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 
             $result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/Cancel",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;
@@ -271,7 +271,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 
             $result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/Refund",$params);
             $result = json_decode($result, true);
-            if (!$result) {
+            if (isset($result["ResponseHeader"])&&isset($result["ResponseHeader"]["Errors"])&&!empty($result["ResponseHeader"]["Errors"])) {
                 $errorMsg = "";
                 
                 $errorCode = 503;
