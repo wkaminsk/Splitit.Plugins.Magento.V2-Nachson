@@ -53,7 +53,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
             $dataForLogin = array(
                 'UserName' => $this->helper->getConfig("payment/splitit_paymentmethod/api_username"),
                 'Password' => $this->helper->getConfig("payment/splitit_paymentmethod/api_password"),
-                'TouchPoint' => array("Code" => "MagentoPlugin", "Version" => "M2.0S2.0")
+                'TouchPoint' => array("Code" => "MagentoPlugin", "Version" => "v2.1")
             );
         }
 

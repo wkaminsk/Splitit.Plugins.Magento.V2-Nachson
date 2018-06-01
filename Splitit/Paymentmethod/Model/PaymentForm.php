@@ -232,7 +232,7 @@ class PaymentForm {
         $dataForLogin = array(
             'UserName' => $this->helper->getConfig("payment/splitit_paymentredirect/api_username"),
             'Password' => $this->helper->getConfig("payment/splitit_paymentredirect/api_password"),
-            'TouchPoint' => array("Code" => "MagentoPlugin", "Version" => "M2.0S2.0")
+            'TouchPoint' => array("Code" => "MagentoPlugin", "Version" => "v2.1")
         );
         $result = $this->api->apiLogin($dataForLogin);
         if (isset($result["serverError"])) {
