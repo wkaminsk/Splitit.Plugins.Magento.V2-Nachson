@@ -1,0 +1,21 @@
+Credit Card Type,type de carte de crédit,module,Splitit_Paymentmethod
+Credit Card Number,Numéro de Carte de Crédit,module,Splitit_Paymentmethod
+Expiration Date,Date d'expiration,module,Splitit_Paymentmethod
+Month,Mois,module,Splitit_Paymentmethod
+Year,An,module,Splitit_Paymentmethod
+Card Verification Number,Numéro de vérification de carte,module,Splitit_Paymentmethod
+What is this?,Qu'est-ce que c'est?,module,Splitit_Paymentmethod
+installments,versements,module,Splitit_Paymentmethod
+/mon,/lun,module,Splitit_Paymentmethod
+Number Of Installments,Nombre d'installations,module,Splitit_Paymentmethod
+Visa,Visa,module,Splitit_Paymentmethod
+MasterCard,MasterCard,module,Splitit_Paymentmethod
+Approval,Approbation,module,Splitit_Paymentmethod
+Click To Approve Terms and Conditions,Cliquez sur pour approuver les termes et conditions,module,Splitit_Paymentmethod
+No interest,Pas d'intérêt,module,Splitit_Paymentmethod
+Tell me more,Dis m'en plus,module,Splitit_Paymentmethod
+Please Select,Veuillez sélectionner,module,Splitit_Paymentmethod
+I Approve,J'approuve,module,Splitit_Paymentmethod
+You will redirect to secured payment form,Vous allez rediriger vers un formulaire de paiement sécurisé,module,Splitit_Paymentmethod
+Monthly payments - 0% Interest,Paiements mensuels - 0% d'intérêt,module,Splitit_Paymentmethod
+Installments of,Versements de,module,Splitit_Paymentmethod
