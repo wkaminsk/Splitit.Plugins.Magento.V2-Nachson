@@ -131,6 +131,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
     public function createDataForInstallmentPlanInit($selectedInstallment) {
 
         $firstInstallmentAmount = $this->getFirstInstallmentAmount($selectedInstallment);
+        $cultureName = $this->helper->getCultureName();
         //print_r($this->billingAddress->getData());die;
         //print_r($this->billingAddress->getStreet());die("--sdf");
         $customerInfo = $this->customerSession->getCustomer()->getData();
@@ -183,7 +184,8 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
             "ConsumerData" => [
                 "FullName" => $customerInfo["firstname"] . " " . $customerInfo["lastname"],
                 "Email" => $customerInfo["email"],
-                "PhoneNumber" => $this->billingAddress->getTelephone()
+                "PhoneNumber" => $this->billingAddress->getTelephone(),
+                "CultureName" => $cultureName
             ],
         ];
 //        print_r($params);
