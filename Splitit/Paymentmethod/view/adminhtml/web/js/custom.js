@@ -4,10 +4,11 @@ var currencyCodeSymbol = "";
 var jqueryIsHere = 0;
 var curUrl = window.location.href; 
 var baseUrl = "";
-baseUrl = curUrl.substring(0, curUrl.indexOf('admin'));
+baseUrl = window.location.origin+'/';
 
 var jqueryInterval = setInterval(function(){  
-    var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
+//    var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
+    var depandingOnCart = document.getElementsByName('groups[splitit_paymentmethod][fields][depending_on_cart_total][value]')[0];  
     if(depandingOnCart){
       jqueryIsHere = 1;
       clearInterval(jqueryInterval);
@@ -40,8 +41,8 @@ function runMyScripts(){
       event.stopPropagation();
       event.stopImmediatePropagation();
       //alert('Please fill the required fields in Splitit section "Depending on cart total"');
-      jQuery("#payment_us_splitit_paymentmethod_percentage_of_order").css("border","1px solid #ccc");
-      if(jQuery('#payment_us_splitit_paymentmethod_select_installment_setup').val() == 'depending_on_cart_total'){
+      jQuery("[id^=payment_][id$=_splitit_paymentmethod_percentage_of_order]:first").css("border","1px solid #ccc");
+      if(jQuery("[id^=payment_][id$=_splitit_paymentmethod_select_installment_setup]:first").val() == 'depending_on_cart_total'){
         var fromToArr = {};
         var i=0;
         jQuery("#tier_price_container tr").each(function(){
@@ -129,8 +130,8 @@ function runMyScripts(){
       }
 
       // 
-      if(jQuery("select#payment_us_splitit_paymentmethod_first_payment").val() == "percentage"){
-        var percentageOfOrder = jQuery("#payment_us_splitit_paymentmethod_percentage_of_order").val();
+      if(jQuery("select[id^=payment_][id$=_splitit_paymentmethod_first_payment]:first").val() == "percentage"){
+        var percentageOfOrder = jQuery("[id^=payment_][id$=_splitit_paymentmethod_percentage_of_order]:first").val();
         if(percentageOfOrder > 50 ){
           percentageFlag++; 
           flag1++; 
@@ -138,7 +139,7 @@ function runMyScripts(){
         
       }
       if(flag1 == 0){
-        if(jQuery('#payment_us_splitit_paymentmethod_select_installment_setup').val() == 'depending_on_cart_total'){
+        if(jQuery('[id^=payment_][id$=_splitit_paymentmethod_select_installment_setup]:first').val() == 'depending_on_cart_total'){
           createJsonOfDependingOnCartTotal(); 
         }
         eval(configForm.submit());
@@ -166,17 +167,17 @@ function runMyScripts(){
 
   
 
-  jQuery(document).on('change', '#payment_us_splitit_paymentmethod_select_installment_setup', function(){
+  jQuery(document).on('change', '[id^=payment_][id$=_splitit_paymentmethod_select_installment_setup]:first', function(){
     if(jQuery(this).val() == 'fixed'){
       jQuery('#tiers_table.splitit').closest('td').addClass('not-allowed-td');
-      jQuery('#payment_us_splitit_paymentmethod_fixed_installment').removeAttr('disabled');
+      jQuery('[id^=payment_][id$=_splitit_paymentmethod_fixed_installment]:first').removeAttr('disabled');
     }else{
       jQuery('#tiers_table.splitit').closest('td').removeClass('not-allowed-td');
-      jQuery('#payment_us_splitit_paymentmethod_fixed_installment').attr('disabled', 'disabled');
+      jQuery('[id^=payment_][id$=_splitit_paymentmethod_fixed_installment]:first').attr('disabled', 'disabled');
     }
   });
 
-  jQuery(document).on("click","#payment_us_splitit_paymentmethod_check_setting", function(){
+  jQuery(document).on("click","[id^=payment_][id$=_splitit_paymentmethod_check_setting]:first", function(){
     checkSetting();  
   });
 }
@@ -197,14 +198,15 @@ function getCurrency(){
       // console.log(jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").length);
       // show depanding on cart table
       var tableHtml = getTableHtml();
-      jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").replaceWith(tableHtml);
+//      jQuery("#payment_us_splitit_paymentmethod_depending_on_cart_total").replaceWith(tableHtml);
+      jQuery('[name="groups[splitit_paymentmethod][fields][depending_on_cart_total][value]"]').replaceWith(tableHtml);
       // disable or enable Fixed and Depanding on cart total
-      if(jQuery("#payment_us_splitit_paymentmethod_select_installment_setup").val() == 'fixed'){
+      if(jQuery("[id^=payment_][id$=_splitit_paymentmethod_select_installment_setup]:first").val() == 'fixed'){
         jQuery('#tiers_table.splitit').closest('td').addClass('not-allowed-td');
-        jQuery('#payment_us_splitit_paymentmethod_fixed_installment').removeAttr('disabled');
+        jQuery('[id^=payment_][id$=_splitit_paymentmethod_fixed_installment]:first').removeAttr('disabled');
       }else{
         jQuery('#tiers_table.splitit').closest('td').removeClass('not-allowed-td');
-        jQuery('#payment_us_splitit_paymentmethod_fixed_installment').attr('disabled', 'disabled');
+        jQuery('[id^=payment_][id$=_splitit_paymentmethod_fixed_installment]:first').attr('disabled', 'disabled');
       }
     }
   });
@@ -235,7 +237,7 @@ function getTableHtml(){
 }
 
 function getTableInnerContent(){
-  var jsonValue = jQuery("#payment_us_splitit_paymentmethod_depanding_on_cart_total_values").val();
+  var jsonValue = jQuery("[id^=payment_][id$=_splitit_paymentmethod_depanding_on_cart_total_values]:first").val();
   if(jsonValue == "" || jsonValue == undefined){
     return getRowHtml();
   }else{
@@ -267,7 +269,7 @@ function getRowHtml(){
 }
 
 function getRowHtmlFromJson(){
-  var doctv = JSON.parse(jQuery("#payment_us_splitit_paymentmethod_depanding_on_cart_total_values").val());
+  var doctv = JSON.parse(jQuery("[id^=payment_][id$=_splitit_paymentmethod_depanding_on_cart_total_values]:first").val());
   var rowHtml = "";
   jQuery.each( doctv, function( index, value ){
       rowHtml += '<tr>';
@@ -359,7 +361,7 @@ function createJsonOfDependingOnCartTotal(){
         i++;      
     });
     object = JSON.stringify(object);
-    jQuery("#payment_us_splitit_paymentmethod_depanding_on_cart_total_values").val(object);
+    jQuery("[id^=payment_][id$=_splitit_paymentmethod_depanding_on_cart_total_values]:first").val(object);
 
 }
 
@@ -379,22 +381,22 @@ function checkSetting(){
 }
 
 function splitit_fee_types(){
-    jQuery(document).on('change','#payment_us_splitit_paymentmethod_splitit_fee_types',function(){
-        jQuery('#payment_us_splitit_paymentmethod_splitit_fees').trigger('change');
+    jQuery(document).on('change','[id^=payment_][id$=_splitit_paymentmethod_splitit_fee_types]:first',function(){
+        jQuery('[id^=payment_][id$=_splitit_paymentmethod_splitit_fees]:first').trigger('change');
     });
-    jQuery(document).on('change','#payment_us_splitit_paymentredirect_splitit_fee_types',function(){
-        jQuery('#payment_us_splitit_paymentredirect_splitit_fees').trigger('change');
+    jQuery(document).on('change','[id^=payment_][id$=_splitit_paymentredirect_splitit_fee_types]:first',function(){
+        jQuery('[id^=payment_][id$=_splitit_paymentredirect_splitit_fees]:first').trigger('change');
     });
-    jQuery(document).on('change','#payment_us_splitit_paymentmethod_splitit_fees',function(){
+    jQuery(document).on('change','[id^=payment_][id$=_splitit_paymentmethod_splitit_fees]:first',function(){
         if(jQuery(this).val()>50){
-        if(jQuery('#payment_us_splitit_paymentmethod_splitit_fee_types').val()==1){
+        if(jQuery('[id^=payment_][id$=_splitit_paymentmethod_splitit_fee_types]:first').val()==1){
             jQuery(this).val(50);
         }
         }
     });
-    jQuery(document).on('change','#payment_us_splitit_paymentredirect_splitit_fees',function(){
+    jQuery(document).on('change','[id^=payment_][id$=_splitit_paymentredirect_splitit_fees]:first',function(){
         if(jQuery(this).val()>50){
-        if(jQuery('#payment_us_splitit_paymentredirect_splitit_fee_types').val()==1){
+        if(jQuery('[id^=payment_][id$=_splitit_paymentredirect_splitit_fee_types]:first').val()==1){
             jQuery(this).val(50);
         }
         }
@@ -402,7 +404,7 @@ function splitit_fee_types(){
 }
 
 function splitit_fee_table(){
-    var table=jQuery('#row_payment_us_splitit_paymentmethod_splitit_fee_table');
+    var table=jQuery('[id^=row_payment_][id$=_splitit_paymentmethod_splitit_fee_table]:first');
     console.log('row_payment_us_splitit_paymentmethod_splitit_fee_table loaded');
     while(table.find('tbody tr').length!=23){
         table.find('button.action-add').click();

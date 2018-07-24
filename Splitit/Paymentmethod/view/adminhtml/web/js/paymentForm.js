@@ -4,10 +4,11 @@ var currencyCodeSymbol1 = "";
 var jqueryIsHere1 = 0;
 var curUrl1 = window.location.href; 
 var baseUrl1 = "";
-baseUrl1 = curUrl1.substring(0, curUrl1.indexOf('admin'));
+baseUrl1 = window.location.origin+'/';
 
 var jqueryInterval1 = setInterval(function(){  
-    var dependingOnCart = document.getElementById('payment_us_splitit_paymentredirect_depending_on_cart_total');  
+//    var dependingOnCart = document.getElementById('payment_us_splitit_paymentredirect_depending_on_cart_total');  
+    var dependingOnCart = document.getElementsByName('groups[splitit_paymentredirect][fields][depending_on_cart_total][value]')[0];  
     if(dependingOnCart){
       jqueryIsHere1 = 1;
       clearInterval(jqueryInterval1);      
@@ -38,8 +39,8 @@ function runMyScripts1(){
       event.stopPropagation();
       event.stopImmediatePropagation();
       //alert('Please fill the required fields in Splitit section "Depending on cart total"');
-      jQuery("#payment_us_splitit_paymentredirect_percentage_of_order").css("border","1px solid #ccc");
-      if(jQuery('#payment_us_splitit_paymentredirect_select_installment_setup').val() == 'depending_on_cart_total'){
+      jQuery("[id^=payment_][id$=_splitit_paymentredirect_percentage_of_order]:first").css("border","1px solid #ccc");
+      if(jQuery('[id^=payment_][id$=_splitit_paymentredirect_select_installment_setup]:first').val() == 'depending_on_cart_total'){
         var fromToArrP = {};
         var iP=0;
         jQuery("#tier_price_containerP tr").each(function(){
@@ -127,8 +128,8 @@ function runMyScripts1(){
       }
 
       // 
-      if(jQuery("select#payment_us_splitit_paymentredirect_first_payment").val() == "percentage"){
-        var percentageOfOrderP = jQuery("#payment_us_splitit_paymentredirect_percentage_of_order").val();
+      if(jQuery("select[id^=payment_][id$=_splitit_paymentredirect_first_payment]:first").val() == "percentage"){
+        var percentageOfOrderP = jQuery("[id^=payment_][id$=_splitit_paymentredirect_percentage_of_order]:first").val();
         if(percentageOfOrderP > 50 ){
           percentageFlagP++; 
           flag1P++; 
@@ -137,7 +138,7 @@ function runMyScripts1(){
       }
 //      alert(jQuery('#payment_us_splitit_paymentredirect_select_installment_setup').val());
       if(flag1P == 0){
-        if(jQuery('#payment_us_splitit_paymentredirect_select_installment_setup').val() == 'depending_on_cart_total'){
+        if(jQuery('[id^=payment_][id$=_splitit_paymentredirect_select_installment_setup]:first').val() == 'depending_on_cart_total'){
           createJsonOfDependingOnCartTotal1(); 
         }
         eval(configForm.submit());
@@ -165,17 +166,17 @@ function runMyScripts1(){
 
   
 
-  jQuery(document).on('change', '#payment_us_splitit_paymentredirect_select_installment_setup', function(){
+  jQuery(document).on('change', '[id^=payment_][id$=_splitit_paymentredirect_select_installment_setup]:first', function(){
     if(jQuery(this).val() == 'fixed'){
       jQuery('#tiers_tableP.splitit').closest('td').addClass('not-allowed-td');
-      jQuery('#payment_us_splitit_paymentredirect_fixed_installment').removeAttr('disabled');
+      jQuery('[id^=payment_][id$=_splitit_paymentredirect_fixed_installment]:first').removeAttr('disabled');
     }else{
       jQuery('#tiers_tableP.splitit').closest('td').removeClass('not-allowed-td');
-      jQuery('#payment_us_splitit_paymentredirect_fixed_installment').attr('disabled', 'disabled');
+      jQuery('[id^=payment_][id$=_splitit_paymentredirect_fixed_installment]:first').attr('disabled', 'disabled');
     }
   });
 
-  jQuery(document).on("click","#payment_us_splitit_paymentredirect_check_setting", function(){
+  jQuery(document).on("click","[id^=payment_][id$=_splitit_paymentredirect_check_setting]:first", function(){
     checkSetting1();  
   });
 }
@@ -196,14 +197,15 @@ function getCurrency1(){
       // console.log(jQuery("#payment_us_splitit_paymentredirect_depending_on_cart_total").length);
       // show depanding on cart table
       var tableHtmlP = getTableHtml1();
-      jQuery("#payment_us_splitit_paymentredirect_depending_on_cart_total").replaceWith(tableHtmlP);
+//      jQuery("#payment_us_splitit_paymentredirect_depending_on_cart_total").replaceWith(tableHtmlP);
+      jQuery('[name="groups[splitit_paymentredirect][fields][depending_on_cart_total][value]"]').replaceWith(tableHtmlP);
       // disable or enable Fixed and Depanding on cart total
-      if(jQuery("#payment_us_splitit_paymentredirect_select_installment_setup").val() == 'fixed'){
+      if(jQuery("[id^=payment_][id$=_splitit_paymentredirect_select_installment_setup]:first").val() == 'fixed'){
         jQuery('#tiers_tableP.splitit').closest('td').addClass('not-allowed-td');
-        jQuery('#payment_us_splitit_paymentredirect_fixed_installment').removeAttr('disabled');
+        jQuery('[id^=payment_][id$=_splitit_paymentredirect_fixed_installment]:first').removeAttr('disabled');
       }else{
         jQuery('#tiers_tableP.splitit').closest('td').removeClass('not-allowed-td');
-        jQuery('#payment_us_splitit_paymentredirect_fixed_installment').attr('disabled', 'disabled');
+        jQuery('[id^=payment_][id$=_splitit_paymentredirect_fixed_installment]:first').attr('disabled', 'disabled');
       }
     }
   });
@@ -234,7 +236,7 @@ function getTableHtml1(){
 }
 
 function getTableInnerContent1(){
-  var jsonValueP = jQuery("#payment_us_splitit_paymentredirect_depanding_on_cart_total_values").val();
+  var jsonValueP = jQuery("[id^=payment_][id$=_splitit_paymentredirect_depanding_on_cart_total_values]:first").val();
   console.log(jsonValueP);
   if(jsonValueP == "" || jsonValueP == undefined){
     return getRowHtml1();
@@ -253,7 +255,7 @@ function getRowHtml1(){
             for(var iP=2; iP<=24; iP++){
           rowHtmlP += '<option value="'+iP+'">'+iP+' Installments</option>';
       }
-            rowHtmlP+='</select>';
+            rowHtmlP+='</select>'
          +'</td>'
          +'<td style="padding: 8px; text-align: center;">'
            +getCurrencyDropdown1("")
@@ -267,7 +269,7 @@ function getRowHtml1(){
 }
 
 function getRowHtmlFromJson1(){
-  var doctvP = JSON.parse(jQuery("#payment_us_splitit_paymentredirect_depanding_on_cart_total_values").val());
+  var doctvP = JSON.parse(jQuery("[id^=payment_][id$=_splitit_paymentredirect_depanding_on_cart_total_values]:first").val());
   var rowHtmlP = "";
   jQuery.each( doctvP, function( indexP, valueP ){
       rowHtmlP += '<tr>';
@@ -360,7 +362,7 @@ function createJsonOfDependingOnCartTotal1(){
     });
     objectP = JSON.stringify(objectP);
     console.log(objectP);
-    jQuery("#payment_us_splitit_paymentredirect_depanding_on_cart_total_values").val(objectP);
+    jQuery("[id^=payment_][id$=_splitit_paymentredirect_depanding_on_cart_total_values]:first").val(objectP);
 
 }
 
