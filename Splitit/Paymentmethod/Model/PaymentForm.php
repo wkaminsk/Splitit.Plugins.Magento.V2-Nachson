@@ -49,7 +49,7 @@ class PaymentForm {
         \Psr\Log\LoggerInterface $logger,
         Api $api,
         \Magento\Quote\Model\QuoteValidator $quoteValidator,
-        \Magento\Braintree\Model\Paypal\Helper\OrderPlace $orderPlace,
+        Helper\OrderPlace $orderPlace,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Store\Api\Data\StoreInterface $store,
         \Magento\Framework\UrlInterface $urlBuilder,
