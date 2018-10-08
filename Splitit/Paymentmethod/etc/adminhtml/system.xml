@@ -168,14 +168,14 @@
                     <label>Splitit Fallback Language</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures</source_model>
                 </field>
-                <field id="splitit_per_product" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <!-- <field id="splitit_per_product" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Enable Splitit per product</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Perproduct</source_model>
                 </field>
                 <field id="splitit_product_skus" translate="label" type="multiselect" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>List of product SKUs</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Productskus</source_model>
-                </field>
+                </field> -->
                 
                 <!-- <field id="min_order_total" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Minimum Order Total</label>
@@ -337,14 +337,14 @@
                     <label>Splitit Fallback Language</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures</source_model>
                 </field>
-                <field id="splitit_per_product" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <!-- <field id="splitit_per_product" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Enable Splitit per product</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Perproduct</source_model>
                 </field>
                 <field id="splitit_product_skus" translate="label" type="multiselect" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>List of product SKUs</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\Productskus</source_model>
-                </field>
+                </field> -->
             </group>
         </section>
     </system>
