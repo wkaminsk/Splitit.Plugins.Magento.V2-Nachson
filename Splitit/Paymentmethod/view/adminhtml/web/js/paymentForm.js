@@ -18,6 +18,103 @@ var jqueryInterval1 = setInterval(function(){
      }       
   }, 1000);
 
+var productListInterval1 = setInterval(function(){
+  var prodList1 = document.getElementsByName('groups[splitit_paymentredirect][fields][splitit_product_skus][value]')[0];
+  if((typeof prodList1 != 'undefined')&&prodList1){
+    clearInterval(productListInterval1);
+    jQuery(document).on('click','.close-btn-prod-list1',function(){
+        console.log('prod1 remove clicked');
+        var $elemId1 = jQuery('#'+jQuery(prodList1).attr('id')+'_prodlist');
+        var prodId1 = jQuery(this).parent().attr('data-proid');
+        var terms1 = split( $elemId1.val() );
+        terms1 = terms1.filter(function(v){return v!==''});
+        var index1 = terms1.indexOf(prodId1);
+        if (index1 > -1) {
+          terms1.splice(index1, 1);
+        }
+        $elemId1.val(terms1.join(","));
+        jQuery(this).parent().remove();
+    });
+    autoPopulateProds1(prodList1);
+    autoCompleteWizard1(prodList1);
+  }
+},2000);
+
+function autoPopulateProds1(prodList1){
+  var prodIds1 = jQuery(prodList1).val();
+  jQuery.ajax({
+    url: baseUrl + "splititpaymentmethod/index/productlist",
+    data: {isAjax: 1, prodIds: prodIds1},
+    type: 'POST',
+    dataType: 'json',
+    success: function(result1){
+      console.log(result1);
+      result1.forEach(function(ash1){
+        jQuery('<div class="search-item-box" title="'+ash1.label+'" data-proid="'+ash1.value+'">'
+          +ash1.label+'<span class="close-btn-prod-list1"></span</div>')
+        .appendTo('.selected-item-conatiner1');
+      });
+    }
+  });
+  jQuery(prodList1).val('');
+}
+
+function autoCompleteWizard1(prodList1){
+  var gutterWidth1 = 8, itemPerColumn1 = 4;
+  var $prod1 = jQuery(prodList1);
+  $prod1.attr('placeholder','Product Name/SKU');
+  $prod1.wrapAll('<div class="ui-widget-prod-list1"></div>');
+  var eleHtml1 = $prod1.parent().html();
+  var textId1 = $prod1.attr('id');
+  $prod1.attr('name','').parent().append('<div class="selected-item-conatiner1"></div>').append(jQuery(eleHtml1).attr('type','hidden').attr('id',textId1+"_prodlist"));
+  $prod1.on( "keydown", function( event1 ) {
+    if ( event1.keyCode === jQuery.ui.keyCode.TAB &&
+        jQuery( this ).autocomplete().data("uiAutocomplete").menu.active ) {
+      event1.preventDefault();
+    }
+  })
+  .autocomplete({
+    minLength: 3,
+    source: function( request1, response1 ) {
+      jQuery.getJSON( baseUrl + "splititpaymentmethod/index/productlist", {
+        term: extractLast( request1.term )
+      }, response1 );
+    },
+    search: function() {
+      // custom minLength
+      var term1 = extractLast( this.value );
+      if ( term1.length < 3 ) {
+        return false;
+      }
+    },
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms1 = split( jQuery('#'+textId1+"_prodlist").val() );
+      terms1 = terms1.filter(function(v){return v!==''});
+      // remove the current input
+      // terms.pop();
+      // add the selected item
+      // terms.push( ui.item.value );
+      if(jQuery.inArray(ui.item.value,terms1)==-1){
+        terms1.push( ui.item.value );
+        var itemBoxWidth1 = jQuery(this).outerWidth() / itemPerColumn1;
+        jQuery('<div class="search-item-box" title="'+ui.item.label+'" data-proid="'+ui.item.value+'">'+ui.item.label+'<span class="close-btn-prod-list1"></span</div>')
+        .appendTo('.selected-item-conatiner1');
+      }
+        jQuery('.ui-helper-hidden-accessible').text('');
+      // add placeholder to get the comma-and-space at the end
+      // terms.push( "" );
+      // this.value = terms.join( ", " );
+      jQuery('#'+textId1+"_prodlist").val(terms1.join(","));
+      this.value = '';      
+      return false;
+    }
+  });
+}
+
 function runMyScripts1(){
 
   // run on page load.  

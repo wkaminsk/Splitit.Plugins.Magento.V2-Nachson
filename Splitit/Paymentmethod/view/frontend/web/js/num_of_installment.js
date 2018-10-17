@@ -37,7 +37,7 @@ function runMyScripts(){
 						productprice = jQuery(priceSpan).text();
 						currencySymbol = result.currencySymbol;
 						productprice = Number(productprice.replace(/[^0-9\.]+/g,""));
-						productprice = jQuery(".product-info-price").find('[data-price-type="finalPrice"]').attr('data-price-amount');
+						productprice = jQuery(this).find('[data-price-type="finalPrice"]').attr('data-price-amount');
 						installments = (productprice/result.numOfInstallmentForDisplay).toFixed(2);
 						installmentNewSpan = '<br><span class="cart-installment">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
 						jQuery(priceSpan).after(installmentNewSpan);

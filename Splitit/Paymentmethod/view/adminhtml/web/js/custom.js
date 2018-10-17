@@ -20,6 +20,112 @@ splitit_fee_table();
      }       
   }, 1000);
 
+var productListInterval = setInterval(function(){
+  var prodList = document.getElementsByName('groups[splitit_paymentmethod][fields][splitit_product_skus][value]')[0];
+  if((typeof prodList != 'undefined')&&prodList){
+    clearInterval(productListInterval);
+    jQuery(document).on('click','.close-btn-prod-list',function(){
+        console.log('prod remove clicked');
+        var inputPadding  = jQuery(prodList).css('padding-left'),
+            widthLastItem = jQuery('.selected-item-conatiner .search-item-box:last-of-type').outerWidth();
+        var $elemId = jQuery('#'+jQuery(prodList).attr('id')+'_prodlist');
+        var prodId = jQuery(this).parent().attr('data-proid');
+        var terms = split( $elemId.val() );
+        terms = terms.filter(function(v){return v!==''});
+        var index = terms.indexOf(prodId);
+        if (index > -1) {
+          terms.splice(index, 1);
+        }
+        $elemId.val(terms.join(","));
+        jQuery(this).parent().remove();
+    });
+    autoPopulateProds(prodList);
+    autoCompleteWizard(prodList);
+  }
+},2000);
+
+function split( val ) {
+      return val.split( /,\s*/ );
+}
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+function autoPopulateProds(prodList){
+  var prodIds = jQuery(prodList).val();
+  jQuery.ajax({
+    url: baseUrl + "splititpaymentmethod/index/productlist",
+    data: {isAjax: 1, prodIds: prodIds},
+    type: 'POST',
+    dataType: 'json',
+    success: function(result){
+      console.log(result);
+      result.forEach(function(ash){
+        jQuery('<div class="search-item-box" title="'+ash.label+'" data-proid="'+ash.value+'">'
+          +ash.label+'<span class="close-btn-prod-list"></span</div>')
+        .appendTo('.selected-item-conatiner');
+      });
+    }
+  });
+  jQuery(prodList).val('');
+}
+
+function autoCompleteWizard(prodList){
+  var gutterWidth = 8, itemPerColumn = 4;
+  var $prod = jQuery(prodList);
+  $prod.attr('placeholder','Product Name/SKU');
+  $prod.wrapAll('<div class="ui-widget-prod-list"></div>');
+  var eleHtml = $prod.parent().html();
+  var textId = $prod.attr('id');
+  $prod.attr('name','').parent().append('<div class="selected-item-conatiner"></div>').append(jQuery(eleHtml).attr('type','hidden').attr('id',textId+"_prodlist"));
+  $prod.on( "keydown", function( event ) {
+    if ( event.keyCode === jQuery.ui.keyCode.TAB &&
+        jQuery( this ).autocomplete().data("uiAutocomplete").menu.active ) {
+      event.preventDefault();
+    }
+  })
+  .autocomplete({
+    minLength: 3,
+    source: function( request, response ) {
+      jQuery.getJSON( baseUrl + "splititpaymentmethod/index/productlist", {
+        term: extractLast( request.term )
+      }, response );
+    },
+    search: function() {
+      // custom minLength
+      var term = extractLast( this.value );
+      if ( term.length < 3 ) {
+        return false;
+      }
+    },
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function( event, ui ) {
+      var terms = split( jQuery('#'+textId+"_prodlist").val() );
+      terms = terms.filter(function(v){return v!==''});
+      // remove the current input
+      // terms.pop();
+      // add the selected item
+      // terms.push( ui.item.value );
+      if(jQuery.inArray(ui.item.value,terms)==-1){
+        terms.push( ui.item.value );
+        var itemBoxWidth = jQuery(this).outerWidth() / itemPerColumn;
+        jQuery('<div class="search-item-box" title="'+ui.item.label+'" data-proid="'+ui.item.value+'">'+ui.item.label+'<span class="close-btn-prod-list"></span</div>')
+        .appendTo('.selected-item-conatiner');
+      }
+        jQuery('.ui-helper-hidden-accessible').text('');
+      // add placeholder to get the comma-and-space at the end
+      // terms.push( "" );
+      // this.value = terms.join( ", " );
+      jQuery('#'+textId+"_prodlist").val(terms.join(","));
+      this.value = '';      
+      return false;
+    }
+  });
+}
+
 function runMyScripts(){
 
   // run on page load.  

@@ -5,10 +5,13 @@
    xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
    <head>
-   		<css src="Splitit_Paymentmethod::css/custom.css"/>
+   		<css src="Splitit_Paymentmethod::css/jquery-ui.css"/>
+      <css src="Splitit_Paymentmethod::css/custom.css"/>
+      <css src="Splitit_Paymentmethod::css/prodlist.css"/>
    		<!-- <script src="Splitit_Paymentmethod::js/jquery-1.12.4.js"/> -->
-    	<script src="Splitit_Paymentmethod::js/custom.js"/>
-    	<script src="Splitit_Paymentmethod::js/paymentForm.js"/>
+      <!-- <script src="Splitit_Paymentmethod::js/jquery.magicsearch.js"/> -->
+      <script src="Splitit_Paymentmethod::js/custom.js"/>
+      <script src="Splitit_Paymentmethod::js/paymentForm.js"/>
    </head>
    <body/>
 </page>
