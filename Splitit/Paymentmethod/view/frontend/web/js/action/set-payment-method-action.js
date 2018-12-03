@@ -16,6 +16,10 @@ define(
                 payload,
                 method = 'put',
                 paymentData = quote.paymentMethod();
+                console.log($('#agreement_splitit_paymentredirect_1').attr('name'));
+                if($('#agreement_splitit_paymentredirect_1').length && $('#agreement_splitit_paymentredirect_1').is(':checked')){
+                    paymentData['extension_attributes']={agreement_ids:[$('#agreement_splitit_paymentredirect_1').val()]};
+                }
 console.log("setPaymentMethodAction");
             /**
              * Checkout for guest and registered customer.

@@ -62,7 +62,7 @@ class Update extends \Magento\Framework\App\Action\Action {
                 $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data'); // Instance of Pricing Helper
                 $formattedFees = $priceHelper->currency($fees, true, false);
                 return $result->setData(['success' => true, 'data' => array('splitit_fees' => $formattedFees)]);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $result = $this->resultJsonFactory->create();
                 return $result->setData(['success' => false, 'data' => false]);
             }

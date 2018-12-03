@@ -22,6 +22,7 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
                         "data" => "",
                         
         ];
+        $logger = $this->_objectManager->get('\Psr\Log\LoggerInterface');
 
 		$selectedInstallment = "";
 		if(isset($request["selectedInstallment"]) && $request["selectedInstallment"] != ""){
@@ -40,7 +41,8 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
 		$loginResponse = $apiModelObj->apiLogin();
 		// check if login successfully or not
 		if(!$loginResponse["status"]){
-			$response["errorMsg"] = $loginResponse["errorMsg"];
+			 $logger->addError($loginResponse["errorMsg"]);
+			$response["errorMsg"] = 'Error in processing your order. Please try again later.';
 			return $resultJson->setData($response);
 			
 		}
@@ -51,7 +53,8 @@ class Installmentplaninit extends \Magento\Framework\App\Action\Action {
             $response["status"] = true;
             $response["successMsg"] = $installmentPlanInitResponse["successMsg"];
         }else{
-            $response["errorMsg"] = $installmentPlanInitResponse["errorMsg"];
+        	 $logger->addError($installmentPlanInitResponse["errorMsg"]);
+            $response["errorMsg"] = 'Error in processing your order. Please try again later.';
         }
         
         	$resultJson->setData($response);

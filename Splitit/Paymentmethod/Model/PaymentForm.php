@@ -139,6 +139,8 @@ class PaymentForm {
             return $response;
         } else {
             $this->logger->error(__($response['data']));
+             $response["status"] = false;
+              $response["error"] = true;
             return $response;
 //            throw new \Magento\Framework\Validator\Exception(__($response['data']));
         }
@@ -528,8 +530,8 @@ class PaymentForm {
     }
 
     public function getFirstInstallmentAmount($selectedInstallment) {
-        $firstPayment = Mage::getStoreConfig('payment/pis_cc/first_payment');
-        $percentageOfOrder = Mage::getStoreConfig('payment/pis_cc/percentage_of_order');
+        $firstPayment = $this->helper->getConfig('payment/pis_cc/first_payment');
+        $percentageOfOrder = $this->helper->getConfig('payment/pis_cc/percentage_of_order');
         $installmentsInDropdownArr = $this->customerSession->getInstallmentsInDropdown();
 
         $firstInstallmentAmount = 0;

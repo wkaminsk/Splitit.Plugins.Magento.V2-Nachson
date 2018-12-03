@@ -70,9 +70,10 @@ class OrderPlace extends AbstractHelper
      */
     public function execute(Quote $quote, array $agreement)
     {
-        if (!$this->agreementsValidator->isValid($agreement)) {
-            throw new LocalizedException(__('Please agree to all the terms and conditions before placing the order.'));
-        }
+        /* var_dump($agreement);
+         if (!$this->agreementsValidator->isValid($agreement)) {
+             throw new LocalizedException(__('Please agree to all the terms and conditions before placing the order.'));
+         }*/
 
         if ($this->getCheckoutMethod($quote) === Onepage::METHOD_GUEST) {
             $this->prepareGuestQuote($quote);

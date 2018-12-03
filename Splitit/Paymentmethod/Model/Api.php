@@ -204,7 +204,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
     public function installmentplaninitforhostedsolution($params){
         try{
             return $this->makePhpCurlRequest($this->getApiUrl(), "InstallmentPlan/Initiate" , $params);        
-        }catch(Exception $e){
+        }catch(\Exception $e){
             $this->setError($e->getMessage());
         } 
         
@@ -213,7 +213,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
     public function getInstallmentPlanDetails($apiUrl, $params){
         try{
             return $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Get" , $params);        
-        }catch(Exception $e){
+        }catch(\Exception $e){
             $this->setError($e->getMessage());
         } 
     }
@@ -224,7 +224,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
                 $apiUrl=$this->getApiUrl();
             }
             return $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Update" , $params);        
-        }catch(Exception $e){
+        }catch(\Exception $e){
             $this->setError($e->getMessage());
         } 
     }

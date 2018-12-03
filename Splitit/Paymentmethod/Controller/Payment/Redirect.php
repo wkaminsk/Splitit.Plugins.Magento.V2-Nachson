@@ -31,6 +31,7 @@ class Redirect extends \Magento\Framework\App\Action\Action {
     protected $quoteFactory;
     protected $paymentForm;
     protected $api;
+    protected $logger;
 
     public function __construct(
     \Magento\Framework\App\Action\Context $context, 
@@ -38,13 +39,15 @@ class Redirect extends \Magento\Framework\App\Action\Action {
     \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory, 
     \Magento\Sales\Api\Data\OrderInterface $order, 
     \Magento\Quote\Model\QuoteFactory $quoteFactory, 
-    \Splitit\Paymentmethod\Helper\Data $helperData
+    \Splitit\Paymentmethod\Helper\Data $helperData,
+    \Psr\Log\LoggerInterface $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->_helperData = $helperData;
         $this->order = $order;
         $this->quoteFactory = $quoteFactory;
+        $this->logger = $logger;
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->checkoutSession = $objectManager->get('\Magento\Checkout\Model\Session');
         $this->paymentForm = $objectManager->get('\Splitit\Paymentmethod\Model\PaymentForm');
@@ -53,8 +56,18 @@ class Redirect extends \Magento\Framework\App\Action\Action {
     }
 
     public function execute() {
+
 //        die("redirect controller");
         $data = $this->paymentForm->orderPlaceRedirectUrl();
+       // echo '<pre>'; print_r($data); die;
+        if($data['error'] == true &&  $data["status"] == false)
+        {
+            $this->logger->addError("Split It processing error : ".$data["data"]);
+             $this->messageManager->addErrorMessage('Error in processing your order. Please try again later.');
+             $this->checkoutSession->setErrorMessage('Error in processing your order. Please try again later.');
+             $this->_redirect('checkout/cart')->sendResponse();
+            // exit; 
+        }
         $order = $this->checkoutSession->getLastRealOrder();
         $orderId = $order->getEntityId();
         $payment=$order->getPayment();
