@@ -345,6 +345,9 @@
                     <label>List of product SKUs</label>
                     <!-- <source_model>Splitit\Paymentmethod\Model\Source\Productskus</source_model> -->
                 </field>
+                <field id="installment_price_text_testing" translate="label" sortOrder="270"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Installment price text testing</label>
+                </field>
             </group>
         </section>
     </system>
