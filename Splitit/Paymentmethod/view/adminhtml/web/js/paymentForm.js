@@ -349,7 +349,7 @@ function getRowHtml1(){
          +'</td>'
          +'<td style="padding: 8px;">'
           +'<select id="doctv_installments" name="doctv_installments_pf" class=" select multiselect doctv_installments" size="10" multiple="multiple">';
-            for(var iP=2; iP<=24; iP++){
+            for(var iP=1; iP<=24; iP++){
           rowHtmlP += '<option value="'+iP+'">'+iP+' Installments</option>';
       }
             rowHtmlP+='</select>'
@@ -375,7 +375,7 @@ function getRowHtmlFromJson1(){
         var installmentsP = valueP.doctv.installments.split(',');
         var iP = 2;
         var selectedP = "";
-        for(iP=2; iP<=24; iP++){
+        for(iP=1; iP<=24; iP++){
           if(jQuery.inArray(iP.toString(), installmentsP) != -1){
             selectedP = 'selected="selected"';
           }
