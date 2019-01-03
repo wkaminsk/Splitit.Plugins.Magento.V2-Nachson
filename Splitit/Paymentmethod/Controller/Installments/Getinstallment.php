@@ -96,6 +96,7 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
     	if($this->helper->getConfig("payment/splitit_paymentmethod/faq_link_enabled")){
     		$help["title"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title");
     		$help["link"] = $baseUrl."splititpaymentmethod/help/help"; 
+    		$help["link"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title_url");
     	}
     	return $help;
     }

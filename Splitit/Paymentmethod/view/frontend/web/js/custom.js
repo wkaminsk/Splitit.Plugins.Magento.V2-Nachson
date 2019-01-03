@@ -71,11 +71,11 @@ window.onload = function(){
 				
 				
 			// show help link
-			if(result.helpSection.link != undefined){
+			/*if(result.helpSection.link != undefined){
 				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.helpSection.link + '\',\'' +  result.helpSection.title + '\')">'+result.helpSection.title+'</a>';
 				
 				jQuery("#splitit-paymentmethod").append(helpLink);	
-			}
+			}*/
 			
 
 			// show installments

@@ -22,7 +22,24 @@ function runMyScripts(){
 		success: function(result){
 			
 			var numOfInstallmentForDisplay = result.numOfInstallmentForDisplay;
-			
+			// show help link
+			if(result.help.splitit_paymentmethod.link != undefined){
+				if(jQuery("#splitit-paymentmethod").find('a').length){
+					jQuery("#splitit-paymentmethod").find('a').remove();
+				}
+				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.help.splitit_paymentmethod.link + '\',\'' +  result.help.splitit_paymentmethod.title + '\')">'+result.help.splitit_paymentmethod.title+'</a>';
+				
+				jQuery("#splitit-paymentmethod").append(helpLink);	
+			}
+			// show help link
+			if(result.help.splitit_paymentredirect.link != undefined){
+				if(jQuery("#splitit-paymentredirect").find('a').length){
+					jQuery("#splitit-paymentredirect").find('a').remove();
+				}
+				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.help.splitit_paymentredirect.link + '\',\'' +  result.help.splitit_paymentredirect.title + '\')">'+result.help.splitit_paymentredirect.title+'</a>';
+				
+				jQuery("#splitit-paymentredirect").append(helpLink);	
+			}
 			if(result.isActive){
 				var priceSpan = "";
 				var productprice = "";
@@ -126,7 +143,24 @@ function runMyScriptForCheckout(){
 		success: function(result){
 			
 			var numOfInstallmentForDisplay = result.numOfInstallmentForDisplay;
-			
+			// show help link
+			if(result.help.splitit_paymentmethod.link != undefined){
+				if(jQuery("#splitit-paymentmethod").find('a').length){
+					jQuery("#splitit-paymentmethod").find('a').remove();
+				}
+				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.help.splitit_paymentmethod.link + '\',\'' +  result.help.splitit_paymentmethod.title + '\')">'+result.help.splitit_paymentmethod.title+'</a>';
+				
+				jQuery("#splitit-paymentmethod").append(helpLink);	
+			}
+			// show help link
+			if(result.help.splitit_paymentredirect.link != undefined){
+				if(jQuery("#splitit-paymentredirect").find('a').length){
+					jQuery("#splitit-paymentredirect").find('a').remove();
+				}
+				var helpLink = '<a style="float: none;" href="javascript:void(0);" onclick="popWin(\'' +result.help.splitit_paymentredirect.link + '\',\'' +  result.help.splitit_paymentredirect.title + '\')">'+result.help.splitit_paymentredirect.title+'</a>';
+				
+				jQuery("#splitit-paymentredirect").append(helpLink);	
+			}
 			if(result.isActive){
 				var priceSpan = "";
 				var productprice = "";

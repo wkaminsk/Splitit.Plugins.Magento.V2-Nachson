@@ -26,6 +26,7 @@
                 <api_url>https://web-api.splitit.com/</api_url>
                 <api_url_sandbox>https://web-api-sandbox.splitit.com/</api_url_sandbox>
                 <faq_link_title>Tell me more</faq_link_title>
+                <faq_link_title_url>https://s3.amazonaws.com/splitit-images-prod/learnmore/en-us/V1-USD.png</faq_link_title_url>
                 <check_setting>Check settings</check_setting>
                 <installment_price_text>No interest</installment_price_text>
             </splitit_paymentmethod>
@@ -41,6 +42,7 @@
                 <api_url>https://web-api.splitit.com/</api_url>
                 <api_url_sandbox>https://web-api-sandbox.splitit.com/</api_url_sandbox>
                 <faq_link_title>Tell me more</faq_link_title>
+                <faq_link_title_url>https://s3.amazonaws.com/splitit-images-prod/learnmore/en-us/V1-USD.png</faq_link_title_url>
                 <check_setting>Check settings</check_setting>
                 <installment_price_text>No interest</installment_price_text>
             </splitit_paymentredirect>

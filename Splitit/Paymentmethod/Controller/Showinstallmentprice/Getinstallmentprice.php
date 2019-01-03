@@ -21,6 +21,7 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
         $this->paymentForm = $this->_objectManager->create('Splitit\Paymentmethod\Model\PaymentForm');
         $response = [
             "status" => true,
+            "help" => ['splitit_paymentmethod'=>[],'splitit_paymentredirect'=>[]],
             "isActive" => "",
             "pageType" => "",
             "displayInstallmentPriceOnPage" => "",
@@ -34,6 +35,14 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
         if ($isEnable == "") {
             $isEnable = 0;
         }
+        if($this->helper->getConfig("payment/splitit_paymentmethod/faq_link_enabled")){
+            $response['help']['splitit_paymentmethod']["title"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title");
+            $response['help']['splitit_paymentmethod']["link"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title_url");
+        }
+        if($this->helper->getConfig("payment/splitit_paymentredirect/faq_link_enabled")){
+            $response['help']['splitit_paymentredirect']["title"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title");
+            $response['help']['splitit_paymentredirect']["link"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title_url");
+        }        
         $displayInstallmentPriceOnPage = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_on_pages");
         $numOfInstallmentForDisplay = $this->helper->getConfig("payment/splitit_paymentmethod/installments_count");
         $installmetPriceText = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_text");
