@@ -524,6 +524,16 @@ class PaymentForm {
                 "CancelExitURL" => $this->urlBuilder->getUrl('splititpaymentmethod/payment/cancel')
             )
         );
+        // check for 3d secure yes or no
+        $_3d_secure = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_3d_secure");
+        if($_3d_secure != "" && $_3d_secure == 1){
+            $params['PlanData']["Attempt3DSecure"] = true;
+            $params["RedirectUrls"]= array(
+                "Succeeded"=> $this->urlBuilder->getUrl('splititpaymentmethod/payment/success'),
+                "Failed"=> $this->urlBuilder->getUrl('splititpaymentmethod/payment/cancel'),
+                "Canceled"=> $this->urlBuilder->getUrl('splititpaymentmethod/payment/cancel')
+            );
+        }
         $params = array_merge($params, $paymentWizardData);
 
         return $params;
