@@ -528,7 +528,7 @@ class PaymentForm {
         $_3d_secure = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_3d_secure");
         $_3d_minimal_amount = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_3d_minimal_amount");
         $grandTotal = round($this->_checkoutSession->getQuote()->getGrandTotal(), 2);
-        if($_3d_secure != "" && $_3d_secure == 1 && $_3d_minimal_amount != "" && $_3d_minimal_amount >= $grandTotal){
+        if($_3d_secure != "" && $_3d_secure == 1 && $_3d_minimal_amount != "" && $grandTotal >= $_3d_minimal_amount){
             $params['PlanData']["Attempt3DSecure"] = true;
             $params["RedirectUrls"]= array(
                 "Succeeded"=> $this->urlBuilder->getUrl('splititpaymentmethod/payment/success'),
