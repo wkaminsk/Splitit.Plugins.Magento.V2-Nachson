@@ -270,9 +270,13 @@
                     <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
                 </field>
 
-                <field id="splitit_3d_secure" translate="label" sortOrder="16.5" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="splitit_3d_secure" translate="label" sortOrder="16.1" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enable 3D Secure</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="splitit_3d_minimal_amount" translate="label" sortOrder="16.2"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Minimal amount for 3D attempt</label>
                 </field>
                 
                 <field id="splitit_fee_on_total" translate="label" sortOrder="17.1" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
