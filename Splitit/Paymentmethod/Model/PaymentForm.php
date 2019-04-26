@@ -369,13 +369,12 @@ class PaymentForm {
     public function installmentplaninitForHostedSolution() {
         $session = $this->_checkoutSession;
         $quote_id = $session->getQuoteId();
-        $firstInstallmentAmount = 0; //$this->getFirstInstallmentAmount($selectedInstallment);
+        $firstInstallmentAmount = $this->getFirstInstallmentAmountHosted();
         $checkout = $this->_checkoutSession->getQuote();
         $billAddress = $checkout->getBillingAddress();
         $BillingAddressArr = $billAddress->getData();
         $customerInfo = $this->customerSession->getCustomer()->getData();
         $numOfInstallments = $this->_checkoutSession->getInstallmentsInDropdownForPaymentForm();
-
 
         if (!isset($customerInfo["firstname"])) {
             $customerInfo["firstname"] = $billAddress->getFirstname();
@@ -469,10 +468,6 @@ class PaymentForm {
                 //"NumberOfInstallments" => $selectedInstallment,
                 "PurchaseMethod" => "ECommerce",
                 "RefOrderNumber" => $this->_checkoutSession->getLastOrderId(),
-                "FirstInstallmentAmount" => array(
-                    "Value" => $firstInstallmentAmount,
-                    "CurrencyCode" => $this->_store->getCurrentCurrency()->getCode(),
-                ),
                 "AutoCapture" => $autoCapture,
                 "ExtendedParams" => array(
                     "CreateAck" => "NotReceived"
@@ -493,6 +488,13 @@ class PaymentForm {
                 "CultureName" => $cultureName
             ),
         );
+
+        if($firstInstallmentAmount){
+            $params['PlanData']["FirstInstallmentAmount"] = array(
+                    "Value" => $firstInstallmentAmount,
+                    "CurrencyCode" => $this->_store->getCurrentCurrency()->getCode(),
+                );
+        }
 
         $cart = $this->quote;
         $itemsArr = array();
@@ -539,6 +541,23 @@ class PaymentForm {
         $params = array_merge($params, $paymentWizardData);
 
         return $params;
+    }
+
+    public function getFirstInstallmentAmountHosted() {
+        $firstPayment = $this->helper->getConfig('payment/splitit_paymentredirect/first_payment');
+        $percentageOfOrder = $this->helper->getConfig('payment/splitit_paymentredirect/percentage_of_order');
+
+        $firstInstallmentAmount = 0;
+        if ($firstPayment == "shipping") {
+            $firstInstallmentAmount = $this->_checkoutSession->getQuote()->getShippingAddress()->getShippingAmount();
+        } else if ($firstPayment == "percentage") {
+            if ($percentageOfOrder > 50) {
+                $percentageOfOrder = 50;
+            }
+            $firstInstallmentAmount = (($this->_checkoutSession->getQuote()->getGrandTotal() * $percentageOfOrder) / 100);
+        }
+
+        return round($firstInstallmentAmount, 2);
     }
 
     public function getFirstInstallmentAmount($selectedInstallment) {
