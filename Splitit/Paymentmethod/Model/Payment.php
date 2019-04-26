@@ -43,6 +43,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
     private $helper;
     private $objectManager = null;
     private $grandTotal = null;
+    private $requestData = null;
 
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -87,6 +88,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         $cart = $this->objectManager->get("\Magento\Checkout\Model\Cart");
         $this->grandTotal = round($cart->getQuote()->getGrandTotal(),2);
 //        $this->checkProductBasedAvailability();
+        $request=$this->objectManager->get('Magento\Framework\App\RequestInterface');
+        $this->requestData=$request->getParams();
     }
 
     /**
@@ -130,6 +133,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
                 }
                 
             }
+            $this->customerSession->setInstallmentPlanNumber($result['InstallmentPlan']['InstallmentPlanNumber']);
             $payment->setTransactionId($result['InstallmentPlan']['InstallmentPlanNumber']);
             $payment->setIsTransactionClosed(0);
             $payment->setIsTransactionApproved(true);
@@ -165,7 +169,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
                     
             }
         }catch(\Exception $e){
-            $this->debugData(['request' => $requestData, 'exception' => $e->getMessage()]);
+            $this->debugData(['request' => $this->requestData, 'exception' => $e->getMessage()]);
             $this->_logger->error(__('Payment Authorize error.'));
             throw new \Magento\Framework\Validator\Exception(__('Payment Authorize error.'));
         }
@@ -240,7 +244,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
             $order->save();
 
         } catch (\Exception $e) {
-            $this->debugData(['request' => $requestData, 'exception' => $e->getMessage()]);
+            $this->debugData(['request' => $this->requestData, 'exception' => $e->getMessage()]);
             $this->_logger->error(__('Payment capturing error.'));
             throw new \Magento\Framework\Validator\Exception(__('Payment capturing error.'));
         }
@@ -421,29 +425,98 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         return true;
     }
 
+    private function isOneInstallment(){
+        $selectInstallmentSetup = $this->helper->getConfig('payment/splitit_paymentmethod/select_installment_setup');
+        $options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
+        $storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+        $currencySymbol = $this->objectManager->get('\Magento\Directory\Model\Currency')->load($currentCurrencyCode)->getCurrencySymbol();
+
+        $countInstallments = $installmentValue = 0;
+        if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){
+            $installments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
+            
+            if(count($installments)){
+                foreach (explode(',', $installments) as $value) {
+                    $installmentValue = $value;
+                    $countInstallments++;
+                }
+                
+            }
+        } else {
+            $depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
+            $depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+            $dataAsPerCurrency = [];
+            foreach($depandingOnCartInstallmentsArr as $data){
+                $dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
+            }
+
+            if(count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])){
+                
+                foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){
+                    if($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to){
+                        foreach (explode(',', $data->installments) as $n) {
+                            $installmentValue = $n;
+                            $countInstallments++;
+                        }
+                        break;
+                    }else if($totalAmount >= $data->from && empty($data->to)){
+                        foreach (explode(',', $data->installments) as $n) {
+                            $installmentValue = $n;
+                            $countInstallments++;
+                        }
+                        break;
+                    }
+                }
+            }
+
+        }
+        if($countInstallments==1 && $installmentValue==1){
+            return true;
+        }
+        return false;
+    }
+
     protected function createInstallmentPlan($api, $payment, $amount)
     {
         $cultureName = $this->helper->getCultureName();
-        $params = [
-            "RequestHeader" => [
-                "SessionId" => $this->customerSession->getSplititSessionid(),
-                "ApiKey"    => $this->helper->getConfig("payment/splitit_payment/api_terminal_key"),
-                "CultureName" => $cultureName
-            ],
-            "InstallmentPlanNumber" => $this->customerSession->getInstallmentPlanNumber(),
-            "CreditCardDetails" => [
-                "CardCvv" => $payment->getCcCid(),
-                "CardNumber" => $payment->getCcNumber(),
-                "CardExpYear" => $payment->getCcExpYear(),
-                "CardExpMonth" => $payment->getCcExpMonth(),
-            ],
-            "PlanApprovalEvidence" => [
-                "AreTermsAndConditionsApproved" => "True"
-            ],
-        ];
-
+        $this->_logger->error(__('creating installment plan-----'));
+        if($this->isOneInstallment()){
+        $this->_logger->error(__('is one installment-----'));
+            $apiLogin = $this->_apiModel->apiLogin();
+            $params = $this->_apiModel->createDataForInstallmentPlanInit(1);
+            $params["CreditCardDetails"] = [
+                    "CardCvv" => $payment->getCcCid(),
+                    "CardNumber" => $payment->getCcNumber(),
+                    "CardExpYear" => $payment->getCcExpYear(),
+                    "CardExpMonth" => $payment->getCcExpMonth(),
+                ];
+            $params["PlanApprovalEvidence"] = [
+                    "AreTermsAndConditionsApproved" => "True"
+                ];         
+        } else {
+        $this->_logger->error(__('normal installment-----'));
+            $params = [
+                "RequestHeader" => [
+                    "SessionId" => $this->customerSession->getSplititSessionid(),
+                    "ApiKey"    => $this->helper->getConfig("payment/splitit_payment/api_terminal_key"),
+                    "CultureName" => $cultureName
+                ],
+                "InstallmentPlanNumber" => $this->customerSession->getInstallmentPlanNumber(),
+                "CreditCardDetails" => [
+                    "CardCvv" => $payment->getCcCid(),
+                    "CardNumber" => $payment->getCcNumber(),
+                    "CardExpYear" => $payment->getCcExpYear(),
+                    "CardExpMonth" => $payment->getCcExpMonth(),
+                ],
+                "PlanApprovalEvidence" => [
+                    "AreTermsAndConditionsApproved" => "True"
+                ],
+            ];
+        }
+        $this->_logger->error(print_r($params,true));
         $result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Create",$params);
-        
+        $this->_logger->error(print_r($result,true));
         return $result;
     }
 

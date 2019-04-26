@@ -83,6 +83,15 @@ window.onload = function(){
 			// disable place order button
 			jQuery("button#splitit-form").prop("disabled",true);
 			
+			if(result.installmentShow){
+				jQuery("#select-num-of-installments").closest('.num-of-installments').show();
+				jQuery('.apr-tc').show();
+			} else {
+				jQuery('.monthly-img').css('padding-top','1%');
+				jQuery('.apr-tc').remove();
+				jQuery("button#splitit-form").prop("disabled",false);
+			}
+			
 			}
 		});
 	}

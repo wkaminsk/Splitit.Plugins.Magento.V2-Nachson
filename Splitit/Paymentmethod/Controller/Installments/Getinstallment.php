@@ -40,12 +40,15 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 		$currencySymbol = $this->_objectManager->get('\Magento\Directory\Model\Currency')->load($currentCurrencyCode)->getCurrencySymbol();
 
 		$installmentHtml = '<option value="">--'.__('No Installment available').'--</option>';
+		$countInstallments = $installmentValue = 0;
 		if($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed"){
 			$installments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
 			
 			if(count($installments)){
 				$installmentHtml = '<option value="">--'.__('Please Select').'--</option>';
 				foreach (explode(',', $installments) as $value) {
+					$installmentValue = $value;
+					$countInstallments++;
 					$installmentHtml .= '<option value="'.$value.'">'.$value.' '.__('Installments').'</option>';
 				}
 				
@@ -67,12 +70,15 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
                 foreach($dataAsPerCurrency[$currentCurrencyCode] as $data){
                     if($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to){
                         foreach (explode(',', $data->installments) as $n) {
+                        	$installmentValue = $n;
+                        	$countInstallments++;
                             $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments').'</option>';
                         }
                         break;
                     }else if($totalAmount >= $data->from && empty($data->to)){
                         foreach (explode(',', $data->installments) as $n) {
-
+                        	$installmentValue = $n;
+                        	$countInstallments++;
                             $installmentHtml .= '<option value="'.$n.'">'.$n.' '.__('Installments').'</option>';
                         }
                         break;
@@ -82,6 +88,10 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 
 		}
 		$response["installmentHtml"] = $installmentHtml;
+		$response["installmentShow"] = true;
+		if($countInstallments==1 && $installmentValue==1){
+			$response["installmentShow"] = false;
+		}
 		$response["helpSection"] = $this->getHelpSection();
 		$resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         return $resultJson->setData($response);

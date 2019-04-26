@@ -42,6 +42,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
     protected $_store;
     protected $objectManager;
     protected $paymentForm;
+    private $requestData = null;
 
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -85,6 +86,9 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->objectManager=$objectManager;
         $this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
+        // var_dump($this->quote->getPayment()->getExtensionAttributes());
+        $request=$objectManager->get('Magento\Framework\App\RequestInterface');
+        $this->requestData=$request->getParams();
     }
 
     public function getCheckoutRedirectUrl() {
@@ -172,7 +176,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
             $order->save();
 
         } catch (\Exception $e) {
-            $this->debugData(['request' => $requestData, 'exception' => $e->getMessage()]);
+            $this->debugData(['request' => $this->requestData, 'exception' => $e->getMessage()]);
             $this->_logger->error(__('Payment capturing error.'));
             throw new \Magento\Framework\Validator\Exception(__('Payment capturing error.'));
         }

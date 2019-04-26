@@ -151,6 +151,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
         if (isset($this->billingAddress->getStreet()[1])) {
             $billingStreet2 = $this->billingAddress->getStreet()[1];
         }
+        $autoCapture = false;
+        $paymentAction = $this->helper->getConfig('payment/splitit_paymentmethod/payment_action');
+        if($paymentAction == "authorize_capture"){
+            $autoCapture = true;
+        }
         $params = [
             "RequestHeader" => [
                 "SessionId" => $this->customerSession->getSplititSessionid(),
@@ -168,7 +173,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
                     "Value" => $firstInstallmentAmount,
                     "CurrencyCode" => $this->currencyCode,
                 ],
-                "AutoCapture" => "false",
+                "AutoCapture" => $autoCapture,
                 "ExtendedParams" => [
                     "CreateAck" => "NotReceived"
                 ],

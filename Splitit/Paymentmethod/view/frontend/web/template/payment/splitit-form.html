@@ -30,14 +30,14 @@
 
         <form class="form splitit-form" data-bind="attr: {'id': getCode() + '-form'}">
             <!-- ko template: 'Magento_Payment/payment/cc-form' --><!-- /ko -->
-        </form>
-        <div class="num-of-installments" style="width:230px">
+        <div class="num-of-installments" style="width:230px;display: none;">
             <label><!-- ko i18n: 'Number Of Installments' --><!-- /ko --><em>*</em></label>
-            <select id="select-num-of-installments" class="select">
+            <select id="select-num-of-installments" name="installments_no" class="select">
                 <option value="">--<!-- ko i18n: 'Please Select' --><!-- /ko -->--</option>
             </select>
         </div>
-        <div class="apr-tc">
+        </form>
+        <div class="apr-tc" style="display: none;">
             <span><!-- ko i18n: 'Click To Approve Terms and Conditions' --><!-- /ko --></span>    
         </div>
         <div class="monthly-img">
