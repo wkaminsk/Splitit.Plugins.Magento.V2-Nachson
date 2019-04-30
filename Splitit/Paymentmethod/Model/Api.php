@@ -30,6 +30,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
         $cart = $objectManager->get("\Magento\Checkout\Model\Cart");
+        $this->quote = $cart->getQuote();
         $this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
         $this->shippingAddress = $cart->getQuote()->getShippingAddress();
         $this->shippingAmount = round($this->shippingAddress->getShippingAmount(), 2);
@@ -193,6 +194,26 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
                 "CultureName" => $cultureName
             ],
         ];
+        $cart = $this->quote;
+        $itemsArr = array();
+        $i = 0;
+        $currencyCode = $this->currencyCode;
+        foreach ($cart->getAllItems() as $item) {
+            $itemsArr[$i]["Name"] = $item->getName();
+            $itemsArr[$i]["SKU"] = $item->getSku();
+            $itemsArr[$i]["Price"] = array("Value" => round($item->getPrice(), 2), "CurrencyCode" => $currencyCode);
+            $itemsArr[$i]["Quantity"] = $item->getQty();
+//            $itemsArr[$i]["Description"] = $product->getShortDescription();
+            $i++;
+        }
+        $params['CartData'] = array(
+            "Items" => $itemsArr,
+            "AmountDetails" => array(
+                "Subtotal" => round($this->quote->getSubtotal(), 2),
+                "Tax" => round($this->quote->getShippingAddress()->getData('tax_amount'), 2),
+                "Shipping" => round($this->quote->getShippingAddress()->getShippingAmount(), 2)
+            )
+        );
 //        print_r($params);
         return $params;
     }
