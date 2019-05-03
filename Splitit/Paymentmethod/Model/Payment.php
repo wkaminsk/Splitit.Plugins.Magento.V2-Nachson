@@ -482,7 +482,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc
         $cultureName = $this->helper->getCultureName();
         $this->_logger->error(__('creating installment plan-----'));
         if($this->isOneInstallment()){
-        $this->_logger->error(__('is one installment-----'));
+            $this->_logger->error(__('is one installment-----'));
             $apiLogin = $this->_apiModel->apiLogin();
             $params = $this->_apiModel->createDataForInstallmentPlanInit(1);
             $params["CreditCardDetails"] = [
@@ -493,9 +493,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc
                 ];
             $params["PlanApprovalEvidence"] = [
                     "AreTermsAndConditionsApproved" => "True"
-                ];         
+                ];
+            $this->_logger->error("====1 installment ====");
+            $this->_logger->error(json_encode($params));
+            $this->_logger->error("==== END ====");
         } else {
-        $this->_logger->error(__('normal installment-----'));
+            $this->_logger->error(__('normal installment-----'));
             $params = [
                 "RequestHeader" => [
                     "SessionId" => $this->customerSession->getSplititSessionid(),

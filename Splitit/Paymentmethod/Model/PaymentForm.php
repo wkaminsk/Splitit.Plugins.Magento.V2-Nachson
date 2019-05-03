@@ -383,8 +383,10 @@ class PaymentForm {
         }
         $cultureName = $this->helper->getCultureName(true);
         $params = $this->installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, $numOfInstallments, null);
-        $this->logger->addDebug('======= installmentplaninitForHostedSolution : params passed to Initit Api ======= : ');
-        $this->logger->addDebug(print_r($params,TRUE));
+        $this->logger->error('======= installmentplaninitForHostedSolution : params passed to Initit Api ======= : ');
+        $this->logger->error(print_r($params,TRUE));
+        $this->logger->error(json_encode($params));
+        $this->logger->error('======= END ======= : ');
 
         try {
             $response = array("status" => false, "data" => "", "checkoutUrl" => "");
@@ -550,6 +552,10 @@ class PaymentForm {
         $firstInstallmentAmount = 0;
         if ($firstPayment == "shipping") {
             $firstInstallmentAmount = $this->_checkoutSession->getQuote()->getShippingAddress()->getShippingAmount();
+        } else if ($firstPayment == "shipping_taxes") {
+            $shippingAmount = $this->_checkoutSession->getQuote()->getShippingAddress()->getShippingAmount();
+            $taxAmount = $this->_checkoutSession->getQuote()->getShippingAddress()->getData('tax_amount');
+            $firstInstallmentAmount = $shippingAmount + $taxAmount;
         } else if ($firstPayment == "percentage") {
             if ($percentageOfOrder > 50) {
                 $percentageOfOrder = 50;
