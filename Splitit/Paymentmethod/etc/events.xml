@@ -8,4 +8,7 @@
     <event name="order_cancel_after">
     	<observer name="paymentcancel" instance="Splitit\Paymentmethod\Observer\PaymentCancel"/>
     </event>
+    <!-- <event name="sales_order_place_after">
+    	<observer name="afterordersave" instance="Splitit\Paymentmethod\Observer\AfterOrder"/>
+    </event> -->
 </config>

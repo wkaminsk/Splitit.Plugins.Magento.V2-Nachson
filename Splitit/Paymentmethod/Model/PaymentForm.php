@@ -643,7 +643,7 @@ class PaymentForm {
             "RefundUnderCancelation" => "OnlyIfAFullRefundIsPossible"
         );
         $response = array("status" => false, "data" => "");
-        $result = $api->cancelInstallmentPlan($this->api->getApiUrl(), $params);
+        $result = $this->api->cancelInstallmentPlan($this->api->getApiUrl(), $params);
         $decodedResult = $this->jsonHelper->jsonDecode($result);
 
         if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {

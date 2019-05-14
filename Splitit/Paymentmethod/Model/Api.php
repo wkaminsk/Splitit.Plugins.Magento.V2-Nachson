@@ -243,6 +243,17 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
             $this->setError($e->getMessage());
         } 
     }
+
+    public function cancelInstallmentPlan($apiUrl, $params){
+        try{
+            if(!$apiUrl){
+                $apiUrl=$this->getApiUrl();
+            }
+            return $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Cancel" , $params);        
+        }catch(\Exception $e){
+            $this->setError($e->getMessage());
+        } 
+    }
     
     public function updateRefOrderNumber($apiUrl='',$params){
         try{

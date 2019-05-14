@@ -118,7 +118,7 @@ class Success extends \Magento\Framework\App\Action\Action {
         } else {
 
             $this->logger->addDebug('====== Order cancel due to Grand total and Payment detail total coming from Api is not same. =====');
-            $cancelResponse = $this->paymentForm->cancelInstallmentPlan($api, $params["InstallmentPlanNumber"]);
+            $cancelResponse = $this->paymentForm->cancelInstallmentPlan($this->api, $params["InstallmentPlanNumber"]);
             if ($cancelResponse["status"]) {
                 $this->_redirect("splititpaymentmethod/payment/cancel")->sendResponse();
             }
