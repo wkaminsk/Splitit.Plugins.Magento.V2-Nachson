@@ -46,7 +46,7 @@ class AfterOrder implements ObserverInterface
         $this->_checkoutSession = $_checkoutSession;
         $this->_helperData = $helperData;
         $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->orderSender = $this->objectManager->get('\Magento\Sales\Model\Order\Email\OrderSender');
+        $this->orderSender = $this->objectManager->get('Magento\Sales\Model\Order\Email\Sender\OrderSender');
     }
 
     /**
@@ -68,7 +68,7 @@ class AfterOrder implements ObserverInterface
 
         $InstallmentPlanNumber = $additional_data['InstallmentPlanNumber'];
         if(!$InstallmentPlanNumber){
-            throw new \Magento\Framework\Validator\Exception("InstallmentPlanNumber not found", 402);
+            throw new \Magento\Framework\Validator\Exception(__("InstallmentPlanNumber not found"), \Exception("InstallmentPlanNumber not found",402));
         }
         // $extensionAttributes = $order->getExtensionAttributes();
         // $this->_logger->debug("extensionAttributes===".print_r($extensionAttributes,true));
@@ -100,10 +100,10 @@ class AfterOrder implements ObserverInterface
                 $paymentAction = $this->_helperData->getConfig("payment/splitit_paymentredirect/payment_action");
                 
                 $this->_logger->debug("setTransactionId");
-                $payment->setTransactionId($this->checkoutSession->getSplititInstallmentPlanNumber());
+                $payment->setTransactionId($InstallmentPlanNumber);
                 
                 $this->_logger->debug("setParentTransactionId");
-                $payment->setParentTransactionId($this->checkoutSession->getSplititInstallmentPlanNumber());
+                $payment->setParentTransactionId($InstallmentPlanNumber);
                 
                 $this->_logger->debug("setInstallmentsNo");
                 $payment->setInstallmentsNo($planDetails["numberOfInstallments"]);
@@ -128,7 +128,7 @@ class AfterOrder implements ObserverInterface
                 $this->_logger->debug("addStatusToHistory");
                 $order->addStatusToHistory(
                         $order->getStatus(), 'Payment InstallmentPlan was created with number ID: '
-                        . $this->checkoutSession->getSplititInstallmentPlanNumber(), false
+                        . $InstallmentPlanNumber, false
                 );
                 if ($paymentAction == "authorize_capture") {
                     $this->_logger->debug("setShouldCloseParentTransaction");
@@ -142,7 +142,7 @@ class AfterOrder implements ObserverInterface
                     
                     $this->_logger->debug("addStatusToHistory");
                     $order->addStatusToHistory(
-                            false, 'Payment NotifyOrderShipped was sent with number ID: ' . $this->checkoutSession->getSplititInstallmentPlanNumber(), false
+                            false, 'Payment NotifyOrderShipped was sent with number ID: ' . $InstallmentPlanNumber, false
                     );
                 }
                 //$orderObj->queueNewOrderEmail();
@@ -169,7 +169,7 @@ class AfterOrder implements ObserverInterface
         } catch (\Exception $e) {
             $this->_logger->addDebug("ashwani===",['transaction_id' => $transactionId, 'IPN'=>$InstallmentPlanNumber, 'exception' => $e->getMessage()]);
             $this->_logger->error(__('Payment cancel error.'));
-            throw new \Magento\Framework\Validator\Exception("Error occured while updating the order.", 402);
+            throw new \Magento\Framework\Validator\Exception(__("Error occured while updating the order."), $e);
         }
         return $this;
     }

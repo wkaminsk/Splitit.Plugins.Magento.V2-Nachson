@@ -70,9 +70,9 @@ class Init implements InitInterface {
 	    	}
 	    	/*$this->jsonHelper->jsonDecode($result);*/
 	    	$result = $this->api->installmentplaninitforhostedsolution($params);
-    		return $this->jsonHelper->jsonEncode(['session_id'=>$response["splititSessionId"],'initData'=>$result]);
+    		echo $this->jsonHelper->jsonEncode(['session_id'=>$response["splititSessionId"],'initData'=>$this->jsonHelper->jsonDecode($result)]);
     	} catch (\Exception $e) {
-    		return $this->jsonHelper->jsonEncode(['success'=>false,'error'=>true,'error_msg'=>$e->getMessage()]);
+    		echo $this->jsonHelper->jsonEncode(['success'=>false,'error'=>true,'error_msg'=>$e->getMessage()]);
     	}
     }
 }
