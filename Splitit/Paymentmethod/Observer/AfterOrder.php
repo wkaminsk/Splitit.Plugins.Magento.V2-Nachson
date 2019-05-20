@@ -66,110 +66,113 @@ class AfterOrder implements ObserverInterface
 
         $this->_logger->debug("additional_data_function===".print_r($additional_data,true));
 
-        $InstallmentPlanNumber = $additional_data['InstallmentPlanNumber'];
-        if(!$InstallmentPlanNumber){
-            throw new \Magento\Framework\Validator\Exception(__("InstallmentPlanNumber not found"), \Exception("InstallmentPlanNumber not found",402));
-        }
-        // $extensionAttributes = $order->getExtensionAttributes();
-        // $this->_logger->debug("extensionAttributes===".print_r($extensionAttributes,true));
-        $this->_logger->debug('order_id='.get_class($order));
-        $this->_logger->debug("order_data===".$order->getEntityId()."===".$order->getIncrementId()."====".$order->getGrandTotal());
+        if(isset($additional_data['InstallmentPlanNumber']) && $additional_data['InstallmentPlanNumber']){
+            $InstallmentPlanNumber = $additional_data['InstallmentPlanNumber'];
+            if(!$InstallmentPlanNumber){
+                throw new \Magento\Framework\Validator\Exception(__("InstallmentPlanNumber not found"), \Exception("InstallmentPlanNumber not found",402));
+            }
+            // $extensionAttributes = $order->getExtensionAttributes();
+            // $this->_logger->debug("extensionAttributes===".print_r($extensionAttributes,true));
+            $this->_logger->debug('order_id='.get_class($order));
+            $this->_logger->debug("order_data===".$order->getEntityId()."===".$order->getIncrementId()."====".$order->getGrandTotal());
 
-        $transactionId = $payment->getParentTransactionId();
-        $this->_logger->debug('transactionId='.$transactionId);
-        
-        try {
-            $api = $this->paymentForm->_initApi();
-            $this->customerSession->setInstallmentPlanNumber($InstallmentPlanNumber);
-            $this->_checkoutSession->setSplititInstallmentPlanNumber($InstallmentPlanNumber);
+            $transactionId = $payment->getParentTransactionId();
+            $this->_logger->debug('transactionId='.$transactionId);
+            
+            try {
+                $api = $this->paymentForm->_initApi();
+                $this->customerSession->setInstallmentPlanNumber($InstallmentPlanNumber);
+                $this->_checkoutSession->setSplititInstallmentPlanNumber($InstallmentPlanNumber);
 
-            $planDetails = $this->paymentForm->getInstallmentPlanDetails($this->api);
+                $planDetails = $this->paymentForm->getInstallmentPlanDetails($this->api);
 
-            $this->_logger->debug('======= get installmentplan details :  ======= ');
-            $this->_logger->debug(print_r($planDetails,TRUE));
+                $this->_logger->debug('======= get installmentplan details :  ======= ');
+                $this->_logger->debug(print_r($planDetails,TRUE));
 
-            $orderId=$order->getEntityId();
-            $orderIncrementId = $order->getIncrementId();
-            // $orderObj = $this->order->load($orderId);
-            $grandTotal = number_format((float) $order->getGrandTotal(), 2, '.', '');
-            $planDetails["grandTotal"] = number_format((float) $planDetails["grandTotal"], 2, '.', '');
-            $this->_logger->debug('======= grandTotal(order):' . $grandTotal . ', grandTotal(planDetails):' . $planDetails["grandTotal"] . '   ======= ');
-            if ($grandTotal == $planDetails["grandTotal"] && ($planDetails["planStatus"] == "PendingMerchantShipmentNotice" || $planDetails["planStatus"] == "InProgress")) {
+                $orderId=$order->getEntityId();
+                $orderIncrementId = $order->getIncrementId();
+                // $orderObj = $this->order->load($orderId);
+                $grandTotal = number_format((float) $order->getGrandTotal(), 2, '.', '');
+                $planDetails["grandTotal"] = number_format((float) $planDetails["grandTotal"], 2, '.', '');
+                $this->_logger->debug('======= grandTotal(order):' . $grandTotal . ', grandTotal(planDetails):' . $planDetails["grandTotal"] . '   ======= ');
+                if ($grandTotal == $planDetails["grandTotal"] && ($planDetails["planStatus"] == "PendingMerchantShipmentNotice" || $planDetails["planStatus"] == "InProgress")) {
 
-                // $payment = $order->getPayment();
-                $paymentAction = $this->_helperData->getConfig("payment/splitit_paymentredirect/payment_action");
-                
-                $this->_logger->debug("setTransactionId");
-                $payment->setTransactionId($InstallmentPlanNumber);
-                
-                $this->_logger->debug("setParentTransactionId");
-                $payment->setParentTransactionId($InstallmentPlanNumber);
-                
-                $this->_logger->debug("setInstallmentsNo");
-                $payment->setInstallmentsNo($planDetails["numberOfInstallments"]);
-                
-                $this->_logger->debug("setIsTransactionClosed");
-                $payment->setIsTransactionClosed(0);
-                
-                $this->_logger->debug("setCurrencyCode");
-                $payment->setCurrencyCode($planDetails["currencyCode"]);
-                
-                $this->_logger->debug("setCcType");
-                $payment->setCcType($planDetails["cardBrand"]["Code"]);
-                
-                $this->_logger->debug("setIsTransactionApproved");
-                $payment->setIsTransactionApproved(true);
-
-                $this->_logger->debug("registerAuthorizationNotification");
-                $payment->registerAuthorizationNotification($grandTotal);
-    //            $payment->setAdditionalInformation(
-    //                [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $planDetails]
-    //            );
-                $this->_logger->debug("addStatusToHistory");
-                $order->addStatusToHistory(
-                        $order->getStatus(), 'Payment InstallmentPlan was created with number ID: '
-                        . $InstallmentPlanNumber, false
-                );
-                if ($paymentAction == "authorize_capture") {
-                    $this->_logger->debug("setShouldCloseParentTransaction");
-                    $payment->setShouldCloseParentTransaction(true);
+                    // $payment = $order->getPayment();
+                    $paymentAction = $this->_helperData->getConfig("payment/splitit_paymentredirect/payment_action");
+                    
+                    $this->_logger->debug("setTransactionId");
+                    $payment->setTransactionId($InstallmentPlanNumber);
+                    
+                    $this->_logger->debug("setParentTransactionId");
+                    $payment->setParentTransactionId($InstallmentPlanNumber);
+                    
+                    $this->_logger->debug("setInstallmentsNo");
+                    $payment->setInstallmentsNo($planDetails["numberOfInstallments"]);
                     
                     $this->_logger->debug("setIsTransactionClosed");
-                    $payment->setIsTransactionClosed(1);
+                    $payment->setIsTransactionClosed(0);
                     
-                    $this->_logger->debug("registerCaptureNotification");
-                    $payment->registerCaptureNotification($grandTotal);
+                    $this->_logger->debug("setCurrencyCode");
+                    $payment->setCurrencyCode($planDetails["currencyCode"]);
                     
+                    $this->_logger->debug("setCcType");
+                    $payment->setCcType($planDetails["cardBrand"]["Code"]);
+                    
+                    $this->_logger->debug("setIsTransactionApproved");
+                    $payment->setIsTransactionApproved(true);
+
+                    $this->_logger->debug("registerAuthorizationNotification");
+                    $payment->registerAuthorizationNotification($grandTotal);
+        //            $payment->setAdditionalInformation(
+        //                [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $planDetails]
+        //            );
                     $this->_logger->debug("addStatusToHistory");
                     $order->addStatusToHistory(
-                            false, 'Payment NotifyOrderShipped was sent with number ID: ' . $InstallmentPlanNumber, false
+                            $order->getStatus(), 'Payment InstallmentPlan was created with number ID: '
+                            . $InstallmentPlanNumber, false
                     );
+                    if ($paymentAction == "authorize_capture") {
+                        $this->_logger->debug("setShouldCloseParentTransaction");
+                        $payment->setShouldCloseParentTransaction(true);
+                        
+                        $this->_logger->debug("setIsTransactionClosed");
+                        $payment->setIsTransactionClosed(1);
+                        
+                        $this->_logger->debug("registerCaptureNotification");
+                        $payment->registerCaptureNotification($grandTotal);
+                        
+                        $this->_logger->debug("addStatusToHistory");
+                        $order->addStatusToHistory(
+                                false, 'Payment NotifyOrderShipped was sent with number ID: ' . $InstallmentPlanNumber, false
+                        );
+                    }
+                    //$orderObj->queueNewOrderEmail();
+        //            $orderObj->sendNewOrderEmail();
+                    $this->_logger->debug("orderSender->send");
+                    // $this->orderSender->send($order);
+                    $this->_logger->debug("==payment save==");
+                    // $payment->save();
+                    // $order->save();
+
+                    $this->_logger->debug('====== Order Id =====:' . $orderId . '==== Order Increment Id ======:' . $orderIncrementId);
+                    $this->_logger->debug("==updateRefOrderNumber==");
+                    $curlRes = $this->paymentForm->updateRefOrderNumber($this->api, $order);
+                    $this->_logger->debug('====== Order Id =====:' . $orderId . '==== Order Increment Id ======:' . $orderIncrementId."===updated on splitit");
+
+                } else {
+
+                    $this->_logger->debug('====== Order cancel due to Grand total and Payment detail total coming from Api is not same. =====');
+                    $cancelResponse = $this->paymentForm->cancelInstallmentPlan($this->api, $InstallmentPlanNumber);
+                    if ($cancelResponse["status"]) {
+                        throw new \Magento\Framework\Validator\Exception("Order cancel due to Grand total and Payment detail total coming from Api is not same.", 402);
+                    }
                 }
-                //$orderObj->queueNewOrderEmail();
-    //            $orderObj->sendNewOrderEmail();
-                $this->_logger->debug("orderSender->send");
-                // $this->orderSender->send($order);
-                $this->_logger->debug("==payment save==");
-                // $payment->save();
-                // $order->save();
-
-                $this->_logger->debug('====== Order Id =====:' . $orderId . '==== Order Increment Id ======:' . $orderIncrementId);
-                $this->_logger->debug("==updateRefOrderNumber==");
-                $curlRes = $this->paymentForm->updateRefOrderNumber($this->api, $order);
-                $this->_logger->debug('====== Order Id =====:' . $orderId . '==== Order Increment Id ======:' . $orderIncrementId."===updated on splitit");
-
-            } else {
-
-                $this->_logger->debug('====== Order cancel due to Grand total and Payment detail total coming from Api is not same. =====');
-                $cancelResponse = $this->paymentForm->cancelInstallmentPlan($this->api, $InstallmentPlanNumber);
-                if ($cancelResponse["status"]) {
-                    throw new \Magento\Framework\Validator\Exception("Order cancel due to Grand total and Payment detail total coming from Api is not same.", 402);
-                }
+            } catch (\Exception $e) {
+                $this->_logger->addDebug("ashwani===",['transaction_id' => $transactionId, 'IPN'=>$InstallmentPlanNumber, 'exception' => $e->getMessage()]);
+                $this->_logger->error(__('Payment cancel error.'));
+                throw new \Magento\Framework\Validator\Exception(__("Error occured while updating the order."), $e);
             }
-        } catch (\Exception $e) {
-            $this->_logger->addDebug("ashwani===",['transaction_id' => $transactionId, 'IPN'=>$InstallmentPlanNumber, 'exception' => $e->getMessage()]);
-            $this->_logger->error(__('Payment cancel error.'));
-            throw new \Magento\Framework\Validator\Exception(__("Error occured while updating the order."), $e);
+            
         }
         return $this;
     }
