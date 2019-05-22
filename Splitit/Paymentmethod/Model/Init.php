@@ -44,9 +44,9 @@ class Init implements InitInterface {
     public function initSplitit($data){
     	try{
 	    	$response = $this->paymentForm->_initApi();
-            if(!$response['splititSessionId'] && $response["errorMsg"]){
+            /*if(!$response['splititSessionId'] && $response["errorMsg"]){
                 echo $this->jsonHelper->jsonEncode($response);
-            }
+            }*/
 	    	$params = $data;
 	    	$params["RequestHeader"] = array(
 	                "SessionId" => $response["splititSessionId"],
@@ -74,7 +74,8 @@ class Init implements InitInterface {
 	    	/*$this->jsonHelper->jsonDecode($result);*/
 	    	$result = $this->api->installmentplaninitforhostedsolution($params);
     		/*echo $this->jsonHelper->jsonEncode(['session_id'=>$response["splititSessionId"],'initData'=>$this->jsonHelper->jsonDecode($result)]);*/
-            echo $result;
+            /*echo $result;*/
+            echo $this->jsonHelper->jsonEncode(['initData'=>$this->jsonHelper->jsonDecode($result)]);
     	} catch (\Exception $e) {
     		echo $this->jsonHelper->jsonEncode(['success'=>false,'error'=>true,'error_msg'=>$e->getMessage()]);
     	}
