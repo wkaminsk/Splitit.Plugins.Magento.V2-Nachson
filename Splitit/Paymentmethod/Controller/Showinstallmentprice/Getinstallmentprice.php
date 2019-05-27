@@ -56,7 +56,7 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 			$textArr = explode(' ', $installmetPriceText);
 			$changeindex = array_search('SPLITIT', $textArr);
 			if ($changeindex) {
-				$replace = "<a href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' style='height: 30px;display: inline-block;margin-bottom: -12px;' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
+				$replace = "<a href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' style='height: 24px;display: inline-block;margin-bottom: -8px;' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
 				$textToChange = str_replace('SPLITIT', $replace, $textArr[$changeindex]);
 				unset($textArr[$changeindex]);
 				$newText = __(implode(' ', $textArr));
