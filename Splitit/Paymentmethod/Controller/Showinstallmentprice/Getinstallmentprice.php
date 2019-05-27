@@ -29,6 +29,8 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 			"installmetPriceText" => "",
 			"grandTotal" => "",
 			"currencySymbol" => "",
+			"splititLogoSrc" => "",
+			"splititLogoBackgroundSrc" => "",
 		];
 
 		$isEnable = $this->helper->getConfig("payment/splitit_paymentmethod/enable_installment_price");
