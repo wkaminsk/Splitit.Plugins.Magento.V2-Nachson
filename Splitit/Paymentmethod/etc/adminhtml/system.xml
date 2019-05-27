@@ -86,6 +86,14 @@
                     <label>Help link URL</label>
                 </field>
 
+                 <field id="splitit_logo_src" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Split It logo Src</label>
+                </field>
+
+                 <field id="splitit_logo__bakcground_href" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Split It background link</label>
+                </field>
+
                 <field id="payment_action" translate="label" sortOrder="15" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Payment Action</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\PaymentAction</source_model>
@@ -162,6 +170,7 @@
 
                 <field id="installment_price_text" translate="label" sortOrder="27"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Installment price text</label>
+                    <comment>SPLITIT in uppercase will automatically convert to Splitit logo</comment>
                 </field>
 
                 <field id="sort_order" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -259,7 +268,13 @@
                 <field id="faq_link_title_url" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Help link URL</label>
                 </field>
+                <field id="splitit_logo_src" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Split It logo Src</label>
+                </field>
 
+                 <field id="splitit_logo__bakcground_href" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Split It background link</label>
+                </field>
                 <field id="payment_action" translate="label" sortOrder="15" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Payment Action</label>
                     <source_model>Splitit\Paymentmethod\Model\Source\PaymentAction</source_model>
@@ -344,6 +359,7 @@
 
                 <field id="installment_price_text" translate="label" sortOrder="27"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Installment price text</label>
+                    <comment>SPLITIT in uppercase will automatically convert to Splitit logo</comment>
                 </field>
 
                 <field id="sort_order" translate="label" type="text" sortOrder="28" showInDefault="1" showInWebsite="1" showInStore="0">
