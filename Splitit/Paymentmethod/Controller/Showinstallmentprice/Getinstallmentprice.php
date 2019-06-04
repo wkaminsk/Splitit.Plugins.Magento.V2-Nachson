@@ -45,18 +45,29 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 			$response['help']['splitit_paymentredirect']["title"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title");
 			$response['help']['splitit_paymentredirect']["link"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title_url");
 		}
-		$displayInstallmentPriceOnPage = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_on_pages");
-		$numOfInstallmentForDisplay = $this->helper->getConfig("payment/splitit_paymentmethod/installments_count");
-		$installmetPriceText = $this->helper->getConfig("payment/splitit_paymentmethod/installment_price_text");
-		$SplititLogoSrc = $this->helper->getConfig("payment/splitit_paymentmethod/splitit_logo_src");
-		$SplititLogoBackgroundSrc = $this->helper->getConfig("payment/splitit_paymentmethod/splitit_logo__bakcground_href");
+
+		$displayInstallmentPriceOnPage = '';
+		$numOfInstallmentForDisplay = '';
+
+		$splititLogoArray = $this->helper->getInstallmentPriceText();
+		$installmetPriceText = "";
+		$SplititLogoSrc = "";
+		$SplititLogoBackgroundSrc = "";
+		if ($splititLogoArray) {
+			$installmetPriceText = $splititLogoArray['price_text'];
+			$SplititLogoSrc = $splititLogoArray['logo_src'];
+			$SplititLogoBackgroundSrc = $splititLogoArray['bakcground_href'];
+			$displayInstallmentPriceOnPage = $splititLogoArray['installment_price_on_pages'];
+			$numOfInstallmentForDisplay = $splititLogoArray['installments_count'];
+		}
+
 		if (is_null($installmetPriceText)) {
 			$installmetPriceText = "";
 		} else {
 			$textArr = explode(' ', $installmetPriceText);
 			$changeindex = array_search('SPLITIT', $textArr);
 			if ($changeindex) {
-				$replace = "<a href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' style='height: 24px;display: inline-block;margin-bottom: -8px;' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
+				$replace = "<a href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
 				$textToChange = str_replace('SPLITIT', $replace, $textArr[$changeindex]);
 				unset($textArr[$changeindex]);
 				$newText = __(implode(' ', $textArr));
