@@ -155,7 +155,10 @@ class Data extends AbstractHelper {
 			$fee = 0;
 			if (version_compare($this->getMagentoVersion(), '2.3.0', '<')) {
 
-				$feeTable = (unserialize($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
+				$feeTable = @unserialize($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
+				if ($feeTable == false) {
+					$feeTable = json_decode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE), true);
+				}
 			} else {
 
 				$feeTable = json_decode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE), true);

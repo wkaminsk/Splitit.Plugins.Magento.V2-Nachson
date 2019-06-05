@@ -600,7 +600,7 @@ class PaymentForm {
 				"SessionId" => $this->customerSession->getSplititSessionid(),
 			),
 			"QueryCriteria" => array(
-				"InstallmentPlanNumber" => $this->customerSession->getInstallmentPlanNumber(),
+				"InstallmentPlanNumber" => $this->_checkoutSession->getSplititInstallmentPlanNumber(),
 			),
 		);
 		$response = array("status" => false, "data" => "", "numberOfInstallments" => "", "cardBrand" => "", "cardNumber" => "", "cardExpMonth" => "", "cardExpYear" => "");
