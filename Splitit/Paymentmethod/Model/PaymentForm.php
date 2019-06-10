@@ -44,6 +44,7 @@ class PaymentForm {
 	protected $objectManager;
 	protected $logger;
 	protected $orderPlace;
+	protected $productModel;
 
 	public function __construct(
 		\Psr\Log\LoggerInterface $logger,
@@ -69,6 +70,7 @@ class PaymentForm {
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$this->objectManager = $objectManager;
 		$this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
+		$this->productModel = $objectManager->get('Magento\Catalog\Model\Product');
 	}
 
 	public function orderPlaceRedirectUrl() {
@@ -500,10 +502,12 @@ class PaymentForm {
 		$i = 0;
 		$currencyCode = $this->_store->getCurrentCurrency()->getCode();
 		foreach ($cart->getAllItems() as $item) {
+			$description = $this->productModel->load($item->getProductId())->getShortDescription();
 			$itemsArr[$i]["Name"] = $item->getName();
 			$itemsArr[$i]["SKU"] = $item->getSku();
 			$itemsArr[$i]["Price"] = array("Value" => round($item->getPrice(), 2), "CurrencyCode" => $currencyCode);
 			$itemsArr[$i]["Quantity"] = $item->getQty();
+			$itemsArr[$i]["Description"] = strip_tags($description);
 //            $itemsArr[$i]["Description"] = $product->getShortDescription();
 			$i++;
 		}
@@ -541,7 +545,7 @@ class PaymentForm {
 			);
 		}
 		$params = array_merge($params, $paymentWizardData);
-
+		//print_r($params);die;
 		return $params;
 	}
 
