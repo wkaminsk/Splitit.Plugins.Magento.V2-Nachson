@@ -246,7 +246,7 @@ class Data extends AbstractHelper {
 	public function getInstallmentPriceText() {
 		$text = [];
 
-		if ($this->getConfig("payment/splitit_paymentredirect/installment_price_text")) {
+		if ($this->getConfig("payment/splitit_paymentredirect/installment_price_text") && $this->getConfig("payment/splitit_paymentredirect/active") && $this->getConfig("payment/splitit_paymentredirect/enable_installment_price")) {
 			$text['price_text'] = $this->getConfig("payment/splitit_paymentredirect/installment_price_text");
 			$text['logo_src'] = $this->getConfig("payment/splitit_paymentredirect/splitit_logo_src");
 			$text['bakcground_href'] = $this->getConfig("payment/splitit_paymentredirect/splitit_logo__bakcground_href");
@@ -254,14 +254,13 @@ class Data extends AbstractHelper {
 			$text['installment_price_on_pages'] = $this->getConfig("payment/splitit_paymentredirect/installment_price_on_pages");
 		}
 
-		if ($this->getConfig("payment/splitit_paymentmethod/installment_price_text")) {
+		if ($this->getConfig("payment/splitit_paymentmethod/installment_price_text") && $this->getConfig("payment/splitit_paymentmethod/active") && $this->getConfig("payment/splitit_paymentmethod/enable_installment_price")) {
 			$text['price_text'] = $this->getConfig("payment/splitit_paymentmethod/installment_price_text");
 			$text['logo_src'] = $this->getConfig("payment/splitit_paymentmethod/splitit_logo_src");
 			$text['bakcground_href'] = $this->getConfig("payment/splitit_paymentmethod/splitit_logo__bakcground_href");
 			$text['installments_count'] = $this->getConfig("payment/splitit_paymentmethod/installments_count");
 			$text['installment_price_on_pages'] = $this->getConfig("payment/splitit_paymentmethod/installment_price_on_pages");
 		}
-
 		return $text;
 	}
 
