@@ -86,9 +86,7 @@
                     <label>Help link URL</label>
                 </field>
 
-                 <field id="splitit_logo_src" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Split It logo Src</label>
-                </field>
+                 
 
                  <field id="splitit_logo__bakcground_href" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Split It background link</label>
@@ -156,6 +154,10 @@
                 <field id="enable_installment_price" translate="label" sortOrder="24" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enable Installment Price</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="splitit_logo_src" translate="label" sortOrder="24"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Splitit logo source</label>
                 </field>
 
                 <field id="installment_price_on_pages" translate="label" type="multiselect" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0" >
@@ -268,9 +270,7 @@
                 <field id="faq_link_title_url" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Help link URL</label>
                 </field>
-                <field id="splitit_logo_src" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Split It logo Src</label>
-                </field>
+                
 
                  <field id="splitit_logo__bakcground_href" translate="label" sortOrder="14"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Split It background link</label>
@@ -345,6 +345,10 @@
                 <field id="enable_installment_price" translate="label" sortOrder="24" type="select" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enable Installment Price</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="splitit_logo_src" translate="label" sortOrder="24"  showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Splitit logo source</label>
                 </field>
 
                 <field id="installment_price_on_pages" translate="label" type="multiselect" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0" >
