@@ -1,9 +1,13 @@
 window.onload = function(){
 	
 	var splititAvail = 0;
-	var curUrl      = window.location.href; 
+	/*var curUrl      = window.location.href; 
 	var baseUrl = "";
-	baseUrl = curUrl.substring(0, curUrl.indexOf('checkout'));
+
+	baseUrl = curUrl.substring(0, curUrl.indexOf('checkout'));*/
+	var url = window.location.hostname;
+	var http = window.location.protocol;
+	var baseUrl = http+"//"+url+"/";
 	
 	/*var sitInterval = setInterval(function(){
 		splititAvail = jQuery('#splitit_paymentmethod').length;
