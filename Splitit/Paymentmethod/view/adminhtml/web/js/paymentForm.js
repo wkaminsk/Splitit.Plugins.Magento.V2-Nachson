@@ -9,13 +9,17 @@ baseUrl1 = window.location.origin+'/';
 var jqueryInterval1 = setInterval(function(){  
 //    var dependingOnCart = document.getElementById('payment_us_splitit_paymentredirect_depending_on_cart_total');  
     var dependingOnCart = document.getElementsByName('groups[splitit_paymentredirect][fields][depending_on_cart_total][value]')[0];  
-    if(dependingOnCart){
-      jqueryIsHere1 = 1;
-      clearInterval(jqueryInterval1);      
-      runMyScripts1();     
-     }else{
-      console.log('Element not found!!');
-     }       
+    if (typeof jQuery == 'undefined'){
+      if(dependingOnCart){
+        jqueryIsHere1 = 1;
+        clearInterval(jqueryInterval1);      
+        runMyScripts1();     
+      }else{
+        console.log('Element not found!!');
+      }
+    } else {
+      console.log("jQuery not found.")
+    }
   }, 1000);
 
 var productListInterval1 = setInterval(function(){

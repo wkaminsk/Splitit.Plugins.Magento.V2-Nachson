@@ -9,15 +9,19 @@ baseUrl = window.location.origin+'/';
 var jqueryInterval = setInterval(function(){  
 //    var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
     var depandingOnCart = document.getElementsByName('groups[splitit_paymentmethod][fields][depending_on_cart_total][value]')[0];  
-    if(depandingOnCart){
-      jqueryIsHere = 1;
-      clearInterval(jqueryInterval);
-//      splitit_fee_types();
-splitit_fee_table();
-      runMyScripts();
-     }else{
-      console.log('Element not found!!');
-     }       
+    if (typeof jQuery == 'undefined'){
+      if(depandingOnCart){
+        jqueryIsHere = 1;
+        clearInterval(jqueryInterval);
+        //splitit_fee_types();
+        splitit_fee_table();
+        runMyScripts();
+      }else{
+        console.log('Element not found!!');
+      }
+    } else {
+      console.log("jQuery not found.")
+    }
   }, 1000);
 
 var productListInterval = setInterval(function(){
