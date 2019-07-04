@@ -9,7 +9,7 @@ baseUrl = window.location.origin+'/';
 var jqueryInterval = setInterval(function(){  
 //    var depandingOnCart = document.getElementById('payment_us_splitit_paymentmethod_depending_on_cart_total');  
     var depandingOnCart = document.getElementsByName('groups[splitit_paymentmethod][fields][depending_on_cart_total][value]')[0];  
-    if (typeof jQuery == 'undefined'){
+    if (typeof jQuery != 'undefined'){
       if(depandingOnCart){
         jqueryIsHere = 1;
         clearInterval(jqueryInterval);
