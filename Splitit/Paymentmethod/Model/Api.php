@@ -21,11 +21,23 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	private $guestEmail;
 	private $quote;
 	protected $productModel;
+	protected $logger;
+	/**
+	 * @var \Magento\Framework\HTTP\Client\Curl
+	 */
+	protected $curl;
 
+	/**
+	 * @param \Magento\Customer\Model\Session $customerSession
+	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+	 * @param \Magento\Directory\Model\Currency $currency
+	 * @param \Magento\Framework\HTTP\Client\Curl $curl
+	 */
 	public function __construct(
 		\Magento\Customer\Model\Session $customerSession,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
-		\Magento\Directory\Model\Currency $currency
+		\Magento\Directory\Model\Currency $currency,
+		\Magento\Framework\HTTP\Client\Curl $curl
 	) {
 
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
@@ -41,12 +53,30 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 		$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
 		$this->currencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
-		$this->currencySymbol = $objectManager->get('\Magento\Directory\Model\Currency')->load($this->currencyCode)->getCurrencySymbol();
+		$this->currencySymbol = $currency->load($this->currencyCode)->getCurrencySymbol();
+
+		$this->curl = $curl;
 
 		$this->customerSession = $customerSession;
 
 		$this->countryFactory = $objectManager->get('\Magento\Directory\Model\CountryFactory');
 		$this->productModel = $objectManager->get('Magento\Catalog\Model\Product');
+		$this->logger = $objectManager->get('\Psr\Log\LoggerInterface');
+	}
+
+	/** check if splititsession id not exist create new
+	 **	return string
+	 **/
+	public function getorCreateSplititSessionid() {
+		if (!$this->customerSession->getSplititSessionid()) {
+			$this->apiLogin();
+			$this->logger->error('New Session Id :' . $this->customerSession->getSplititSessionid());
+		} else {
+			$this->logger->error('Old Session Id :' . $this->customerSession->getSplititSessionid());
+		}
+
+		return $this->customerSession->getSplititSessionid();
+
 	}
 
 	public function apiLogin($dataForLogin = array()) {
@@ -89,43 +119,47 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	}
 
 	public function installmentPlanInit($selectedInstallment, $guestEmail) {
-		$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
-		$apiUrl = $this->getApiUrl();
-		$this->guestEmail = $guestEmail;
-		$params = $this->createDataForInstallmentPlanInit($selectedInstallment);
-		$this->customerSession->setSelectedInstallment($selectedInstallment);
-		// check if cunsumer dont filled data in billing form in case of onepage checkout.
-		$billingFieldsEmpty = $this->checkForBillingFieldsEmpty();
-		if (!$billingFieldsEmpty["status"]) {
-			$response["errorMsg"] = $billingFieldsEmpty["errorMsg"];
-			return $response;
-		}
-		// call Installment Plan Initiate api to get Approval URL
-		$result = $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Initiate", $params);
-		$decodedResult = json_decode($result, true);
-		//print_r($decodedResult);die("--sfdfs");
-		// check for curl error
-		if (isset($decodedResult["errorMsg"])) {
-			$response["errorMsg"] = $decodedResult["errorMsg"];
-			return $response;
-		}
-
-		// check for approval URL from response
-		if (isset($decodedResult) && isset($decodedResult["ApprovalUrl"]) && $decodedResult["ApprovalUrl"] != "") {
-			// get response from Approval Url
-			$approvalUrlResponse = $this->getApprovalUrlResponse($decodedResult);
+		try {
+			$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
+			$apiUrl = $this->getApiUrl();
+			$this->guestEmail = $guestEmail;
+			$params = $this->createDataForInstallmentPlanInit($selectedInstallment);
+			$this->customerSession->setSelectedInstallment($selectedInstallment);
+			// check if cunsumer dont filled data in billing form in case of onepage checkout.
+			$billingFieldsEmpty = $this->checkForBillingFieldsEmpty();
+			if (!$billingFieldsEmpty["status"]) {
+				$response["errorMsg"] = $billingFieldsEmpty["errorMsg"];
+				return $response;
+			}
+			// call Installment Plan Initiate api to get Approval URL
+			$result = $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Initiate", $params);
+			$decodedResult = json_decode($result, true);
+			//print_r($decodedResult);die("--sfdfs");
 			// check for curl error
-			if (isset($approvalUrlResponse["errorMsg"]) && $approvalUrlResponse["errorMsg"] != "") {
-				$response["errorMsg"] = $approvalUrlResponse["errorMsg"];
+			if (isset($decodedResult["errorMsg"])) {
+				$response["errorMsg"] = $decodedResult["errorMsg"];
 				return $response;
 			}
 
-			$response["status"] = true;
-			$response["successMsg"] = $approvalUrlResponse["successMsg"];
-		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
-			$response["errorMsg"] = $this->getErrorFromApi($decodedResult);
-		} else if (isset($decodedResult["serverError"])) {
-			$response["errorMsg"] = $decodedResult["serverError"];
+			// check for approval URL from response
+			if (isset($decodedResult) && isset($decodedResult["ApprovalUrl"]) && $decodedResult["ApprovalUrl"] != "") {
+				// get response from Approval Url
+				$approvalUrlResponse = $this->getApprovalUrlResponse($decodedResult);
+				// check for curl error
+				if (isset($approvalUrlResponse["errorMsg"]) && $approvalUrlResponse["errorMsg"] != "") {
+					$response["errorMsg"] = $approvalUrlResponse["errorMsg"];
+					return $response;
+				}
+
+				$response["status"] = true;
+				$response["successMsg"] = $approvalUrlResponse["successMsg"];
+			} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
+				$response["errorMsg"] = $this->getErrorFromApi($decodedResult);
+			} else if (isset($decodedResult["serverError"])) {
+				$response["errorMsg"] = $decodedResult["serverError"];
+			}
+		} catch (Exception $e) {
+			$response["errorMsg"] = $e->getMessage();
 		}
 
 		return $response;
@@ -159,9 +193,13 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		if ($paymentAction == "authorize_capture") {
 			$autoCapture = true;
 		}
+		/*if (strlen($this->billingAddress->getTelephone()) < 5) {
+			throw new \Magento\Framework\Validator\Exception(__("Splitit does not accept phone number less than 5 digits."));
+		}*/
+
 		$params = [
 			"RequestHeader" => [
-				"SessionId" => $this->customerSession->getSplititSessionid(),
+				"SessionId" => $this->getorCreateSplititSessionid(),
 				"ApiKey" => $this->helper->getConfig("payment/splitit_paymentmethod/api_terminal_key"),
 			],
 			"PlanData" => [
@@ -326,6 +364,21 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
 		if ($this->billingAddress->getStreet()[0] == "" || $this->billingAddress->getCity() == "" || $this->billingAddress->getPostcode() == "" || $customerInfo["firstname"] == "" || $customerInfo["lastname"] == "" || $customerInfo["email"] == "" || $this->billingAddress->getTelephone() == "") {
 			$response["errorMsg"] = "Please fill required fields.";
+		} else if (strlen($this->billingAddress->getTelephone()) < 5 || strlen($this->billingAddress->getTelephone()) > 10) {
+
+			$response["errorMsg"] = __("Splitit does not accept phone number less than 5 digits or greater than 10 digits.");
+		} elseif (!$this->billingAddress->getCity()) {
+			$response["errorMsg"] = __("Splitit does not accept empty city field.");
+		} elseif (!$this->billingAddress->getCountry()) {
+			$response["errorMsg"] = ("Splitit does not accept empty country field.");
+		} elseif (!$this->billingAddress->getPostcode()) {
+			$response["errorMsg"] = ("Splitit does not accept empty postcode field.");
+		} elseif (!$customerInfo["firstname"]) {
+			$response["errorMsg"] = ("Splitit does not accept empty customer name field.");
+		} elseif (strlen($customerInfo["firstname"] . ' ' . $customerInfo['lastname']) < 3) {
+			$response["errorMsg"] = ("Splitit does not accept less than 3 characters customer name field.");
+		} elseif (!filter_var($customerInfo['email'], FILTER_VALIDATE_EMAIL)) {
+			$response["errorMsg"] = ("Splitit does not accept invalid customer email field.");
 		} else {
 			$response["status"] = true;
 		}
@@ -368,7 +421,30 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 	public function makePhpCurlRequest($gwUrl, $method, $params) {
 		$url = trim($gwUrl, '/') . '/api/' . $method . '?format=JSON';
-		$ch = curl_init($url);
+		// $ch = curl_init($url);
+		$jsonData = json_encode($params);
+		/*$this->curl->setOption(CURLOPT_CUSTOMREQUEST, "POST");
+		$this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
+		$this->curl->setOption(CURLOPT_POST, 1);
+		$this->curl->setOption(CURLOPT_POSTFIELDS, $jsonData);*/
+		try{
+
+			$this->curl->setOption(CURLOPT_FOLLOWLOCATION, 1);
+			$this->curl->setOption(CURLOPT_SSL_VERIFYPEER, 0);
+			$this->curl->setHeaders(array(
+				'Content-Type' => 'application/json',
+				'Content-Length' => strlen($jsonData)
+			));
+			$this->curl->post($url,$jsonData);
+			$result = $this->curl->getBody();
+
+		} catch(\Exception $e){
+			$result["errorMsg"] = $this->getServerDownMsg();
+			$result = json_encode($result);
+		}
+		
+		return $result;
+		/*$ch = curl_init($url);
 		$jsonData = json_encode($params);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -391,7 +467,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 			$result = json_encode($result);
 		}
 		curl_close($ch);
-		return $result;
+		return $result;*/
 	}
 
 	public function getSplititSupportedCultures($approvalUrl) {

@@ -131,7 +131,7 @@ class Data extends AbstractHelper {
 	 */
 	public function canApply(\Magento\Quote\Model\Quote $quote) {
 
-		/*         * @TODO check module or config* */
+		/** check module or config **/
 		if ($method = $quote->getPayment()->getMethod()) {
 			if ($this->isEnabled($method)) {
 				if (isset($this->methodFee[$method])) {
