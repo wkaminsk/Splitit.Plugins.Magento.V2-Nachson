@@ -27,25 +27,28 @@ class Cancel extends \Magento\Framework\App\Action\Action {
     protected $quoteFactory;
 
     public function __construct(
-    \Magento\Framework\App\Action\Context $context,
-    \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
-    \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-    \Magento\Sales\Api\Data\OrderInterface $order,
-    \Magento\Quote\Model\QuoteFactory $quoteFactory,
-    \Splitit\Paymentmethod\Helper\Data $helperData
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
+        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        \Magento\Sales\Api\Data\OrderInterface $order,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Splitit\Paymentmethod\Helper\Data $helperData,
+        \Magento\Checkout\Model\Session $checkoutSession
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->_helperData = $helperData;
         $this->order = $order;
         $this->quoteFactory = $quoteFactory;
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->checkoutSession = $objectManager->get('\Magento\Checkout\Model\Session'); 
+        $this->checkoutSession = $checkoutSession; 
         parent::__construct($context);
     }
     
+    /**
+     * Cancel the order handle
+     * @return void
+     **/
     public function execute() {
-//        die("cancel controller");
         $session = $this->checkoutSession;
         $session->setQuoteId($session->getSplititQuoteId());
         
@@ -54,7 +57,7 @@ class Cancel extends \Magento\Framework\App\Action\Action {
             if ($order->getId()) {
                 $order->cancel()->save();
             }
-            $this->checkoutSession->restoreQuote();;
+            $this->checkoutSession->restoreQuote();
             $order = $session->getLastRealOrder();
             $quote = $this->quoteFactory->create()->load($order->getQuoteId());
             if ($quote->getId()) {

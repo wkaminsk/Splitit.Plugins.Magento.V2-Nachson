@@ -55,7 +55,8 @@ class PaymentForm {
 		\Magento\Store\Api\Data\StoreInterface $store,
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\Json\Helper\Data $jsonHelper,
-		\Magento\Checkout\Model\Session $_checkoutSession
+		\Magento\Checkout\Model\Session $_checkoutSession,
+		\Magento\Catalog\Model\Product $productModel
 	) {
 		$this->api = $api;
 		$this->quoteValidator = $quoteValidator;
@@ -70,7 +71,7 @@ class PaymentForm {
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$this->objectManager = $objectManager;
 		$this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
-		$this->productModel = $objectManager->get('Magento\Catalog\Model\Product');
+		$this->productModel = $productModel;
 	}
 
 	public function orderPlaceRedirectUrl() {
@@ -87,7 +88,7 @@ class PaymentForm {
 			"installmentNum" => "1",
 		);
 
-		//check for address
+		/*check for address*/
 		$quote = $this->quote;
 		$billAddress = $quote->getBillingAddress();
 		$customerInfo = $this->customerSession->getCustomer()->getData();
@@ -107,9 +108,7 @@ class PaymentForm {
 			return $response;
 		}
 		$initResponse = $this->installmentplaninitForHostedSolution();
-//        print_r($initResponse);
-		//        echo 5/0;
-		//        return $initResponse;
+
 		$response["data"] = $initResponse["data"];
 		if ($initResponse["status"]) {
 			$response["status"] = true;
@@ -117,9 +116,7 @@ class PaymentForm {
 
 		if (isset($initResponse["checkoutUrl"]) && $initResponse["checkoutUrl"] != "") {
 			$response["checkoutUrl"] = $initResponse["checkoutUrl"];
-//            print_r($initResponse);
-			//            print_r($response);
-			//            die("--eeeeee");
+
 			$quote = $this->quote;
 			$billAddress = $quote->getBillingAddress();
 			$customerInfo = $this->customerSession->getCustomer()->getData();
@@ -132,7 +129,6 @@ class PaymentForm {
 
 			if (!($bags[0] == "" || $billAddress->getCity() == "" || $billAddress->getPostcode() == "" || $customerInfo["firstname"] == "" || $customerInfo["lastname"] == "" || $customerInfo["email"] == "" || $billAddress->getTelephone() == "")) {
 				if ($this->quoteValidator->validateBeforeSubmit($quote)) {
-//                    echo "validated quote";exit;
 					$this->orderPlace->execute($quote, array());
 				}
 			}
@@ -146,7 +142,6 @@ class PaymentForm {
 			$response["status"] = false;
 			$response["error"] = true;
 			return $response;
-//            throw new \Magento\Framework\Validator\Exception(__($response['data']));
 		}
 	}
 
@@ -333,7 +328,7 @@ class PaymentForm {
 			$params = $this->installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, null, $selectedInstallment);
 
 			$response = array("status" => false, "data" => "");
-			// check if cunsumer dont filled data
+			/*check if consumer dont filled data*/
 			$bags = $billAddress->getStreet();
 			if ($bags[0] == "" || $billAddress->getCity() == "" || $billAddress->getPostcode() == "" || $customerInfo["firstname"] == "" || $customerInfo["lastname"] == "" || $customerInfo["email"] == "" || $billAddress->getTelephone() == "") {
 				$response["emptyFields"] = true;
@@ -341,16 +336,14 @@ class PaymentForm {
 				return $response;
 			}
 
-//            $result = Mage::getSingleton("pis_payment/api")->installmentplaninit($this->getApiUrl(), $params);
 			$result = $this->api->installmentplaninit($this->api->getApiUrl(), $params);
-			// check for approval URL from response
+			/*check for approval URL from response*/
 			$decodedResult = $this->jsonHelper->jsonDecode($result);
 
 			if (isset($decodedResult) && isset($decodedResult["ApprovalUrl"]) && $decodedResult["ApprovalUrl"] != "") {
 				$intallmentPlan = $decodedResult["InstallmentPlan"]["InstallmentPlanNumber"];
-				// set Installment plan number into session
+				/*set Installment plan number into session*/
 				$this->customerSession->setInstallmentPlanNumber($intallmentPlan);
-//                $approvalUrlResponse = Mage::getSingleton("pis_payment/api")->getApprovalUrlResponse($decodedResult["ApprovalUrl"]);
 				$approvalUrlResponse = $this->api->getApprovalUrlResponse($decodedResult["ApprovalUrl"]);
 				$approvalUrlRes = $this->jsonHelper->jsonDecode($approvalUrlResponse);
 				if (isset($approvalUrlRes["Global"]["ResponseResult"]["Errors"]) && count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
@@ -372,7 +365,6 @@ class PaymentForm {
 					$response["data"] = $popupHtml;
 				}
 
-				//print_r($approvalUrlResponse);die("---approvalUrlResponse");
 			} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 				$i = 1;
@@ -392,7 +384,6 @@ class PaymentForm {
 			$response["data"] = $e->getMessage();
 		}
 		return $response;
-		//return $result;
 	}
 
 	public function installmentplaninitForHostedSolution() {
@@ -419,7 +410,7 @@ class PaymentForm {
 
 		try {
 			$response = array("status" => false, "data" => "", "checkoutUrl" => "");
-			// check if cunsumer dont filled data
+			/*check if cunsumer dont filled data*/
 			$bags = $billAddress->getStreet();
 			if ($bags[0] == "" || $billAddress->getCity() == "" || $billAddress->getPostcode() == "" || $customerInfo["firstname"] == "" || $customerInfo["lastname"] == "" || $customerInfo["email"] == "" || $billAddress->getTelephone() == "") {
 				$response["emptyFields"] = true;
@@ -428,7 +419,7 @@ class PaymentForm {
 			}
 
 			$result = $this->api->installmentplaninitforhostedsolution($params);
-			// check for checkout URL from response
+			/*check for checkout URL from response*/
 			$decodedResult = $this->jsonHelper->jsonDecode($result);
 
 			if (isset($decodedResult) && isset($decodedResult["CheckoutUrl"]) && $decodedResult["CheckoutUrl"] != "") {
@@ -437,25 +428,16 @@ class PaymentForm {
 				$response["checkoutUrl"] = $decodedResult["CheckoutUrl"];
 				$installmentPlan = $decodedResult["InstallmentPlan"]["InstallmentPlanNumber"];
 				$response["installmentPlanNumber"] = $decodedResult["InstallmentPlan"]["InstallmentPlanNumber"];
-//                return $response;
-				// store installment plan number in session, so that will not call init again & again if customer clicks on radio button
-				//$this->customerSession->setSplititInstallmentPlanNumber($installmentPlan);
+				/*store installment plan number in session, so that will not call init again & again if customer clicks on radio button*/
+				/*$this->customerSession->setSplititInstallmentPlanNumber($installmentPlan);*/
 				$this->logger->addDebug('======= installmentplaninit : response from splitit =======InstallmentPlanNumber : ' . $installmentPlan);
 				$this->logger->addDebug(print_r($decodedResult, TRUE));
-				// store information in splitit_hosted_solution for successExit and Async
+				/*store information in splitit_hosted_solution for successExit and Async*/
 				$customerId = 0;
 				if ($this->customerSession->isLoggedIn()) {
 					$customerData = $this->customerSession->getCustomer();
 					$customerId = $customerData->getId();
 				}
-//                $db_write = Mage::getSingleton('core/resource')->getConnection('core_write');
-				//                $tablePrefix = (string) Mage::getConfig()->getTablePrefix();
-				//                $cartItemCount = Mage::helper('checkout/cart')->getSummaryCount();
-				//                $grandTotal = $this->_checkoutSession->getQuote()->getGrandTotal();
-				//                $passedData = json_encode($params);
-				//
-				//                $sql = 'INSERT INTO `' . $tablePrefix . 'splitit_hosted_solution` (`installment_plan_number`, `quote_id`, `quote_item_count`, `customer_id`, `base_grand_total`, `additional_data`) VALUES ("' . $installmentPlan . '", ' . $quote_id . ', ' . $cartItemCount . ', ' . $customerId . ', ' . $grandTotal . ',\'' . $passedData . '\')';
-				//                $db_write->query($sql);
 			} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 				$i = 1;
@@ -475,7 +457,6 @@ class PaymentForm {
 			$response["data"] = $e->getMessage();
 		}
 		return $response;
-		//return $result;
 	}
 
 	public function installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, $numOfInstallments = null, $selectedInstallment) {
@@ -538,7 +519,6 @@ class PaymentForm {
 			$itemsArr[$i]["Price"] = array("Value" => round($item->getPrice(), 2), "CurrencyCode" => $currencyCode);
 			$itemsArr[$i]["Quantity"] = $item->getQty();
 			$itemsArr[$i]["Description"] = strip_tags($description);
-//            $itemsArr[$i]["Description"] = $product->getShortDescription();
 			$i++;
 		}
 		$params['CartData'] = array(
@@ -558,7 +538,7 @@ class PaymentForm {
 				"CancelExitURL" => $this->urlBuilder->getUrl('splititpaymentmethod/payment/cancel'),
 			),
 		);
-		// check for 3d secure yes or no
+		/*check for 3d secure yes or no*/
 		$_3d_secure = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_3d_secure");
 		$_3d_minimal_amount = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_3d_minimal_amount");
 		if (!$_3d_minimal_amount) {
@@ -575,7 +555,6 @@ class PaymentForm {
 			);
 		}
 		$params = array_merge($params, $paymentWizardData);
-		//print_r($params);die;
 		return $params;
 	}
 
@@ -726,7 +705,7 @@ class PaymentForm {
 		$depandOnCart = 0;
 
 		if ($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed") {
-			// Select Fixed installment setup
+			/*Select Fixed installment setup*/
 			$fixedInstallments = $this->helper->getConfig("payment/splitit_paymentredirect/fixed_installment");
 			$installments = explode(',', $fixedInstallments);
 			foreach ($installments as $n) {
@@ -735,7 +714,7 @@ class PaymentForm {
 				}
 			}
 		} else {
-			// Select Depanding on cart installment setup
+			/*Select Depanding on cart installment setup*/
 			$depandOnCart = 1;
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentredirect/depanding_on_cart_total_values");
 			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
@@ -781,11 +760,11 @@ class PaymentForm {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product")) {
 			$cart = $this->objectManager->get('\Magento\Checkout\Model\Cart');
-// retrieve quote items collection
-			//        $itemsCollection = $cart->getQuote()->getItemsCollection();
-			// retrieve quote items array
-			//        $items = $cart->getQuote()->getAllItems();
-			// get array of all items what can be display directly
+			/*retrieve quote items collection*/
+			/*$itemsCollection = $cart->getQuote()->getItemsCollection();*/
+			/*retrieve quote items array*/
+			/*$items = $cart->getQuote()->getAllItems();*/
+			/*get array of all items what can be display directly*/
 			$itemsVisible = $cart->getQuote()->getAllVisibleItems();
 			$allowedProducts = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_product_skus");
 			$allowedProducts = explode(',', $allowedProducts);
@@ -808,7 +787,6 @@ class PaymentForm {
 				}
 			}
 		}
-//        var_dump($check);
 		return $check;
 	}
 

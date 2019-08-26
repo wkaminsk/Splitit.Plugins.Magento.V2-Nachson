@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Copyright © 2015 Inchoo d.o.o.
- * created by Zoran Salamun(zoran.salamun@inchoo.net)
+ * Copyright © 2019 Splitit
+ * 
  */
 
 namespace Splitit\Paymentmethod\Controller\Showinstallmentprice;
@@ -12,13 +12,32 @@ use Magento\Framework\Controller\ResultFactory;
 class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 
 	private $helper;
+	private $helperData;
 	private $payment;
 	private $paymentForm;
+	private $cart;
+	public function __construct(
+		\Magento\Framework\App\Action\Context $context,
+		\Splitit\Paymentmethod\Helper\Data $helperData,
+		\Magento\Checkout\Model\Session $checkoutSession,
+		\Splitit\Paymentmethod\Model\PaymentForm $paymentForm,
+		\Splitit\Paymentmethod\Model\Payment $payment,
+		\Magento\Checkout\Model\Cart $cart
+	) {
+		$this->checkoutSession = $checkoutSession;
+		$this->paymentForm = $paymentForm;
+		$this->payment = $payment;
+		$this->helperData = $helperData;
+		$this->cart = $cart;
+		parent::__construct($context);
+	}
 
+	/**
+	 * Get number of available installments based on total
+	 * @return Json
+	 **/
 	public function execute() {
-		$this->helper = $this->_objectManager->create('Splitit\Paymentmethod\Helper\Data');
-		$this->payment = $this->_objectManager->create('Splitit\Paymentmethod\Model\Payment');
-		$this->paymentForm = $this->_objectManager->create('Splitit\Paymentmethod\Model\PaymentForm');
+		$this->helper = $this->helperData;
 		$response = [
 			"status" => true,
 			"help" => ['splitit_paymentmethod' => [], 'splitit_paymentredirect' => []],
@@ -37,14 +56,6 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 		if ($isEnable == "") {
 			$isEnable = 0;
 		}
-		if ($this->helper->getConfig("payment/splitit_paymentmethod/faq_link_enabled")) {
-			$response['help']['splitit_paymentmethod']["title"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title");
-			$response['help']['splitit_paymentmethod']["link"] = $this->helper->getConfig("payment/splitit_paymentmethod/faq_link_title_url");
-		}
-		if ($this->helper->getConfig("payment/splitit_paymentredirect/faq_link_enabled")) {
-			$response['help']['splitit_paymentredirect']["title"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title");
-			$response['help']['splitit_paymentredirect']["link"] = $this->helper->getConfig("payment/splitit_paymentredirect/faq_link_title_url");
-		}
 
 		$displayInstallmentPriceOnPage = '';
 		$numOfInstallmentForDisplay = '';
@@ -53,21 +64,25 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 		$installmetPriceText = "";
 		$SplititLogoSrc = "";
 		$SplititLogoBackgroundSrc = "";
+		$helpLink = "";
 		if ($splititLogoArray) {
 			$installmetPriceText = $splititLogoArray['price_text'];
 			$SplititLogoSrc = $splititLogoArray['logo_src'];
 			$SplititLogoBackgroundSrc = $splititLogoArray['bakcground_href'];
 			$displayInstallmentPriceOnPage = $splititLogoArray['installment_price_on_pages'];
 			$numOfInstallmentForDisplay = $splititLogoArray['installments_count'];
+			$helpLink = $splititLogoArray['help_link'];
+			$helpTitle = $splititLogoArray['help_title'];
 		}
 
 		if (is_null($installmetPriceText)) {
 			$installmetPriceText = "";
 		} else {
+			$installmetPriceText = str_replace('{NOI}', $numOfInstallmentForDisplay, $installmetPriceText);
 			$textArr = explode(' ', $installmetPriceText);
 			$changeindex = array_search('SPLITIT', $textArr);
 			if ($changeindex > -1) {
-				$replace = "<a href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
+				$replace = "<a id='tell-me-more' href='" . $SplititLogoBackgroundSrc . "' target='_blank'><img class='logoWidthSrc' src='" . $SplititLogoSrc . "' alt='SPLITIT'/></a>";
 				$textToChange = str_replace('SPLITIT', $replace, $textArr[$changeindex]);
 				unset($textArr[$changeindex]);
 				$newText = __(implode(' ', $textArr));
@@ -75,6 +90,9 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 				$newVal = array($changeindex => $textToChange);
 				$newList = array_merge(array_slice($newTextArr, 0, $changeindex), $newVal, array_slice($newTextArr, $changeindex));
 				$installmetPriceText = implode(' ', $newList);
+			}
+			if ($helpLink) {
+				$installmetPriceText = $installmetPriceText . " <a class='tellLink' id='tell-me-more' href='" . $helpLink . "' target='_blank'>" . $helpTitle . "</a>";
 			}
 		}
 
@@ -88,8 +106,7 @@ class Getinstallmentprice extends \Magento\Framework\App\Action\Action {
 		$response["numOfInstallmentForDisplay"] = $numOfInstallmentForDisplay;
 		$response["installmetPriceText"] = __($installmetPriceText);
 
-		$cart = $this->_objectManager->get("\Magento\Checkout\Model\Cart");
-		$totalAmount = $cart->getQuote()->getGrandTotal();
+		$totalAmount = $this->cart->getQuote()->getGrandTotal();
 		$response["grandTotal"] = number_format((float) $totalAmount, 2, '.', '');
 		$response["currencySymbol"] = $this->helper->getCurrencyData();
 

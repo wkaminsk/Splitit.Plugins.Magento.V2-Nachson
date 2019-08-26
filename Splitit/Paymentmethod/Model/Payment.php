@@ -35,6 +35,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	protected $_debugReplacePrivateDataKeys = ['number', 'exp_month', 'exp_year', 'cvc'];
 
 	protected $_apiModel = null;
+	protected $currency;
+	protected $storeManager;
+	protected $cart;
 	private $customerSession;
 	private $helper;
 	private $objectManager = null;
@@ -53,6 +56,10 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		\Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
 		\Magento\Directory\Model\CountryFactory $countryFactory,
 		\Magento\Customer\Model\Session $customerSession,
+		\Magento\Checkout\Model\Cart $cart,
+		\Magento\Framework\App\RequestInterface $request,
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
+		\Magento\Directory\Model\Currency $currency,
 		array $data = array()
 	) {
 		parent::__construct(
@@ -72,17 +79,15 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 		$this->_countryFactory = $countryFactory;
 
-		//$this->_minAmount = $this->getConfigData('min_order_total');
-		//$this->_maxAmount = $this->getConfigData('max_order_total');
-
 		$this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$this->_apiModel = $this->objectManager->get('Splitit\Paymentmethod\Model\Api');
 		$this->customerSession = $customerSession;
+		$this->storeManager = $storeManager;
+		$this->currency = $currency;
+		$this->cart = $cart;
 		$this->helper = $this->objectManager->get('Splitit\Paymentmethod\Helper\Data');
-		$cart = $this->objectManager->get("\Magento\Checkout\Model\Cart");
 		$this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
-//        $this->checkProductBasedAvailability();
-		$request = $this->objectManager->get('Magento\Framework\App\RequestInterface');
+       	/*$this->checkProductBasedAvailability();*/
 		$this->requestData = $request->getParams();
 	}
 
@@ -108,7 +113,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			$result = $this->createInstallmentPlan($api, $payment, $amount);
 			$result = json_decode($result, true);
 
-			// show error if there is any error from spliti it when click on place order
+			/*show error if there is any error from spliti it when click on place order*/
 			if (!$result["ResponseHeader"]["Succeeded"]) {
 				$errorMsg = "";
 				if (isset($result["serverError"])) {
@@ -152,7 +157,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 				false
 			);
 
-			// call InstallmentPlan-UpdatePlan-Params for update "RefOrderNumber" after order creation
+			/*call InstallmentPlan-UpdatePlan-Params for update "RefOrderNumber" after order creation*/
 			$updateStatus = $this->updateRefOrderNumber($api, $order);
 			if ($updateStatus["status"] == false) {
 
@@ -327,7 +332,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 			$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Refund", $params);
 			$result = json_decode($result, true);
-//            print_r($result);exit;
+
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 
@@ -373,25 +378,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	 * @return bool
 	 */
 	public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null) {
-//return parent::isAvailable($quote);
+
 		if ($this->checkAvailableInstallments($quote) && $this->checkProductBasedAvailability()) {
 			return parent::isAvailable($quote);
 		} else {
 			return false;
 		}
-		/*return parent::isAvailable($quote);
-			        if ($quote && (
-			            $quote->getBaseGrandTotal() < $this->_minAmount
-			            || ($this->_maxAmount && $quote->getBaseGrandTotal() > $this->_maxAmount))
-			        ) {
-			            return false;
-			        }
-
-			        if (!$this->getConfigData('api_key')) {
-			            return false;
-			        }
-
-		*/
 	}
 
 	/**
@@ -410,9 +402,8 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	private function isOneInstallment() {
 		$selectInstallmentSetup = $this->helper->getConfig('payment/splitit_paymentmethod/select_installment_setup');
 		$options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
-		$storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
-		$currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
-		$currencySymbol = $this->objectManager->get('\Magento\Directory\Model\Currency')->load($currentCurrencyCode)->getCurrencySymbol();
+		$currentCurrencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
+		$currencySymbol = $this->currency->load($currentCurrencyCode)->getCurrencySymbol();
 
 		$countInstallments = $installmentValue = 0;
 		if ($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed") {
@@ -520,7 +511,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		];
 		$response = ["status" => false, "errorMsg" => ""];
 		$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Update", $params);
-		//$result = $this->_apiModel->makePhpCurlRequestForUpdate($api, "InstallmentPlan/Update",$params);
 		$decodedResult = json_decode($result, true);
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {
 			$response["status"] = true;
@@ -551,8 +541,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		$depandOnCart = 0;
 
 		if ($selectInstallmentSetup == "" || $selectInstallmentSetup == "fixed") {
-			// Select Fixed installment setup
-
+			/*Select Fixed installment setup*/
 			$fixedInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/fixed_installment");
 			$installments = explode(',', $fixedInstallments);
 			if (count($installments) > 0) {
@@ -560,7 +549,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			}
 
 		} else {
-			// Select Depanding on cart installment setup
+			/*Select Depanding on cart installment setup*/
 			$depandOnCart = 1;
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
 			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
@@ -568,8 +557,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			foreach ($depandingOnCartInstallmentsArr as $data) {
 				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
 			}
-			$storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
-			$currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+			$currentCurrencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
 			if (count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])) {
 
 				foreach ($dataAsPerCurrency[$currentCurrencyCode] as $data) {
@@ -603,13 +591,13 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	public function checkProductBasedAvailability() {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentmethod/splitit_per_product")) {
-			$cart = $this->objectManager->get('\Magento\Checkout\Model\Cart');
-// retrieve quote items collection
-			//        $itemsCollection = $cart->getQuote()->getItemsCollection();
-			// retrieve quote items array
-			//        $items = $cart->getQuote()->getAllItems();
-			// get array of all items what can be display directly
-			$itemsVisible = $cart->getQuote()->getAllVisibleItems();
+			/*retrieve quote items collection*/
+			/*$itemsCollection = $cart->getQuote()->getItemsCollection();*/
+			/*retrieve quote items array*/
+			/*$items = $cart->getQuote()->getAllItems();*/
+			
+			/*get array of all items what can be display directly*/
+			$itemsVisible = $this->cart->getQuote()->getAllVisibleItems();
 			$allowedProducts = $this->helper->getConfig("payment/splitit_paymentmethod/splitit_product_skus");
 			$allowedProducts = explode(',', $allowedProducts);
 			if ($this->helper->getConfig("payment/splitit_paymentmethod/splitit_per_product") == 1) {
@@ -631,7 +619,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 				}
 			}
 		}
-//        var_dump($check);
 		return $check;
 	}
 

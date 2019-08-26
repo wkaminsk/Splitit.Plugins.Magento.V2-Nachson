@@ -31,13 +31,17 @@ class Success extends \Magento\Framework\App\Action\Action {
     protected $orderSender;
 
     public function __construct(
-    \Magento\Framework\App\Action\Context $context,
-    \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
-    \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-    \Magento\Sales\Api\Data\OrderInterface $order,
-    \Magento\Quote\Model\QuoteFactory $quoteFactory,
-    \Psr\Log\LoggerInterface $logger,
-    \Splitit\Paymentmethod\Helper\Data $helperData
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig, 
+        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        \Magento\Sales\Api\Data\OrderInterface $order,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
+        \Psr\Log\LoggerInterface $logger,
+        \Splitit\Paymentmethod\Helper\Data $helperData,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Splitit\Paymentmethod\Model\PaymentForm $paymentForm,
+        \Splitit\Paymentmethod\Model\Api $api,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -45,23 +49,20 @@ class Success extends \Magento\Framework\App\Action\Action {
         $this->order = $order;
         $this->quoteFactory = $quoteFactory;
         $this->logger = $logger;
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->checkoutSession = $objectManager->get('\Magento\Checkout\Model\Session');
-        $this->paymentForm = $objectManager->get('\Splitit\Paymentmethod\Model\PaymentForm');
-        $this->api = $objectManager->get('\Splitit\Paymentmethod\Model\Api');
-        $this->orderSender = $objectManager->get('\Magento\Sales\Model\Order\Email\Sender\OrderSender');
+        $this->checkoutSession = $checkoutSession;
+        $this->paymentForm = $paymentForm;
+        $this->api = $api;
+        $this->orderSender = $orderSender;
         parent::__construct($context);
     }
     
+    /**
+     * Success the order handle
+     * @return void
+     **/
     public function execute() {
         $order = $this->checkoutSession->getLastRealOrder();
-//        $orderId=$order->getEntityId();
-//        var_dump($orderId);
-//        $orderIncId=$order->getIncrementId();
-//        var_dump($orderIncId);
-//        var_dump($this->checkoutSession->getData());
-//        print_r($this->getRequest()->getParams());
-//        die("success controller");
+
         $params = $this->getRequest()->getParams();
         if(!$this->checkoutSession->getSplititInstallmentPlanNumber()){
             $this->checkoutSession->setSplititInstallmentPlanNumber($params['InstallmentPlanNumber']);
@@ -92,9 +93,9 @@ class Success extends \Magento\Framework\App\Action\Action {
             $payment->setIsTransactionApproved(true);
 
             $payment->registerAuthorizationNotification($grandTotal);
-//            $payment->setAdditionalInformation(
-//                [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $planDetails]
-//            );
+           /*$payment->setAdditionalInformation(
+               [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $planDetails]
+           );*/
             $orderObj->addStatusToHistory(
                     $orderObj->getStatus(), 'Payment InstallmentPlan was created with number ID: '
                     . $this->checkoutSession->getSplititInstallmentPlanNumber(), false
@@ -107,8 +108,8 @@ class Success extends \Magento\Framework\App\Action\Action {
                         false, 'Payment NotifyOrderShipped was sent with number ID: ' . $this->checkoutSession->getSplititInstallmentPlanNumber(), false
                 );
             }
-            //$orderObj->queueNewOrderEmail();
-//            $orderObj->sendNewOrderEmail();
+            /*$orderObj->queueNewOrderEmail();
+            $orderObj->sendNewOrderEmail();*/
             $this->orderSender->send($orderObj);
             $orderObj->save();
 
