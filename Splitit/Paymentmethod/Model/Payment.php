@@ -87,7 +87,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		$this->cart = $cart;
 		$this->helper = $this->objectManager->get('Splitit\Paymentmethod\Helper\Data');
 		$this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
-       	/*$this->checkProductBasedAvailability();*/
+		/*$this->checkProductBasedAvailability();*/
 		$this->requestData = $request->getParams();
 	}
 
@@ -516,10 +516,11 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			$response["status"] = true;
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 			$errorMsg = "";
+			$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 			$i = 1;
 			foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;
@@ -595,7 +596,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			/*$itemsCollection = $cart->getQuote()->getItemsCollection();*/
 			/*retrieve quote items array*/
 			/*$items = $cart->getQuote()->getAllItems();*/
-			
+
 			/*get array of all items what can be display directly*/
 			$itemsVisible = $this->cart->getQuote()->getAllVisibleItems();
 			$allowedProducts = $this->helper->getConfig("payment/splitit_paymentmethod/splitit_product_skus");

@@ -26,7 +26,6 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	 * @var \Magento\Framework\HTTP\Client\Curl
 	 */
 	protected $curl;
-	protected $storeManager;
 
 	/**
 	 * @param \Magento\Customer\Model\Session $customerSession
@@ -36,7 +35,6 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	 */
 	public function __construct(
 		\Magento\Customer\Model\Session $customerSession,
-		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Directory\Model\Currency $currency,
 		\Magento\Framework\HTTP\Client\Curl $curl,
 		\Magento\Checkout\Model\Cart $cart,
@@ -313,12 +311,13 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 	public function getErrorFromApi($decodedResult) {
 		$errorMsg = "";
-		if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
+		$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
+		if (isset($decodedResult["ResponseHeader"]) && $errorCount) {
 
 			$i = 1;
 			foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;
@@ -333,7 +332,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		$percentageOfOrder = $this->helper->getConfig('payment/splitit_paymentmethod/percentage_of_order');
 
 		$selectedInstallmentAmount = round($this->grandTotal / $selectedInstallment, 2);
-		
+
 		$firstInstallmentAmount = 0;
 		if ($firstPayment == "equal") {
 			$firstInstallmentAmount = $selectedInstallmentAmount;
@@ -402,9 +401,10 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		if (isset($approvalUrlRes["Global"]["ResponseResult"]["Errors"]) && count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
 			$i = 1;
 			$errorMsg = "";
+			$errorCount = count($approvalUrlRes["Global"]["ResponseResult"]["Errors"]);
 			foreach ($approvalUrlRes["Global"]["ResponseResult"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;

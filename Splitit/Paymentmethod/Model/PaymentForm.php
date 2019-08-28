@@ -295,10 +295,11 @@ class PaymentForm {
 			$response["status"] = true;
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 			$errorMsg = "";
+			$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 			$i = 1;
 			foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;
@@ -349,9 +350,10 @@ class PaymentForm {
 				if (isset($approvalUrlRes["Global"]["ResponseResult"]["Errors"]) && count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
 					$i = 1;
 					$errorMsg = "";
+					$errorCount = count($approvalUrlRes["Global"]["ResponseResult"]["Errors"]);
 					foreach ($approvalUrlRes["Global"]["ResponseResult"]["Errors"] as $key => $value) {
 						$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-						if ($i < count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
+						if ($i < $errorCount) {
 							$errorMsg .= ", ";
 						}
 						$i++;
@@ -367,10 +369,11 @@ class PaymentForm {
 
 			} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
+				$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 				$i = 1;
 				foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 					$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-					if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+					if ($i < $errorCount) {
 						$errorMsg .= ", ";
 					}
 					$i++;
@@ -441,9 +444,10 @@ class PaymentForm {
 			} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 				$i = 1;
+				$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 				foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 					$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-					if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+					if ($i < $errorCount) {
 						$errorMsg .= ", ";
 					}
 					$i++;
@@ -633,9 +637,10 @@ class PaymentForm {
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 			$errorMsg = "";
 			$i = 1;
+			$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 			foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;
@@ -663,9 +668,10 @@ class PaymentForm {
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
 			$errorMsg = "";
 			$i = 1;
+			$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
 			foreach ($decodedResult["ResponseHeader"]["Errors"] as $key => $value) {
 				$errorMsg .= "Code : " . $value["ErrorCode"] . " - " . $value["Message"];
-				if ($i < count($decodedResult["ResponseHeader"]["Errors"])) {
+				if ($i < $errorCount) {
 					$errorMsg .= ", ";
 				}
 				$i++;
