@@ -82,6 +82,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 	}
 
+	/**
+	 * Responsible for login to Splitit and generate session id
+	 *
+	 * @return array
+	 */
 	public function apiLogin($dataForLogin = array()) {
 
 		$apiUrl = $this->getApiUrl();
@@ -121,6 +126,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $response;
 	}
 
+	/**
+	 * Init call for installments
+	 *
+	 * @return array
+	 */
 	public function installmentPlanInit($selectedInstallment, $guestEmail) {
 		try {
 			$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
@@ -167,6 +177,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $response;
 	}
 
+	/**
+	 * Prepare data for installment init call
+	 *
+	 * @return array
+	 */
 	public function createDataForInstallmentPlanInit($selectedInstallment) {
 
 		$firstInstallmentAmount = $this->getFirstInstallmentAmount($selectedInstallment);
@@ -195,10 +210,6 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		if ($paymentAction == "authorize_capture") {
 			$autoCapture = true;
 		}
-		/*if (strlen($this->billingAddress->getTelephone()) < 5) {
-			throw new \Magento\Framework\Validator\Exception(__("Splitit does not accept phone number less than 5 digits."));
-		}*/
-
 		$params = [
 			"RequestHeader" => [
 				"SessionId" => $this->getorCreateSplititSessionid(),
@@ -261,6 +272,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $params;
 	}
 
+	/**
+	 * Get Api url
+	 *
+	 * @return array
+	 */
 	public function getApiUrl() {
 
 		$helper = $this->helper;
@@ -270,6 +286,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $helper->getConfig("payment/splitit_paymentmethod/api_url");
 	}
 
+	/**
+	 * Init for hosted solution
+	 * @param params array
+	 * @return json
+	 */
 	public function installmentplaninitforhostedsolution($params) {
 		try {
 			return $this->makePhpCurlRequest($this->getApiUrl(), "InstallmentPlan/Initiate", $params);
@@ -279,6 +300,12 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 	}
 
+	/**
+	 * Get installment details from Splitit
+	 * @param apiurl string
+	 * @param params array
+	 * @return json
+	 */
 	public function getInstallmentPlanDetails($apiUrl, $params) {
 		try {
 			return $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Get", $params);
@@ -287,6 +314,12 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		}
 	}
 
+	/**
+	 * Cancel installment details from Splitit
+	 * @param apiurl string
+	 * @param params array
+	 * @return json
+	 */
 	public function cancelInstallmentPlan($apiUrl, $params) {
 		try {
 			if (!$apiUrl) {
@@ -298,6 +331,12 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		}
 	}
 
+	/**
+	 * Update installment details from Splitit
+	 * @param apiurl string
+	 * @param params array
+	 * @return json
+	 */
 	public function updateRefOrderNumber($apiUrl = '', $params) {
 		try {
 			if (!$apiUrl) {
@@ -309,6 +348,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		}
 	}
 
+	/**
+	 * Get error details
+	 * @param decodedResult array
+	 * @return string
+	 */
 	public function getErrorFromApi($decodedResult) {
 		$errorMsg = "";
 		$errorCount = count($decodedResult["ResponseHeader"]["Errors"]);
@@ -326,6 +370,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $errorMsg;
 	}
 
+	/**
+	 * Get first insatallment amount
+	 * @param selectedInstallment int
+	 * @return float
+	 */
 	public function getFirstInstallmentAmount($selectedInstallment) {
 
 		$firstPayment = $this->helper->getConfig('payment/splitit_paymentmethod/first_payment');
@@ -352,6 +401,10 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return round($firstInstallmentAmount, 2);
 	}
 
+	/**
+	 * Get first insatallment amount
+	 * @return array
+	 */
 	public function checkForBillingFieldsEmpty() {
 		$customerInfo = $this->customerSession->getCustomer()->getData();
 		if (!isset($customerInfo["firstname"])) {
@@ -386,6 +439,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $response;
 	}
 
+	/**
+	 * Get approval url details from Splitit
+	 * @param decodedResult string
+	 * @return array
+	 */
 	public function getApprovalUrlResponse($decodedResult) {
 		$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
 		$intallmentPlan = $decodedResult["InstallmentPlan"]["InstallmentPlanNumber"];
@@ -421,6 +479,13 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $response;
 	}
 
+	/**
+	 * Curl requests
+	 * @param gwUrl string
+	 * @param method string
+	 * @param params array
+	 * @return json
+	 */
 	public function makePhpCurlRequest($gwUrl, $method, $params) {
 		$url = trim($gwUrl, '/') . '/api/' . $method . '?format=JSON';
 		$jsonData = json_encode($params);
@@ -470,6 +535,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 	}
 
+	/**
+	 * Get supported culture from Splitit
+	 * @param approvalUrl string
+	 * @return json
+	 */
 	public function getSplititSupportedCultures($approvalUrl) {
 		$url = $approvalUrl . '?format=json';
 		if (version_compare($this->helper->getMagentoVersion(), '2.2.1', '<')) {
@@ -508,6 +578,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $result;
 	}
 
+	/**
+	 * Get approval url response from Splitit
+	 * @param approvalUrl string
+	 * @return json
+	 */
 	public function getApprovalUrlResponseFromApi($approvalUrl) {
 		$url = $approvalUrl . '&format=json';
 		if (version_compare($this->helper->getMagentoVersion(), '2.2.1', '<')) {
@@ -550,6 +625,10 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		return $result;
 	}
 
+	/**
+	 * Set server down message
+	 * @return string
+	 */
 	public function getServerDownMsg() {
 		return "Failed to connect to splitit payment server. Please retry again later.";
 	}

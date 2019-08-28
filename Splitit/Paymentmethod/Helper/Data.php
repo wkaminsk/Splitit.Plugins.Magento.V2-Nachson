@@ -54,18 +54,30 @@ class Data extends AbstractHelper {
 		$this->_getMethodFee();
 	}
 
+	/**
+	 * To get the config value
+	 * @return string
+	 */
 	public function getConfig($config_path) {
 		return $this->scopeConfig->getValue(
 			$config_path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE
 		);
 	}
 
+	/**
+	 * To json encode
+	 * @return Json
+	 */
 	public function encodeData($dataToEncode) {
 
 		$encodedData = $this->jsonObject->jsonEncode($dataToEncode);
 		return $encodedData;
 	}
 
+	/**
+	 * To get the currency symbol
+	 * @return string
+	 */
 	public function getCurrencyData() {
 		$currencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
 		$currencyRate = $this->storeManager->getStore()->getCurrentCurrencyRate();
@@ -74,6 +86,10 @@ class Data extends AbstractHelper {
 		return $currencySymbol = $currency->getCurrencySymbol();
 	}
 
+	/**
+	 * To get Splitit culture names
+	 * @return string
+	 */
 	public function getCultureName($paymentForm = false) {
 		$storelang = $this->storeLocale->getLocale();
 		$splititSupportedCultures = $this->getSplititSupportedCultures();
@@ -89,6 +105,10 @@ class Data extends AbstractHelper {
 		}
 	}
 
+	/**
+	 * To get Splitit supported culture names
+	 * @return array
+	 */
 	public function getSplititSupportedCultures() {
 		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 		$api = $objectManager->get('Splitit\Paymentmethod\Model\Api');
@@ -239,7 +259,7 @@ class Data extends AbstractHelper {
 		$text = [];
 
 		if ($this->getConfig("payment/splitit_paymentredirect/active") && $this->getConfig("payment/splitit_paymentredirect/enable_installment_price")) {
-			
+
 			$text['price_text'] = 'or {NOI} interest-free payments of {AMOUNT} with SPLITIT';
 			$text['logo_src'] = $this->getConfig("payment/splitit_paymentredirect/splitit_logo_src");
 			$text['bakcground_href'] = $this->getConfig("payment/splitit_paymentredirect/splitit_logo__bakcground_href");

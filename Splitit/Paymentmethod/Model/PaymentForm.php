@@ -74,11 +74,14 @@ class PaymentForm {
 		$this->productModel = $productModel;
 	}
 
+	/**
+	 * Get order redirect url for hosted
+	 * @return array
+	 */
 	public function orderPlaceRedirectUrl() {
 
 		$api = $this->_initApi();
 
-//        $this->_checkoutSession->setInstallmentsInDropdownForPaymentForm(explode(',',$this->helper->getConfig('payment/splitit_paymentredirect/fixed_installment')));
 		$response = array(
 			"status" => false,
 			"error" => "",
@@ -145,6 +148,12 @@ class PaymentForm {
 		}
 	}
 
+	/**
+	 * Validation for billing fields
+	 * @param billingAddress object
+	 * @param customerInfo object
+	 * @return array
+	 */
 	public function checkForBillingFieldsEmpty($billingAddress, $customerInfo) {
 
 		$response = ["errorMsg" => "", "successMsg" => "", "status" => false];
@@ -171,6 +180,10 @@ class PaymentForm {
 		return $response;
 	}
 
+	/**
+	 * get checkout redirect url
+	 * @return array
+	 */
 	public function getCheckoutRedirectUrl() {
 		$data = $this->orderPlaceRedirectUrl();
 		return $data['checkoutUrl'];
@@ -187,12 +200,6 @@ class PaymentForm {
 		$terms = $info->getAdditionalInformation('terms');
 		$errorMsg = '';
 
-		/* if (empty($no)) {
-			          $errorMsg = $this->_getHelper()->__('Installments are required fields');
-		*/
-		/* if (empty($terms)) {
-			          $errorMsg = $this->_getHelper()->__('You should accept terms and conditions');
-		*/
 		if ($errorMsg) {
 			throw new \Magento\Framework\Validator\Exception($errorMsg);
 		}
@@ -200,9 +207,15 @@ class PaymentForm {
 		return $this;
 	}
 
+	/**
+	 * capture the payment and update
+	 * @param payment object
+	 * @param sessionId string
+	 * @param transactionId string
+	 * @return array
+	 */
 	public function splititCapture($payment, $sessionId, $transactionId) {
 		$api = $this->getApi();
-		//$authNumber = $payment->getAuthorizationTransaction()->getTxnId();
 		$params = array(
 			"RequestHeader" => array("SessionId" => $sessionId),
 			"InstallmentPlanNumber" => $transactionId,
@@ -222,6 +235,13 @@ class PaymentForm {
 		return $result;
 	}
 
+	/**
+	 * create the installment plan
+	 * @param api object
+	 * @param payment object
+	 * @param amount float
+	 * @return array
+	 */
 	protected function createInstallmentPlan($api, $payment, $amount) {
 		$cultureName = $this->helper->getCultureName(true);
 		$params = array(
@@ -268,10 +288,21 @@ class PaymentForm {
 		return $result;
 	}
 
+	/**
+	 * get number of installments
+	 * @param api object
+	 * @return int
+	 */
 	public function getValidNumberOfInstallments($api) {
 		return $result = $api->getValidNumberOfInstallments();
 	}
 
+	/**
+	 * Update order in magento
+	 * @param api object
+	 * @param order int
+	 * @return array
+	 */
 	public function updateRefOrderNumber($api, $order) {
 
 		$params = array(
@@ -310,6 +341,12 @@ class PaymentForm {
 		return $response;
 	}
 
+	/**
+	 * initialization of plam
+	 * @param api object
+	 * @param selectedInstallment int
+	 * @return array
+	 */
 	public function installmentplaninit($api, $selectedInstallment) {
 		$session = $this->_checkoutSession;
 		$quote_id = $session->getQuoteId();
@@ -389,6 +426,10 @@ class PaymentForm {
 		return $response;
 	}
 
+	/**
+	 * initialization of plam
+	 * @return array
+	 */
 	public function installmentplaninitForHostedSolution() {
 		$session = $this->_checkoutSession;
 		$quote_id = $session->getQuoteId();
@@ -463,6 +504,16 @@ class PaymentForm {
 		return $response;
 	}
 
+	/**
+	 * initialization of plan params
+	 * @param billAddress object
+	 * @param customerInfo object
+	 * @param firstInstallmentAmount int
+	 * @param cultureName string
+	 * @param numOfInstallments int
+	 * @param selectedInstallment int
+	 * @return array
+	 */
 	public function installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, $numOfInstallments = null, $selectedInstallment) {
 		$paymentAction = $this->helper->getConfig("payment/splitit_paymentredirect/payment_action");
 		$autoCapture = false;
@@ -481,7 +532,6 @@ class PaymentForm {
 					"Value" => round($this->_checkoutSession->getQuote()->getGrandTotal(), 2),
 					"CurrencyCode" => $this->_store->getCurrentCurrency()->getCode(),
 				),
-				//"NumberOfInstallments" => $selectedInstallment,
 				"PurchaseMethod" => "ECommerce",
 				"RefOrderNumber" => $this->_checkoutSession->getLastOrderId(),
 				"AutoCapture" => $autoCapture,
@@ -562,6 +612,10 @@ class PaymentForm {
 		return $params;
 	}
 
+	/**
+	 * Get first insatallment amount for hosted
+	 * @return float
+	 */
 	public function getFirstInstallmentAmountHosted() {
 		$firstPayment = $this->helper->getConfig('payment/splitit_paymentredirect/first_payment');
 		$percentageOfOrder = $this->helper->getConfig('payment/splitit_paymentredirect/percentage_of_order');
@@ -583,6 +637,11 @@ class PaymentForm {
 		return round($firstInstallmentAmount, 2);
 	}
 
+	/**
+	 * Get first insatallment amount
+	 * @param selectedInstallment int
+	 * @return float
+	 */
 	public function getFirstInstallmentAmount($selectedInstallment) {
 		$firstPayment = $this->helper->getConfig('payment/pis_cc/first_payment');
 		$percentageOfOrder = $this->helper->getConfig('payment/pis_cc/percentage_of_order');
@@ -611,6 +670,11 @@ class PaymentForm {
 		return round($firstInstallmentAmount, 2);
 	}
 
+	/**
+	 * Get installment details from Splitit
+	 * @param api object
+	 * @return array
+	 */
 	public function getInstallmentPlanDetails($api) {
 		$params = array(
 			"RequestHeader" => array(
@@ -651,6 +715,12 @@ class PaymentForm {
 		return $response;
 	}
 
+	/**
+	 * Cancel installment details from Splitit
+	 * @param api object
+	 * @param installmentPlanNumber string
+	 * @return array
+	 */
 	public function cancelInstallmentPlan($api, $installmentPlanNumber) {
 		$params = array(
 			"RequestHeader" => array(
@@ -700,6 +770,12 @@ class PaymentForm {
 		}
 	}
 
+	/**
+	 * Determine method availability based on quote amount and config data
+	 *
+	 * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+	 * @return bool
+	 */
 	public function checkAvailableInstallments($quote) {
 		$installments = array();
 		$installmentsInDropdown = array();
@@ -762,15 +838,14 @@ class PaymentForm {
 		return false;
 	}
 
+	/**
+	 * Check product based availability of module
+	 * @return bool
+	 */
 	public function checkProductBasedAvailability() {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product")) {
 			$cart = $this->objectManager->get('\Magento\Checkout\Model\Cart');
-			/*retrieve quote items collection*/
-			/*$itemsCollection = $cart->getQuote()->getItemsCollection();*/
-			/*retrieve quote items array*/
-			/*$items = $cart->getQuote()->getAllItems();*/
-			/*get array of all items what can be display directly*/
 			$itemsVisible = $cart->getQuote()->getAllVisibleItems();
 			$allowedProducts = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_product_skus");
 			$allowedProducts = explode(',', $allowedProducts);

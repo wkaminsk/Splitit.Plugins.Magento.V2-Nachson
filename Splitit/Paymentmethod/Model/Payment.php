@@ -393,9 +393,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	 * @return bool
 	 */
 	public function canUseForCurrency($currencyCode) {
-		/*if (!in_array($currencyCode, $this->_supportedCurrencyCodes)) {
-			            return false;
-		*/
 		return true;
 	}
 
@@ -451,6 +448,13 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		return false;
 	}
 
+	/**
+	 * Create installment plan to Splitit
+	 * @param approvalUrl string
+	 * @param payment object
+	 * @param amount float
+	 * @return json
+	 */
 	protected function createInstallmentPlan($api, $payment, $amount) {
 		$cultureName = $this->helper->getCultureName();
 		$this->_logger->error(__('creating installment plan-----'));
@@ -496,6 +500,12 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		return $result;
 	}
 
+	/**
+	 * Update order in magento
+	 * @param api object
+	 * @param order int
+	 * @return array
+	 */
 	public function updateRefOrderNumber($api, $order) {
 		$params = [
 			"RequestHeader" => [
@@ -532,6 +542,11 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 	}
 
+	/**
+	 * Check available installments
+	 * @param quote object
+	 * @return bool
+	 */
 	public function checkAvailableInstallments($quote) {
 		$installments = array();
 		$totalAmount = $this->grandTotal;
@@ -589,6 +604,10 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 	}
 
+	/**
+	 * Check product based availability of module
+	 * @return bool
+	 */
 	public function checkProductBasedAvailability() {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentmethod/splitit_per_product")) {
