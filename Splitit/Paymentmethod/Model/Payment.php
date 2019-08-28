@@ -28,8 +28,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 	protected $_countryFactory;
 
-	//protected $_minAmount = null;
-	//protected $_maxAmount = null;
 	protected $_supportedCurrencyCodes = array('USD');
 
 	protected $_debugReplacePrivateDataKeys = ['number', 'exp_month', 'exp_year', 'cvc'];
@@ -87,7 +85,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		$this->cart = $cart;
 		$this->helper = $this->objectManager->get('Splitit\Paymentmethod\Helper\Data');
 		$this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
-		/*$this->checkProductBasedAvailability();*/
 		$this->requestData = $request->getParams();
 	}
 
@@ -611,10 +608,6 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	public function checkProductBasedAvailability() {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentmethod/splitit_per_product")) {
-			/*retrieve quote items collection*/
-			/*$itemsCollection = $cart->getQuote()->getItemsCollection();*/
-			/*retrieve quote items array*/
-			/*$items = $cart->getQuote()->getAllItems();*/
 
 			/*get array of all items what can be display directly*/
 			$itemsVisible = $this->cart->getQuote()->getAllVisibleItems();

@@ -20,8 +20,6 @@ class PaymentForm {
 	protected $_isInitializeNeeded = true;
 	protected $_canUseInternal = true;
 	protected $_canUseForMultishipping = false;
-//    protected $_formBlockType = 'pis_payment/form_pisPaymentForm';
-	//    protected $_infoBlockType = 'pis_payment/info_pis';
 	protected $_canAuthorize = true;
 	protected $_canCapture = true;
 	protected $_canCapturePartial = false;
@@ -29,9 +27,7 @@ class PaymentForm {
 	protected $_canRefund = true;
 	protected $_canRefundInvoicePartial = true;
 	protected $_canVoid = false;
-	//protected $_canUseInternal              = false;
 	protected $_canUseCheckout = true;
-	//protected $_infoBlockType = 'pis_payment/info_pis';
 	protected $_canCancel = false;
 	protected $api;
 	protected $helper;
