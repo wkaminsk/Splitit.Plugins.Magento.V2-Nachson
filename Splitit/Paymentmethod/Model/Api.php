@@ -511,27 +511,6 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	}
 
 	/**
-	 * Get supported culture from Splitit
-	 * @param approvalUrl string
-	 * @return json
-	 */
-	public function getSplititSupportedCultures($approvalUrl) {
-		$url = $approvalUrl . '?format=json';
-		try {
-
-			$this->curl->setOption(CURLOPT_FOLLOWLOCATION, 1);
-			$this->curl->setOption(CURLOPT_SSL_VERIFYPEER, 0);
-			$this->curl->get($url);
-			$result = $this->curl->getBody();
-
-		} catch (\Exception $e) {
-			$result["errorMsg"] = $this->getServerDownMsg();
-			$result = json_encode($result);
-		}
-		return $result;
-	}
-
-	/**
 	 * Get approval url response from Splitit
 	 * @param approvalUrl string
 	 * @return json

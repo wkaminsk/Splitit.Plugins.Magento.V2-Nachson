@@ -29,6 +29,7 @@ class Data extends AbstractHelper {
 	public $storeManager;
 	public $currency;
 	public $storeLocale;
+	public $SupportedCulturesSource;
 
 	public static $selectedIns;
 
@@ -42,6 +43,7 @@ class Data extends AbstractHelper {
 		\Magento\Framework\Json\Helper\Data $jsonObject,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Directory\Model\Currency $currency,
+		\Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures $SupportedCulturesSource,
 		\Magento\Framework\Locale\Resolver $storeLocale
 	) {
 		$this->checkoutSession = $checkoutSession;
@@ -50,6 +52,7 @@ class Data extends AbstractHelper {
 		$this->storeManager = $storeManager;
 		$this->currency = $currency;
 		$this->storeLocale = $storeLocale;
+		$this->SupportedCulturesSource = $SupportedCulturesSource;
 		parent::__construct($context);
 		$this->_getMethodFee();
 	}
@@ -110,10 +113,8 @@ class Data extends AbstractHelper {
 	 * @return array
 	 */
 	public function getSplititSupportedCultures() {
-		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$api = $objectManager->get('Splitit\Paymentmethod\Model\Api');
-		$apiUrl = $api->getApiUrl();
-		$getSplititSupportedCultures = $api->getSplititSupportedCultures($apiUrl . "api/Infrastructure/SupportedCultures");
+		$apiUrl = $this->SupportedCulturesSource->getApiUrl();
+		$getSplititSupportedCultures = $this->SupportedCulturesSource->getSplititSupportedCultures($apiUrl . "api/Infrastructure/SupportedCultures");
 
 		$decodedResult = json_decode($getSplititSupportedCultures, true);
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1 && count($decodedResult["SupportedCultures"])) {
