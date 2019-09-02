@@ -12,7 +12,7 @@ class Checksetting extends \Magento\Framework\App\Action\Action {
 
     /**
      * Splitit Helper
-     * @var Splitit\Helper\Data 
+     * @var Splitit\Paymentmethod\Helper\Data 
      */
     private $helper;
 
@@ -25,12 +25,12 @@ class Checksetting extends \Magento\Framework\App\Action\Action {
     /**
      * Contructor
      * @param \Magento\Framework\App\Action\Context $context
-     * @param \Splitit\Helper\Data $helper
+     * @param \Splitit\Paymentmethod\Helper\Data $helper
      * @param \Splitit\Paymentmethod\Model\Api $apiModelObj
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Splitit\Helper\Data $helper,
+        \Splitit\Paymentmethod\Helper\Data $helper,
         \Splitit\Paymentmethod\Model\Api $apiModelObj
     ) {
         $this->helper = $helper;
