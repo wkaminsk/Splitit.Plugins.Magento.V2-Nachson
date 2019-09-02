@@ -14,8 +14,11 @@ var jqueryInterval = setInterval(function(){
         jqueryIsHere = 1;
         clearInterval(jqueryInterval);
         //splitit_fee_types();
-        splitit_fee_table();
-        runMyScripts();
+        jQuery(document).ready(function(){
+          splitit_fee_table();
+          runMyScripts();
+        })
+        
       }else{
         console.log('Element not found!!');
       }

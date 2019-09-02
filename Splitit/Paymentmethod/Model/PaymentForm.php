@@ -52,7 +52,7 @@ class PaymentForm {
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Checkout\Model\Session $_checkoutSession,
-		\Magento\Catalog\Model\Product $productModel
+		\Magento\Catalog\Model\ProductRepository $productModel
 	) {
 		$this->api = $api;
 		$this->quoteValidator = $quoteValidator;
@@ -563,7 +563,7 @@ class PaymentForm {
 		$i = 0;
 		$currencyCode = $this->_store->getCurrentCurrency()->getCode();
 		foreach ($cart->getAllItems() as $item) {
-			$description = $this->productModel->load($item->getProductId())->getShortDescription();
+			$description = $this->productModel->getById($item->getProductId())->getShortDescription();
 			$itemsArr[$i]["Name"] = $item->getName();
 			$itemsArr[$i]["SKU"] = $item->getSku();
 			$itemsArr[$i]["Price"] = array("Value" => round($item->getPrice(), 2), "CurrencyCode" => $currencyCode);

@@ -39,7 +39,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		\Magento\Framework\HTTP\Client\Curl $curl,
 		\Magento\Checkout\Model\Cart $cart,
 		\Magento\Directory\Model\CountryFactory $countryFactory,
-		\Magento\Catalog\Model\Product $productModel,
+		\Magento\Catalog\Model\ProductRepository $productModel,
 		\Psr\Log\LoggerInterface $logger,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	) {
@@ -252,7 +252,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		$i = 0;
 		$currencyCode = $this->currencyCode;
 		foreach ($cart->getAllItems() as $item) {
-			$description = $this->productModel->load($item->getProductId())->getShortDescription();
+			$description = $this->productModel->getById($item->getProductId())->getShortDescription();
 			$itemsArr[$i]["Name"] = $item->getName();
 			$itemsArr[$i]["SKU"] = $item->getSku();
 			$itemsArr[$i]["Price"] = array("Value" => round($item->getPrice(), 2), "CurrencyCode" => $currencyCode);
