@@ -6,10 +6,7 @@ use Magento\Framework\Event\ObserverInterface;
 
 class PaymentCancel implements ObserverInterface
 {
-    /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    protected $objectManager;
+
     protected $_paymentModel;
     protected $_apiModel;
     protected $customerSession;
@@ -22,14 +19,14 @@ class PaymentCancel implements ObserverInterface
     public function __construct(
         \Splitit\Paymentmethod\Model\Payment $paymentModel,
         \Magento\Customer\Model\Session $customerSession,
+        \Splitit\Paymentmethod\Model\Api $apiModel,
         \Psr\Log\LoggerInterface $logger
     )
     {
         $this->_logger = $logger;
         $this->customerSession = $customerSession;
         $this->_paymentModel = $paymentModel;
-        $this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->_apiModel = $this->objectManager->get('Splitit\Paymentmethod\Model\Api');
+        $this->_apiModel = $apiModel;
     }
 
     /**

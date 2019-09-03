@@ -41,11 +41,11 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		\Magento\Directory\Model\CountryFactory $countryFactory,
 		\Magento\Catalog\Model\ProductRepository $productModel,
 		\Psr\Log\LoggerInterface $logger,
+		\Splitit\Paymentmethod\Helper\Data $helper,
 		\Magento\Store\Model\StoreManagerInterface $storeManager
 	) {
 
-		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
+		$this->helper = $helper;
 		$this->quote = $cart->getQuote();
 		$this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
 		$this->shippingAddress = $cart->getQuote()->getShippingAddress();

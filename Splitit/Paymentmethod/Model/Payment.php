@@ -36,9 +36,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 	protected $currency;
 	protected $storeManager;
 	protected $cart;
+	protected $sourceInstallments;
 	private $customerSession;
 	private $helper;
-	private $objectManager = null;
 	private $grandTotal = null;
 	private $requestData = null;
 
@@ -58,6 +58,9 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		\Magento\Framework\App\RequestInterface $request,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Directory\Model\Currency $currency,
+		\Splitit\Paymentmethod\Model\Api $apiModel,
+		\Splitit\Paymentmethod\Helper\Data $helper,
+		\Splitit\Paymentmethod\Model\Source\Installments $sourceInstallments,
 		array $data = array()
 	) {
 		parent::__construct(
@@ -76,14 +79,14 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		);
 
 		$this->_countryFactory = $countryFactory;
-
-		$this->objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$this->_apiModel = $this->objectManager->get('Splitit\Paymentmethod\Model\Api');
+		
+		$this->_apiModel = $apiModel;
 		$this->customerSession = $customerSession;
 		$this->storeManager = $storeManager;
 		$this->currency = $currency;
 		$this->cart = $cart;
-		$this->helper = $this->objectManager->get('Splitit\Paymentmethod\Helper\Data');
+		$this->sourceInstallments = $sourceInstallments;
+		$this->helper = $helper;
 		$this->grandTotal = round($cart->getQuote()->getGrandTotal(), 2);
 		$this->requestData = $request->getParams();
 	}
@@ -395,7 +398,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 	private function isOneInstallment() {
 		$selectInstallmentSetup = $this->helper->getConfig('payment/splitit_paymentmethod/select_installment_setup');
-		$options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
+		$options = $this->sourceInstallments->toOptionArray();
 		$currentCurrencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
 		$currencySymbol = $this->currency->load($currentCurrencyCode)->getCurrencySymbol();
 
@@ -549,7 +552,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		$totalAmount = $this->grandTotal;
 		$selectInstallmentSetup = $this->getConfigData('select_installment_setup');
 
-		$options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
+		$options = $this->sourceInstallments->toOptionArray();
 
 		$depandOnCart = 0;
 

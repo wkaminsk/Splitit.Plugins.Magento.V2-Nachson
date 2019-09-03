@@ -11,16 +11,19 @@ class AddFeeToOrderObserver implements ObserverInterface
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
+    protected $logger;
 
     /**
      * AddFeeToOrderObserver constructor.
      * @param \Magento\Checkout\Model\Session $checkoutSession
      */
     public function __construct(
-        \Magento\Checkout\Model\Session $checkoutSession
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Psr\Log\LoggerInterface $logger
     )
     {
         $this->_checkoutSession = $checkoutSession;
+        $this->logger = $logger;
     }
 
     /**
@@ -31,15 +34,13 @@ class AddFeeToOrderObserver implements ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $logger = $objectManager->get('Psr\Log\LoggerInterface');
-        $logger->debug('fee_amount=0 , base_fee_amount=0');
+        $this->logger->debug('fee_amount=0 , base_fee_amount=0');
         
         $quote = $observer->getEvent()->getQuote();
         $feeAmount = $quote->getFeeAmount();
         
-        $logger->debug($quote->getId());
-        $logger->debug('feeAmount='.$feeAmount);
+        $this->logger->debug($quote->getId());
+        $this->logger->debug('feeAmount='.$feeAmount);
         
         
         $baseFeeAmount = $quote->getBaseFeeAmount();
@@ -51,7 +52,7 @@ class AddFeeToOrderObserver implements ObserverInterface
         $order->setData('fee_amount', $feeAmount);
         $order->setData('base_fee_amount', $baseFeeAmount);
 
-        $logger->debug('fee_amount='.$feeAmount.', base_fee_amount='.$baseFeeAmount);
+        $this->logger->debug('fee_amount='.$feeAmount.', base_fee_amount='.$baseFeeAmount);
 
         return $this;
     }

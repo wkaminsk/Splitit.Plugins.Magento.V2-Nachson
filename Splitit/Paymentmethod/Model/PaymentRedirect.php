@@ -36,7 +36,6 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 	protected $quote;
 	protected $jsonHelper;
 	protected $_store;
-	protected $objectManager;
 	protected $paymentForm;
 	private $requestData = null;
 
@@ -55,6 +54,8 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Checkout\Model\Session $_checkoutSession,
+		\Splitit\Paymentmethod\Helper\Data $helper,
+		\Magento\Framework\App\RequestInterface $request,
 		\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
 		\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
 		array $data = array()
@@ -79,10 +80,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 		$this->jsonHelper = $jsonHelper;
 		$this->paymentForm = $paymentForm;
 		$this->quote = $this->_checkoutSession->getQuote();
-		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$this->objectManager = $objectManager;
-		$this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
-		$request = $objectManager->get('Magento\Framework\App\RequestInterface');
+		$this->helper = $helper;
 		$this->requestData = $request->getParams();
 	}
 

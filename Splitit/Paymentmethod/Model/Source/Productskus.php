@@ -3,7 +3,28 @@
 namespace Splitit\Paymentmethod\Model\Source;
 
 class Productskus {
+	
 	public $skus;
+	protected $productCollectionFactory;
+	protected $productStatus;
+	protected $productVisibility;
+	protected $iterator;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct(
+		\Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
+		\Magento\Catalog\Model\Product\Attribute\Source\Status $productStatus,
+		\Magento\Catalog\Model\Product\Visibility $productVisibility,
+		\Magento\Framework\Model\ResourceModel\Iterator $iterator
+	) {
+		$this->productCollectionFactory = $productCollectionFactory;
+		$this->productStatus = $productStatus;
+		$this->productVisibility = $productVisibility;
+		$this->iterator = $iterator;
+	}
+
 	/**
 	 * Get options for product list
 	 *
@@ -11,14 +32,10 @@ class Productskus {
 	 */
 	public function toOptionArray($params) {
 		$this->skus = array();
-		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$productCollectionFactory = $objectManager->get('Magento\Catalog\Model\ResourceModel\Product\CollectionFactory');
-		$productStatus = $objectManager->get('Magento\Catalog\Model\Product\Attribute\Source\Status');
-		$productVisibility = $objectManager->get('Magento\Catalog\Model\Product\Visibility');
-		$collection = $productCollectionFactory->create();
+		$collection = $this->productCollectionFactory->create();
 		$collection->addAttributeToSelect('*');
 		$collection->addAttributeToSort('name');
-		$collection->addAttributeToFilter('status', ['in' => $productStatus->getVisibleStatusIds()]);
+		$collection->addAttributeToFilter('status', ['in' => $this->productStatus->getVisibleStatusIds()]);
 		if (isset($params['term']) && $params['term']) {
 			$collection->addAttributeToFilter(array(
 				array('attribute' => 'name', 'like' => '%' . $params['term'] . '%'),
@@ -28,10 +45,9 @@ class Productskus {
 		if (isset($params['prodIds']) && $params['prodIds']) {
 			$collection->addAttributeToFilter('entity_id', ['in' => $params['prodIds']]);
 		}
-		$collection->setVisibility($productVisibility->getVisibleInSiteIds());
-		$iterator = $objectManager->get('\Magento\Framework\Model\ResourceModel\Iterator');
+		$collection->setVisibility($this->productVisibility->getVisibleInSiteIds());
 
-		$iterator->walk($collection->getSelect(), array(array($this, 'callBackProd')));
+		$this->iterator->walk($collection->getSelect(), array(array($this, 'callBackProd')));
 		return $this->skus;
 
 	}

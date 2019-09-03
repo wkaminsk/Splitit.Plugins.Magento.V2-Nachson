@@ -5,7 +5,6 @@
  *
  * @category    Splitit
  * @package     Splitit_Paymentmethod
- * @author      Ivan Weiler & Stjepan Udovičić
  * @copyright   Splitit (http://Splitit.net)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -37,10 +36,12 @@ class PaymentForm {
 	protected $quoteValidator;
 	protected $jsonHelper;
 	protected $_store;
-	protected $objectManager;
 	protected $logger;
 	protected $orderPlace;
 	protected $productModel;
+	protected $sourceInstallments;
+	protected $storeManager;
+	protected $cart;
 
 	public function __construct(
 		\Psr\Log\LoggerInterface $logger,
@@ -52,6 +53,10 @@ class PaymentForm {
 		\Magento\Framework\UrlInterface $urlBuilder,
 		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Checkout\Model\Session $_checkoutSession,
+		\Splitit\Paymentmethod\Helper\Data $helper,
+		\Splitit\Paymentmethod\Model\Source\Installments $sourceInstallments,
+		\Magento\Store\Model\StoreManagerInterface $storeManager,
+		\Magento\Checkout\Model\Cart $cart,
 		\Magento\Catalog\Model\ProductRepository $productModel
 	) {
 		$this->api = $api;
@@ -64,10 +69,11 @@ class PaymentForm {
 		$this->jsonHelper = $jsonHelper;
 		$this->logger = $logger;
 		$this->quote = $this->_checkoutSession->getQuote();
-		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-		$this->objectManager = $objectManager;
-		$this->helper = $objectManager->get('Splitit\Paymentmethod\Helper\Data');
+		$this->helper = $helper;
 		$this->productModel = $productModel;
+		$this->sourceInstallments = $sourceInstallments;
+		$this->storeManager = $storeManager;
+		$this->cart = $cart;
 	}
 
 	/**
@@ -778,7 +784,7 @@ class PaymentForm {
 		$totalAmount = $quote->getGrandTotal();
 		$selectInstallmentSetup = $this->helper->getConfig("payment/splitit_paymentredirect/select_installment_setup");
 
-		$options = $this->objectManager->get('Splitit\Paymentmethod\Model\Source\Installments')->toOptionArray();
+		$options = $this->sourceInstallments->toOptionArray();
 
 		$depandOnCart = 0;
 
@@ -800,8 +806,7 @@ class PaymentForm {
 			foreach ($depandingOnCartInstallmentsArr as $data) {
 				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
 			}
-			$storeManager = $this->objectManager->get('\Magento\Store\Model\StoreManagerInterface');
-			$currentCurrencyCode = $storeManager->getStore()->getCurrentCurrencyCode();
+			$currentCurrencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
 			if (count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])) {
 
 				foreach ($dataAsPerCurrency[$currentCurrencyCode] as $data) {
@@ -841,7 +846,7 @@ class PaymentForm {
 	public function checkProductBasedAvailability() {
 		$check = TRUE;
 		if ($this->helper->getConfig("payment/splitit_paymentredirect/splitit_per_product")) {
-			$cart = $this->objectManager->get('\Magento\Checkout\Model\Cart');
+			$cart = $this->cart;
 			$itemsVisible = $cart->getQuote()->getAllVisibleItems();
 			$allowedProducts = $this->helper->getConfig("payment/splitit_paymentredirect/splitit_product_skus");
 			$allowedProducts = explode(',', $allowedProducts);

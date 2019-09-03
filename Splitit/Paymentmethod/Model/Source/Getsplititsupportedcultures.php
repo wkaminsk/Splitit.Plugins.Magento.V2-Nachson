@@ -3,7 +3,7 @@ namespace Splitit\Paymentmethod\Model\Source;
 
 class Getsplititsupportedcultures {
 
-	public $helper;
+	public $scopeConfig;
 	/**
 	 * @var \Magento\Framework\HTTP\Client\Curl
 	 */
@@ -13,10 +13,10 @@ class Getsplititsupportedcultures {
 	 * Constructor
 	 */
 	public function __construct(
-		\Magento\Framework\App\Helper\AbstractHelper $helper,
+		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
 		\Magento\Framework\HTTP\Client\Curl $curl
 	) {
-		$this->helper = $helper;
+		$this->scopeConfig = $scopeConfig;
 		$this->curl = $curl;
 	}
 
@@ -77,7 +77,7 @@ class Getsplititsupportedcultures {
 	 * @return string
 	 */
 	public function getConfig($config_path) {
-		return $this->helper->scopeConfig->getValue(
+		return $this->scopeConfig->getValue(
 			$config_path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE
 		);
 	}
