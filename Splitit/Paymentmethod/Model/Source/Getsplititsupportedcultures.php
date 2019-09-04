@@ -9,15 +9,19 @@ class Getsplititsupportedcultures {
 	 */
 	protected $curl;
 
+	protected $jsonHelper;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct(
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Framework\HTTP\Client\Curl $curl
+		\Magento\Framework\HTTP\Client\Curl $curl,
+		\Magento\Framework\Json\Helper\Data $jsonHelper
 	) {
 		$this->scopeConfig = $scopeConfig;
 		$this->curl = $curl;
+		$this->jsonHelper = $jsonHelper;
 	}
 
 	/**
@@ -28,7 +32,7 @@ class Getsplititsupportedcultures {
 	public function toOptionArray() {
 		$apiUrl = $this->getApiUrl();
 		$getSplititSupportedCultures = $this->getSplititSupportedCultures($apiUrl . "api/Infrastructure/SupportedCultures");
-		$decodedResult = json_decode($getSplititSupportedCultures, true);
+		$decodedResult = $this->jsonHelper->jsonDecode($getSplititSupportedCultures);
 		$allCulture = array();
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1 && count($decodedResult["Cultures"])) {
 			foreach ($decodedResult["Cultures"] as $key => $value) {
@@ -54,7 +58,7 @@ class Getsplititsupportedcultures {
 
 		} catch (\Exception $e) {
 			$result["errorMsg"] = $this->getServerDownMsg();
-			$result = json_encode($result);
+			$result = $this->jsonHelper->jsonEncode($result);
 		}
 		return $result;
 	}

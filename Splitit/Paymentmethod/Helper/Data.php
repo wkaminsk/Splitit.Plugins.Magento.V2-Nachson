@@ -31,6 +31,7 @@ class Data extends AbstractHelper {
 	public $storeLocale;
 	public $SupportedCulturesSource;
 
+	protected $jsonHelper;
 	public static $selectedIns;
 
 	/**
@@ -44,6 +45,7 @@ class Data extends AbstractHelper {
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
 		\Magento\Directory\Model\Currency $currency,
 		\Splitit\Paymentmethod\Model\Source\Getsplititsupportedcultures $SupportedCulturesSource,
+		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Framework\Locale\Resolver $storeLocale
 	) {
 		$this->checkoutSession = $checkoutSession;
@@ -53,8 +55,25 @@ class Data extends AbstractHelper {
 		$this->currency = $currency;
 		$this->storeLocale = $storeLocale;
 		$this->SupportedCulturesSource = $SupportedCulturesSource;
+		$this->jsonHelper = $jsonHelper;
 		parent::__construct($context);
 		$this->_getMethodFee();
+	}
+
+	/**
+	 * To get the encoded value
+	 * @return string
+	 */
+	public function jsonEncode($array = []) {
+		return $this->jsonHelper->jsonEncode($array);
+	}
+
+	/**
+	 * To get the decoded value
+	 * @return array
+	 */
+	public function jsonDecode($encoded) {
+		return $this->jsonHelper->jsonDecode($encoded);
 	}
 
 	/**
@@ -116,7 +135,7 @@ class Data extends AbstractHelper {
 		$apiUrl = $this->SupportedCulturesSource->getApiUrl();
 		$getSplititSupportedCultures = $this->SupportedCulturesSource->getSplititSupportedCultures($apiUrl . "api/Infrastructure/SupportedCultures");
 
-		$decodedResult = json_decode($getSplititSupportedCultures, true);
+		$decodedResult = $this->jsonHelper->jsonDecode($getSplititSupportedCultures);
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1 && count($decodedResult["SupportedCultures"])) {
 			return $decodedResult["SupportedCultures"];
 		}
@@ -182,11 +201,11 @@ class Data extends AbstractHelper {
 
 				$feeTable = @unserialize($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 				if ($feeTable == false) {
-					$feeTable = json_decode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE), true);
+					$feeTable = $this->jsonHelper->jsonDecode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 				}
 			} else {
 
-				$feeTable = json_decode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE), true);
+				$feeTable = $this->jsonHelper->jsonDecode($this->getConfig("payment/$method/splitit_fee_table", \Magento\Store\Model\ScopeInterface::SCOPE_STORE));
 			}
 			$selectedInstallment = $this->checkoutSession->getSelectedIns();
 

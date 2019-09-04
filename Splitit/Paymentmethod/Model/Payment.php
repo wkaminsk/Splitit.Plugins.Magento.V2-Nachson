@@ -111,7 +111,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 
 			$api = $this->_apiModel->getApiUrl();
 			$result = $this->createInstallmentPlan($api, $payment, $amount);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 
 			/*show error if there is any error from spliti it when click on place order*/
 			if (!$result["ResponseHeader"]["Succeeded"]) {
@@ -202,7 +202,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			$params = array_merge($params, array("RequestHeader" => array('SessionId' => $sessionId)));
 			$api = $this->_apiModel->getApiUrl();
 			$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/StartInstallments", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 
@@ -269,7 +269,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			);
 
 			$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Cancel", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 
@@ -331,7 +331,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			);
 
 			$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Refund", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
@@ -416,7 +416,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		} else {
 			$totalAmount = $this->grandTotal;
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
-			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+			$depandingOnCartInstallmentsArr = $this->helper->jsonDecode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
 			foreach ($depandingOnCartInstallmentsArr as $data) {
 				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
@@ -472,7 +472,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 				"AreTermsAndConditionsApproved" => "True",
 			];
 			$this->_logger->error("====1 installment ====");
-			$this->_logger->error(json_encode($params));
+			$this->_logger->error($this->helper->jsonEncode($params));
 			$this->_logger->error("==== END ====");
 		} else {
 			$this->_logger->error(__('normal installment-----'));
@@ -521,7 +521,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 		];
 		$response = ["status" => false, "errorMsg" => ""];
 		$result = $this->_apiModel->makePhpCurlRequest($api, "InstallmentPlan/Update", $params);
-		$decodedResult = json_decode($result, true);
+		$decodedResult = $this->helper->jsonDecode($result);
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {
 			$response["status"] = true;
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
@@ -568,7 +568,7 @@ class Payment extends \Magento\Payment\Model\Method\Cc {
 			/*Select Depanding on cart installment setup*/
 			$depandOnCart = 1;
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
-			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+			$depandingOnCartInstallmentsArr = $this->helper->jsonDecode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
 			foreach ($depandingOnCartInstallmentsArr as $data) {
 				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;

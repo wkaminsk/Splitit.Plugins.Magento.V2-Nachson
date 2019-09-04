@@ -34,7 +34,6 @@ class PaymentForm {
 	protected $customerSession;
 	protected $quote;
 	protected $quoteValidator;
-	protected $jsonHelper;
 	protected $_store;
 	protected $logger;
 	protected $orderPlace;
@@ -51,7 +50,6 @@ class PaymentForm {
 		\Magento\Customer\Model\Session $customerSession,
 		\Magento\Store\Api\Data\StoreInterface $store,
 		\Magento\Framework\UrlInterface $urlBuilder,
-		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Checkout\Model\Session $_checkoutSession,
 		\Splitit\Paymentmethod\Helper\Data $helper,
 		\Splitit\Paymentmethod\Model\Source\Installments $sourceInstallments,
@@ -66,7 +64,6 @@ class PaymentForm {
 		$this->customerSession = $customerSession;
 		$this->_store = $store;
 		$this->urlBuilder = $urlBuilder;
-		$this->jsonHelper = $jsonHelper;
 		$this->logger = $logger;
 		$this->quote = $this->_checkoutSession->getQuote();
 		$this->helper = $helper;
@@ -323,7 +320,7 @@ class PaymentForm {
 		$this->logger->addDebug(print_r($params, TRUE));
 		$response = array("status" => false, "data" => "");
 		$result = $api->updateRefOrderNumber($this->api->getApiUrl(), $params);
-		$decodedResult = $this->jsonHelper->jsonDecode($result);
+		$decodedResult = $this->helper->jsonDecode($result);
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {
 			$response["status"] = true;
 		} else if (isset($decodedResult["ResponseHeader"]) && count($decodedResult["ResponseHeader"]["Errors"])) {
@@ -378,14 +375,14 @@ class PaymentForm {
 
 			$result = $this->api->installmentplaninit($this->api->getApiUrl(), $params);
 			/*check for approval URL from response*/
-			$decodedResult = $this->jsonHelper->jsonDecode($result);
+			$decodedResult = $this->helper->jsonDecode($result);
 
 			if (isset($decodedResult) && isset($decodedResult["ApprovalUrl"]) && $decodedResult["ApprovalUrl"] != "") {
 				$intallmentPlan = $decodedResult["InstallmentPlan"]["InstallmentPlanNumber"];
 				/*set Installment plan number into session*/
 				$this->customerSession->setInstallmentPlanNumber($intallmentPlan);
 				$approvalUrlResponse = $this->api->getApprovalUrlResponse($decodedResult["ApprovalUrl"]);
-				$approvalUrlRes = $this->jsonHelper->jsonDecode($approvalUrlResponse);
+				$approvalUrlRes = $this->helper->jsonDecode($approvalUrlResponse);
 				if (isset($approvalUrlRes["Global"]["ResponseResult"]["Errors"]) && count($approvalUrlRes["Global"]["ResponseResult"]["Errors"])) {
 					$i = 1;
 					$errorMsg = "";
@@ -451,7 +448,7 @@ class PaymentForm {
 		$params = $this->installmentplaninitParams($firstInstallmentAmount, $billAddress, $customerInfo, $cultureName, $numOfInstallments, null);
 		$this->logger->error('======= installmentplaninitForHostedSolution : params passed to Initit Api ======= : ');
 		$this->logger->error(print_r($params, TRUE));
-		$this->logger->error(json_encode($params));
+		$this->logger->error($this->helper->jsonEncode($params));
 		$this->logger->error('======= END ======= : ');
 
 		try {
@@ -466,7 +463,7 @@ class PaymentForm {
 
 			$result = $this->api->installmentplaninitforhostedsolution($params);
 			/*check for checkout URL from response*/
-			$decodedResult = $this->jsonHelper->jsonDecode($result);
+			$decodedResult = $this->helper->jsonDecode($result);
 
 			if (isset($decodedResult) && isset($decodedResult["CheckoutUrl"]) && $decodedResult["CheckoutUrl"] != "") {
 
@@ -688,7 +685,7 @@ class PaymentForm {
 		);
 		$response = array("status" => false, "data" => "", "numberOfInstallments" => "", "cardBrand" => "", "cardNumber" => "", "cardExpMonth" => "", "cardExpYear" => "");
 		$result = $api->getInstallmentPlanDetails($this->api->getApiUrl(), $params);
-		$decodedResult = $this->jsonHelper->jsonDecode($result);
+		$decodedResult = $this->helper->jsonDecode($result);
 
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {
 			$response["status"] = true;
@@ -733,7 +730,7 @@ class PaymentForm {
 		);
 		$response = array("status" => false, "data" => "");
 		$result = $this->api->cancelInstallmentPlan($this->api->getApiUrl(), $params);
-		$decodedResult = $this->jsonHelper->jsonDecode($result);
+		$decodedResult = $this->helper->jsonDecode($result);
 
 		if (isset($decodedResult["ResponseHeader"]["Succeeded"]) && $decodedResult["ResponseHeader"]["Succeeded"] == 1) {
 			$response["status"] = true;
@@ -801,25 +798,26 @@ class PaymentForm {
 			/*Select Depanding on cart installment setup*/
 			$depandOnCart = 1;
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentredirect/depanding_on_cart_total_values");
-			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+			$depandingOnCartInstallmentsArr = $this->helper->jsonDecode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
 			foreach ($depandingOnCartInstallmentsArr as $data) {
-				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;
+
+				$dataAsPerCurrency[$data['doctv']['currency']][] = $data['doctv'];
 			}
 			$currentCurrencyCode = $this->storeManager->getStore()->getCurrentCurrencyCode();
 			if (count($dataAsPerCurrency) && isset($dataAsPerCurrency[$currentCurrencyCode])) {
 
 				foreach ($dataAsPerCurrency[$currentCurrencyCode] as $data) {
-					if ($totalAmount >= $data->from && !empty($data->to) && $totalAmount <= $data->to) {
-						foreach (explode(',', $data->installments) as $n) {
+					if ($totalAmount >= $data['from'] && !empty($data['to']) && $totalAmount <= $data['to']) {
+						foreach (explode(',', $data['installments']) as $n) {
 							if ((array_key_exists($n, $options))) {
 								$installments[$n] = $n;
 								$installmentsInDropdown[$n] = round($totalAmount / $n, 2);
 							}
 						}
 						break;
-					} else if ($totalAmount >= $data->from && empty($data->to)) {
-						foreach (explode(',', $data->installments) as $n) {
+					} else if ($totalAmount >= $data['from'] && empty($data['to'])) {
+						foreach (explode(',', $data['installments']) as $n) {
 
 							if ((array_key_exists($n, $options))) {
 								$installments[$n] = $n;

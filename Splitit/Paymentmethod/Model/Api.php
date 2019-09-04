@@ -99,7 +99,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		}
 
 		$result = $this->makePhpCurlRequest($apiUrl, "Login", $dataForLogin);
-		$decodedResult = json_decode($result, true);
+		$decodedResult = $this->helper->jsonDecode($result);
 
 		$response = ["splititSessionId" => "", "errorMsg" => "", "successMsg" => "", "status" => false];
 		if ($decodedResult) {
@@ -146,7 +146,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 			}
 			/*call Installment Plan Initiate api to get Approval URL*/
 			$result = $this->makePhpCurlRequest($apiUrl, "InstallmentPlan/Initiate", $params);
-			$decodedResult = json_decode($result, true);
+			$decodedResult = $this->helper->jsonDecode($result);
 			/*check for curl error*/
 			if (isset($decodedResult["errorMsg"])) {
 				$response["errorMsg"] = $decodedResult["errorMsg"];
@@ -450,7 +450,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		/*set Installment plan number into session*/
 		$this->customerSession->setInstallmentPlanNumber($intallmentPlan);
 		$approvalUrlResponse = $this->getApprovalUrlResponseFromApi($decodedResult["ApprovalUrl"]);
-		$approvalUrlRes = json_decode($approvalUrlResponse, true);
+		$approvalUrlRes = $this->helper->jsonDecode($approvalUrlResponse);
 		/*check for curl error*/
 		if (isset($approvalUrlRes["errorMsg"])) {
 			$response["errorMsg"] = $approvalUrlRes["errorMsg"];
@@ -488,7 +488,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	 */
 	public function makePhpCurlRequest($gwUrl, $method, $params) {
 		$url = trim($gwUrl, '/') . '/api/' . $method . '?format=JSON';
-		$jsonData = json_encode($params);
+		$jsonData = $this->helper->jsonEncode($params);
 		/**** As older version do not support  json request in curl***/
 		try {
 
@@ -504,7 +504,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 		} catch (\Exception $e) {
 			$result["errorMsg"] = $this->getServerDownMsg();
 			echo $e->getMessage();
-			$result = json_encode($result);
+			$result = $this->helper->jsonEncode($result);
 		}
 		return $result;
 
@@ -518,7 +518,8 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	public function getApprovalUrlResponseFromApi($approvalUrl) {
 		$url = $approvalUrl . '&format=json';
 		try {
-
+			$this->curl->addHeader("Content-Type", "application/json");
+			$this->curl->addHeader("Content-Length", 200);
 			$this->curl->setOption(CURLOPT_FOLLOWLOCATION, 1);
 			$this->curl->setOption(CURLOPT_SSL_VERIFYPEER, 0);
 			$this->curl->get($url);
@@ -526,7 +527,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 
 		} catch (\Exception $e) {
 			$result["errorMsg"] = $this->getServerDownMsg();
-			$result = json_encode($result);
+			$result = $this->helper->jsonEncode($result);
 		}
 		return $result;
 	}

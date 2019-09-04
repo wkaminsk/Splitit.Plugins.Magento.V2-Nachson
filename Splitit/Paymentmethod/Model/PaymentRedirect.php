@@ -34,7 +34,6 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 	protected $_checkoutSession;
 	protected $customerSession;
 	protected $quote;
-	protected $jsonHelper;
 	protected $_store;
 	protected $paymentForm;
 	private $requestData = null;
@@ -52,7 +51,6 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 		\Magento\Customer\Model\Session $customerSession,
 		\Magento\Store\Api\Data\StoreInterface $store,
 		\Magento\Framework\UrlInterface $urlBuilder,
-		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Checkout\Model\Session $_checkoutSession,
 		\Splitit\Paymentmethod\Helper\Data $helper,
 		\Magento\Framework\App\RequestInterface $request,
@@ -77,7 +75,6 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 		$this->customerSession = $customerSession;
 		$this->_store = $store;
 		$this->urlBuilder = $urlBuilder;
-		$this->jsonHelper = $jsonHelper;
 		$this->paymentForm = $paymentForm;
 		$this->quote = $this->_checkoutSession->getQuote();
 		$this->helper = $helper;
@@ -134,7 +131,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 			$this->_logger->error(print_r($params, true));
 			$api = $this->api->getApiUrl();
 			$result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/StartInstallments", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 
@@ -201,7 +198,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 			);
 
 			$result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/Cancel", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 
@@ -263,7 +260,7 @@ class PaymentRedirect extends \Magento\Payment\Model\Method\AbstractMethod {
 			);
 
 			$result = $this->api->makePhpCurlRequest($api, "InstallmentPlan/Refund", $params);
-			$result = json_decode($result, true);
+			$result = $this->helper->jsonDecode($result);
 			if (isset($result["ResponseHeader"]) && isset($result["ResponseHeader"]["Errors"]) && !empty($result["ResponseHeader"]["Errors"])) {
 				$errorMsg = "";
 

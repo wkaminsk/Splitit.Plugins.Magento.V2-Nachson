@@ -13,12 +13,14 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 	protected $splititSource;
 	protected $storeManager;
 	protected $currency;
+	protected $jsonHelper;
 	public function __construct(
 		\Magento\Framework\App\Action\Context $context,
 		\Splitit\Paymentmethod\Helper\Data $helper,
 		\Magento\Checkout\Model\Cart $cart,
 		\Splitit\Paymentmethod\Model\Source\Installments $splititSource,
 		\Magento\Store\Model\StoreManagerInterface $storeManager,
+		\Magento\Framework\Json\Helper\Data $jsonHelper,
 		\Magento\Directory\Model\Currency $currency
 	) {
 		$this->storeManager = $storeManager;
@@ -26,6 +28,7 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 		$this->helper = $helper;
 		$this->cart = $cart;
 		$this->splititSource = $splititSource;
+		$this->jsonHelper = $jsonHelper;
 		parent::__construct($context);
 	}
 
@@ -67,7 +70,7 @@ class Getinstallment extends \Magento\Framework\App\Action\Action {
 		} else {
 			$installmentHtml = '<option value="">--' . __('Please Select') . '--</option>';
 			$depandingOnCartInstallments = $this->helper->getConfig("payment/splitit_paymentmethod/depanding_on_cart_total_values");
-			$depandingOnCartInstallmentsArr = json_decode($depandingOnCartInstallments);
+			$depandingOnCartInstallmentsArr = $this->jsonHelper->jsonDecode($depandingOnCartInstallments);
 			$dataAsPerCurrency = [];
 			foreach ($depandingOnCartInstallmentsArr as $data) {
 				$dataAsPerCurrency[$data->doctv->currency][] = $data->doctv;

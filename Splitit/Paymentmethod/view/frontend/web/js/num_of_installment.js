@@ -195,6 +195,7 @@ function runMyScriptForCheckout(){
 					installmentNewSpan = result.installmetPriceText.replace('{AMOUNT}',currencySymbol+installments);
 					installmentNewSpan = '<br><span class="cart-installment">'+installmentNewSpan+'</span>';
 					//installmentNewSpan = '<br><span class="cart-installment-onepage">'+currencySymbol+installments+' x '+result.numOfInstallmentForDisplay+' '+result.installmetPriceText+'</span>';
+					jQuery('.cart-installment').closest('tr').remove();
 					jQuery('table.table-totals').find('.cart-installment-onepage').closest('tr').remove();
 					jQuery('table.table-totals tr:last').after('<tr><td>'+installmentNewSpan+'</td></tr>');
 					
