@@ -89,6 +89,20 @@ class Curl extends \Magento\Framework\HTTP\Client\Curl {
 		curl_close($this->_ch);
 	}
 
+	/**
+	 * Make request
+	 *
+	 * String type was added to parameter $param in order to support sending JSON or XML requests.
+	 * This feature was added base on Community Pull Request https://github.com/magento/magento2/pull/8373
+	 *
+	 * @param string $method
+	 * @param string $uri
+	 * @param array|string $params - use $params as a string in case of JSON or XML POST request.
+	 *
+	 * @return void
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+	 * @SuppressWarnings(PHPMD.NPathComplexity)
+	 */
 	protected function makeCustomRequest($method, $uri, $params = []) {
 		$this->_ch = curl_init();
 		$this->curlOption(CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP | CURLPROTO_FTPS);
@@ -148,6 +162,13 @@ class Curl extends \Magento\Framework\HTTP\Client\Curl {
 		curl_close($this->_ch);
 	}
 
+	/**
+	 * Make Custom Get request
+	 *
+	 * @param string $url
+	 *
+	 * @return void
+	 */
 	public function curlGetRequest($url) {
 		$this->makeCustomRequest("GET", $url);
 	}
