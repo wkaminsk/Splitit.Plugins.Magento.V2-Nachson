@@ -518,11 +518,7 @@ class Api extends \Magento\Payment\Model\Method\AbstractMethod {
 	public function getApprovalUrlResponseFromApi($approvalUrl) {
 		$url = $approvalUrl . '&format=json';
 		try {
-			$this->curl->addHeader("Content-Type", "application/json");
-			$this->curl->addHeader("Content-Length", 200);
-			$this->curl->setOption(CURLOPT_FOLLOWLOCATION, 1);
-			$this->curl->setOption(CURLOPT_SSL_VERIFYPEER, 0);
-			$this->curl->get($url);
+			$this->curl->curlGetRequest($url);
 			$result = $this->curl->getBody();
 
 		} catch (\Exception $e) {
